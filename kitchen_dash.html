@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Kitchen Dash</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--wine:#7a1f2b;--wine2:#5a1520;--cream:#fbf3e4;--paper:#fffaf0;--ink:#2b1d16;--gold:#d9a441;--green:#3f7d4e;--blue:#2f4f7a;--muted:#8a7565}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--cream) repeating-linear-gradient(45deg,transparent 0 22px,rgba(122,31,43,.04) 22px 44px);color:var(--ink);font-family:Nunito,system-ui,sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{font-family:"Playfair Display",Georgia,serif}
+.wrap{max-width:1100px;margin:0 auto;padding:6px 16px 8px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo .mark{width:34px;height:34px;border-radius:50%;background:var(--wine);color:var(--cream);display:grid;place-items:center;font-size:24px;box-shadow:0 3px 0 var(--wine2)}
+.logo h1{font-size:clamp(18px,3vw,24px);line-height:1;color:var(--wine)}
+.logo small{display:block;font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+.awning{height:14px;border-radius:0 0 10px 10px;background:repeating-linear-gradient(90deg,var(--wine) 0 26px,var(--paper) 26px 52px);margin:-6px -16px 6px;height:10px;box-shadow:0 3px 6px rgba(0,0,0,.12)}
+.btn{font:800 14px Nunito,sans-serif;border:0;border-radius:10px;padding:7px 12px;cursor:pointer;background:var(--wine);color:var(--cream);box-shadow:0 3px 0 var(--wine2);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wine2)}
+.btn.alt{background:var(--paper);color:var(--wine);box-shadow:0 3px 0 #d8c7ad;border:1px solid #e6d6bd}
+.btn.gold{background:var(--gold);color:var(--ink);box-shadow:0 3px 0 #a87a26}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.hud{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+.stat{background:var(--paper);border:1px solid #e6d6bd;border-radius:10px;padding:2px 8px;display:flex;align-items:baseline;justify-content:center;gap:6px;text-align:center}
+.stat b{display:block;font-size:clamp(15px,2.5vw,19px);color:var(--wine)}
+.stat span{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.orders{display:flex;gap:8px;overflow-x:auto;min-height:58px;padding-bottom:2px;margin-bottom:6px}
+.ticket{flex:0 0 112px;background:var(--paper);border:1px solid #e6d6bd;border-top:6px solid var(--wine);border-radius:6px 6px 10px 10px;padding:3px 6px;font-size:12px;position:relative;animation:drop .3s ease-out}
+@keyframes drop{from{transform:translateY(-14px);opacity:0}}
+.ticket .t{font-weight:800}
+.ticket .ing{font-size:14px;margin:0}
+.bar{height:7px;border-radius:4px;background:#eadcc6;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);transition:width .2s linear}
+.ticket.warn{border-top-color:var(--gold)}.ticket.warn .bar i{background:var(--gold)}
+.ticket.danger{border-top-color:#c0392b;animation:shake .4s infinite}.ticket.danger .bar i{background:#c0392b}
+@keyframes shake{50%{transform:translateX(2px)}}
+.empty-orders{color:var(--muted);font-style:italic;align-self:center}
+.stage{position:relative;background:#3a2a20;border-radius:12px;padding:4px;margin:0 auto;box-shadow:0 8px 24px rgba(43,29,22,.25)}
+canvas{display:block;width:100%;height:auto;margin:0 auto;border-radius:10px;touch-action:none}
+.toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:6px 14px;border-radius:999px;font-weight:800;font-size:14px;pointer-events:none;opacity:0;transition:opacity .2s}
+.toast.show{opacity:1}
+.overlay{position:fixed;inset:0;background:rgba(43,29,22,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+.overlay.show{display:flex}
+.card{background:var(--paper);border-radius:18px;max-width:560px;width:100%;max-height:92vh;overflow:auto;padding:20px;box-shadow:0 12px 40px rgba(0,0,0,.35);border-top:10px solid var(--wine)}
+.card h2{color:var(--wine);font-size:26px;margin-bottom:6px}
+.card p{margin:6px 0;line-height:1.45}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.tabs{display:flex;gap:6px;margin:10px 0}
+.tabs button{flex:1}
+.tabs .on{background:var(--wine);color:var(--cream)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:6px;border-bottom:1px dashed #e0cfb4;text-align:left}
+th{color:var(--muted);font-size:11px;text-transform:uppercase}
+.recipes{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px}
+.recipes div{background:var(--cream);border-radius:8px;padding:6px 8px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.sw{width:64px;padding:6px 4px;border-radius:10px;border:2px solid #e6d6bd;background:#fff;text-align:center;font-size:11px;cursor:pointer;position:relative}
+.sw .dot{width:28px;height:28px;border-radius:50%;margin:0 auto 4px;border:2px solid rgba(0,0,0,.15)}
+.sw.sel{border-color:var(--wine);box-shadow:0 0 0 2px var(--wine) inset}
+.sw.lock{opacity:.5;cursor:not-allowed}
+.sw.lock::after{content:"🔒";position:absolute;top:2px;right:4px}
+input[type=text]{font:700 16px Nunito;padding:9px 12px;border-radius:10px;border:2px solid #e0cfb4;width:100%;background:#fff}
+.note{font-size:12px;color:var(--muted);background:var(--cream);border-radius:10px;padding:8px 10px;margin-top:10px}
+.challenge{background:#fff3d6;border:1px dashed var(--gold);border-radius:10px;padding:8px 10px;font-size:14px;margin:8px 0}
+.controls{display:none;justify-content:space-between;align-items:center;margin-top:6px;gap:12px;user-select:none}
+.dpad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:5px}
+.dpad button,.act{border:0;border-radius:14px;background:var(--paper);color:var(--wine);font-size:22px;font-weight:900;box-shadow:0 3px 0 #d8c7ad;touch-action:none}
+.dpad .u{grid-column:2}.dpad .l{grid-column:1;grid-row:2}.dpad .d{grid-column:2;grid-row:2}.dpad .r{grid-column:3;grid-row:2}
+.acts{display:flex;gap:10px}.act{width:78px;height:78px;border-radius:50%;background:var(--wine);color:var(--cream);font-size:13px;box-shadow:0 4px 0 var(--wine2)}.act.use{background:var(--green);box-shadow:0 4px 0 #2a5a36}
+.help{font-size:12px;color:var(--muted);margin-top:4px;text-align:center}
+kbd{background:var(--paper);border:1px solid #d8c7ad;border-radius:5px;padding:0 5px;font-family:inherit;font-weight:800;color:var(--ink)}
+@media (pointer:coarse),(max-width:700px){.controls{display:flex}.help{display:none}}
+@media (max-width:520px){.recipes{grid-template-columns:1fr}.ticket{flex-basis:118px}}
+</style>
+<style>
+.seg{display:flex;gap:6px;margin:4px 0 10px}.seg button{flex:1;font:800 14px Nunito;padding:8px;border-radius:10px;border:2px solid #e0cfb4;background:#fff;color:var(--wine);cursor:pointer}
+.seg button.on{background:var(--wine);color:var(--cream);border-color:var(--wine)}.seg button:disabled{opacity:.45}
+.lbl{font-weight:800;font-size:13px;display:block;margin-top:6px}
+.modeDesc{font-size:13px;color:var(--muted);margin:-4px 0 8px}
+.queue{flex:0 0 auto;align-self:center;font-weight:800;color:var(--wine);font-size:13px;padding:0 6px}
+#bEnd{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="awning"></div>
+  <header>
+    <div class="logo"><div class="mark">🐀</div><div><h1>Kitchen Dash</h1><small>Le Petit Rongeur · Paris</small></div></div>
+    <div class="row" style="margin:0">
+      <button class="btn alt" id="bCustom">👒 Estilo</button>
+      <button class="btn alt" id="bBoard">🏆 Placar</button>
+      <button class="btn alt" id="bEnd">⏹ Encerrar</button>
+      <button class="btn" id="bPause">⏸ Pausar</button>
+    </div>
+  </header>
+  <div class="hud">
+    <div class="stat"><b id="hScore">0</b><span>pts</span></div>
+    <div class="stat"><b id="hTime">3:00</b><span id="hTimeL">tempo</span></div>
+    <div class="stat"><b id="hStars">☆☆☆</b><span>nota</span></div>
+  </div>
+  <div class="orders" id="orders"></div>
+  <div class="stage">
+    <canvas id="cv" width="832" height="576"></canvas>
+    <div class="toast" id="toast"></div>
+  </div>
+  <div class="controls">
+    <div class="dpad">
+      <button class="u" data-k="up">▲</button><button class="l" data-k="left">◀</button><button class="d" data-k="down">▼</button><button class="r" data-k="right">▶</button>
+    </div>
+    <button class="act" id="act">AÇÃO<br><small>toque / segure</small></button>
+  </div>
+  <p class="help" id="help"></p>
+</div>
+
+<div class="overlay show" id="ovStart"><div class="card">
+  <h2>Bienvenue, chef!</h2>
+  <p>Busque ingredientes, pique, cozinhe e entregue no <b>passe</b> 🛎️. Cada chef usa só <b>4 direções + 1 botão</b>: <b>toque</b> = pegar/soltar/servir · <b>segure</b> = usar (picar). Parado olhando para uma estação, o chef a usa sozinho.</p>
+  <div class="recipes">
+    <div><b>🥗 Salada</b><br>🥬 + 🍅 picados no prato</div>
+    <div><b>🍲 Sopa de Tomate</b><br>3× 🍅 picado na panela</div>
+    <div><b>🫕 Ratatouille</b><br>🍅 + 🍆 + 🥒 picados na panela</div>
+    <div><b>🥖 Tartine</b><br>🥖 + 🧀 picados no prato</div>
+  </div>
+  <span class="lbl">Jogadores</span>
+  <div class="seg" id="segP"><button data-v="1" class="on">1 Jogador</button><button data-v="2">2 Jogadores</button></div>
+  <span class="lbl">Modo de jogo</span>
+  <div class="seg" id="segM"><button data-v="classico" class="on">⏱ Clássico</button><button data-v="livre">🌿 Livre</button><button data-v="desafio">🏁 Desafio</button></div>
+  <p class="modeDesc" id="modeDesc"></p>
+  <div class="challenge" id="chStart"></div>
+  <span class="lbl">Nome do chef (P1)</span>
+  <input type="text" id="name" maxlength="16" placeholder="Chef Remy">
+  <div id="p2box" style="display:none"><span class="lbl">Nome do chef (P2)</span><input type="text" id="name2" maxlength="16" placeholder="Chef Colette"></div>
+  <div class="row"><button class="btn" id="bStart">▶ Abrir a cozinha</button><button class="btn alt" id="bCustom2">👒 Personalizar</button></div>
+</div></div>
+
+<div class="overlay" id="ovEnd"><div class="card">
+  <h2 id="endTitle">Fim do expediente!</h2>
+  <p id="endText"></p>
+  <div class="challenge" id="chEnd"></div>
+  <div id="unlockText"></div>
+  <div class="row"><button class="btn" id="bAgain">↻ Tentar de novo</button><button class="btn alt" id="bMenu">Menu</button><button class="btn alt" id="bBoard2">🏆 Placar</button></div>
+</div></div>
+
+<div class="overlay" id="ovBoard"><div class="card">
+  <h2>Placar dos Chefs</h2>
+  <div id="boardBody"></div>
+  <div class="row"><button class="btn" data-close>Fechar</button></div>
+</div></div>
+
+<div class="overlay" id="ovCustom"><div class="card">
+  <h2>Estilo do Chef</h2>
+  <p style="font-size:14px">Itens cosméticos não dão vantagem. Desbloqueie com seu recorde pessoal.</p>
+  <h3>Chapéu</h3><div class="swatches" id="swHat"></div>
+  <h3>Avental</h3><div class="swatches" id="swApron"></div>
+  <h3>Tema da cozinha</h3><div class="swatches" id="swTheme"></div>
+  <div class="note">💠 <b>Loja Pix (em breve):</b> pacotes cosméticos opcionais de pequeno valor. Nenhum item comprado afetará a pontuação — o jogo é justo para todos. Nenhum pagamento é processado nesta versão.</div>
+  <div class="row"><button class="btn" data-close>Pronto</button></div>
+</div></div>
+
+<div class="overlay" id="ovPause"><div class="card" style="text-align:center">
+  <h2>Pausa para o café ☕</h2>
+  <div class="row" style="justify-content:center"><button class="btn" id="bResume">▶ Continuar</button><button class="btn alt" id="bQuit">Encerrar</button></div>
+</div></div>
+
+<script id="mapcheck">
+// map: . floor, # counter, crates: t a b z p q, K knife, S stove, P plates, D delivery, X trash
+var MAP=[
+ "#t#a#b#z#p#q#",
+ "#...........D",
+ "#...........D",
+ "K...####....#",
+ "K...........S",
+ "#...........S",
+ "#...####....S",
+ "#...........#",
+ "##P##X#######"];
+var START=[[5.5,4.5],[8.5,4.5]];
+// BFS: every non-counter station must touch a floor cell reachable from the start
+function checkReach(map,start){
+  var H=map.length,W=map[0].length,seen={},q=[[Math.floor(start[0]),Math.floor(start[1])]],bad=[];
+  seen[q[0]]=1;
+  while(q.length){var c=q.shift();[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var x=c[0]+d[0],y=c[1]+d[1];if(x>=0&&y>=0&&x<W&&y<H&&map[y][x]==='.'&&!seen[[x,y]]){seen[[x,y]]=1;q.push([x,y])}})}
+  for(var y=0;y<H;y++)for(var x=0;x<W;x++){var ch=map[y][x];if(ch==='.'||ch==='#')continue;
+    var ok=[[1,0],[-1,0],[0,1],[0,-1]].some(function(d){return seen[[x+d[0],y+d[1]]]});if(!ok)bad.push(ch+'@'+x+','+y)}
+  return bad;
+}
+if(typeof module!=='undefined')module.exports={checkReach:checkReach,MAP:MAP,START:START};
+</script>
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const store={get(k,d){try{const v=localStorage.getItem('kd_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('kd_'+k,JSON.stringify(v))}catch(e){}}};
+const bad=checkReach(MAP,START[0]);if(bad.length)console.error('Estações inacessíveis:',bad);
+
+const ING={tomate:'🍅',alface:'🥬',berinjela:'🍆',abobrinha:'🥒',pao:'🥖',queijo:'🧀'};
+const RECIPES={
+  salada:{name:'Salada',icon:'🥗',need:['alface','tomate'],pts:60,unlock:0},
+  tartine:{name:'Tartine',icon:'🥖',need:['pao','queijo'],pts:60,unlock:20},
+  sopa:{name:'Sopa de Tomate',icon:'🍲',pot:['tomate','tomate','tomate'],pts:90,unlock:45},
+  ratatouille:{name:'Ratatouille',icon:'🫕',pot:['abobrinha','berinjela','tomate'],pts:130,unlock:70},
+};
+const CHAL_LIST=['salada','tartine','sopa','salada','ratatouille','tartine','sopa','salada','ratatouille','tartine','sopa','ratatouille'];
+const MODES={
+  classico:{n:'Clássico',d:'Turno de 3 minutos com pressão crescente. Clientes perdem a paciência. Faça o máximo de pontos.'},
+  livre:{n:'Livre',d:'Sem limite de tempo nem pressa: pedidos chegam sem parar e acumulam na fila. Encerre quando quiser.'},
+  desafio:{n:'Desafio',d:'12 pedidos fixos, sempre na mesma ordem. Complete todos no menor tempo possível.'},
+};
+const HATS=[{id:'branco',c:'#ffffff',n:'Clássico',req:0},{id:'vinho',c:'#7a1f2b',n:'Bordeaux',req:300},{id:'azul',c:'#2f4f7a',n:'Marinho',req:600},{id:'ouro',c:'#d9a441',n:'Dourado',req:1000}];
+const APRONS=[{id:'creme',c:'#f3e6cc',n:'Creme',req:0},{id:'verde',c:'#3f7d4e',n:'Ervas',req:200},{id:'listra',c:'#2b1d16',n:'Bistrô',req:500},{id:'rosa',c:'#e48aa0',n:'Macaron',req:800}];
+const THEMES=[
+  {id:'bistro',n:'Bistrô',req:0,floor:['#e9dcc4','#dccbaf'],counter:'#8b5a3c',top:'#c9a27a',wall:'#5a3a28'},
+  {id:'marmore',n:'Mármore',req:400,floor:['#eceff1','#d7dde0'],counter:'#4a5560',top:'#cfd8dc',wall:'#2e3a44'},
+  {id:'provence',n:'Provence',req:700,floor:['#e8e0f0','#d8cbe6'],counter:'#6b4f8a',top:'#d6c3a5',wall:'#45325c'},
+];
+const CRATE={t:'tomate',a:'alface',b:'berinjela',z:'abobrinha',p:'pao',q:'queijo'};
+const W=MAP[0].length,H=MAP.length,TS=64,HOLD_T=.22;
+const touch=matchMedia('(pointer:coarse)').matches;
+
+let prefs=store.get('prefs',{hat:'branco',apron:'creme',theme:'bistro',name:'',name2:''});
+let best=store.get('best',0);
+let cfg={players:1,mode:'classico'};
+const theme=()=>THEMES.find(t=>t.id===prefs.theme)||THEMES[0];
+
+const today=new Date().toISOString().slice(0,10);
+const seed=[...today].reduce((a,c)=>a*31+c.charCodeAt(0)>>>0,7);
+const CH=[
+  {txt:'Entregue 3 Ratatouilles em um turno',test:s=>s.served.ratatouille>=3},
+  {txt:'Faça 600 pontos ou mais',test:s=>s.score>=600},
+  {txt:'Termine sem nenhum pedido perdido',test:s=>s.lost===0&&s.delivered>0},
+  {txt:'Entregue 4 Sopas de Tomate',test:s=>s.served.sopa>=4},
+  {txt:'Entregue 10 pratos em um turno',test:s=>s.delivered>=10},
+][seed%5];
+$('#chStart').innerHTML='📅 <b>Desafio do dia</b> (qualquer modo): '+CH.txt;
+
+const cv=$('#cv'),ctx=cv.getContext('2d');
+let S;
+function mkPlayer(i){return{i,x:START[i][0],y:START[i][1],fx:0,fy:1,hold:null,walk:0,dir:{up:0,down:0,left:0,right:0},act:false,actT:0,actFired:false,autoCd:0,moving:false}}
+function newGame(){
+  const tiles={};
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const c=MAP[y][x];if(c!=='.')tiles[x+','+y]={c,x,y,item:null,prog:0,pot:c==='S'?{items:[],t:0,state:'empty'}:null}}
+  S={tiles,players:[mkPlayer(0)],orders:[],queue:[],score:0,time:cfg.mode==='classico'?180:0,spawn:2,elapsed:0,running:true,paused:false,
+     delivered:0,lost:0,wrong:0,served:{salada:0,tartine:0,sopa:0,ratatouille:0},nextId:1,fx:[],combo:0,chalIdx:0,mode:cfg.mode};
+  if(cfg.players===2)S.players.push(mkPlayer(1));
+  if(cfg.mode==='desafio'){for(let i=0;i<3;i++)pushChal()}
+}
+function pushChal(){if(S.chalIdx<CHAL_LIST.length){S.orders.push({id:S.nextId++,r:CHAL_LIST[S.chalIdx],pat:Infinity,max:Infinity,n:S.chalIdx+1});S.chalIdx++}}
+newGame();S.running=false;
+
+const solid=(x,y)=>x<0||y<0||x>=W||y>=H||MAP[y][x]!=='.';
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),1400)}
+function pop(x,y,txt,col){S.fx.push({x,y,txt,col,t:1.2})}
+function beep(f,d=.08,type='sine'){try{beep.a=beep.a||new (window.AudioContext||window.webkitAudioContext)();const a=beep.a,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=f;g.gain.value=.06;o.connect(g);g.connect(a.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+d);o.stop(a.currentTime+d)}catch(e){}}
+function potDish(items){const k=[...items].sort().join(',');for(const id in RECIPES){const r=RECIPES[id];if(r.pot&&[...r.pot].sort().join(',')===k)return id}return 'gororoba'}
+function plateDish(pl){if(pl.dish)return pl.dish;const k=[...pl.contents].sort().join(',');for(const id in RECIPES){const r=RECIPES[id];if(r.need&&[...r.need].sort().join(',')===k)return id}return null}
+function addToPlate(pl,ing){if(pl.dish||pl.contents.length>=2||pl.contents.includes(ing.name)||ing.state!=='chopped')return false;pl.contents.push(ing.name);return true}
+
+function spawnOrder(){
+  const pool=Object.keys(RECIPES).filter(id=>RECIPES[id].unlock<=S.elapsed);
+  const r=pool[Math.floor(Math.random()*pool.length)];
+  if(S.mode==='livre'){if(S.orders.length<6)S.orders.push({id:S.nextId++,r,pat:Infinity,max:Infinity});else if(S.queue.length<20)S.queue.push(r);beep(880,.1);return}
+  const prog=Math.min(1,S.elapsed/180),pat=Math.round(75-30*prog)+(RECIPES[r].pot?15:0);
+  S.orders.push({id:S.nextId++,r,pat,max:pat});beep(880,.1);
+}
+
+// ---- targeting: tile the chef is FACING (direction is remembered) ----
+function target(p){
+  const tx=Math.floor(p.x+p.fx*.8),ty=Math.floor(p.y+p.fy*.8);
+  return S.tiles[tx+','+ty]||null;
+}
+// contextual action (tap)
+function interact(p){
+  const t=target(p);if(!t){toast('Olhe para uma estação');return}const h=p.hold;
+  switch(t.c){
+    case 'P': if(!h){p.hold={kind:'plate',contents:[],dish:null};beep(500)} else if(h.kind==='plate'&&!h.dish&&!h.contents.length){p.hold=null} break;
+    case 'X': if(h){if(h.kind==='plate'){h.contents=[];h.dish=null}else p.hold=null;beep(200,.12,'square');toast('Lixeira 🗑️')} break;
+    case 'D': if(h&&h.kind==='plate')deliver(p,h);else toast('Entregue um prato aqui');break;
+    case 'S':{const pot=t.pot;
+      if(h&&h.kind==='ing'){
+        if(h.state!=='chopped'){toast('Pique antes de cozinhar 🔪');break}
+        if(pot.items.length<3&&pot.state!=='cooked'&&pot.state!=='burnt'){pot.items.push(h.name);p.hold=null;pot.state='cooking';beep(420)}else toast('Panela cheia');
+      }else if(h&&h.kind==='plate'){
+        if(pot.state==='cooked'&&!h.dish&&!h.contents.length){h.dish=potDish(pot.items);pot.items=[];pot.t=0;pot.state='empty';beep(660)}
+        else if(pot.state==='burnt')toast('Queimou! Toque sem nada na mão para limpar');
+        else toast(pot.items.length<3?'A panela precisa de 3 ingredientes':'Ainda cozinhando…');
+      }else if(!h&&pot.state==='burnt'){pot.items=[];pot.t=0;pot.state='empty';toast('Panela limpa');}
+      else if(!h&&pot.items.length)toast(pot.state==='cooked'?'Pegue um prato para servir':'Cozinhando…');
+      break;}
+    default:
+      if(CRATE[t.c]){if(!h){p.hold={kind:'ing',name:CRATE[t.c],state:'raw'};beep(520)}else toast('Mãos ocupadas');break}
+      if(!h&&t.item){p.hold=t.item;t.item=null;t.prog=0;beep(500)}
+      else if(h&&!t.item){if(t.c==='K'&&h.kind!=='ing'){toast('A tábua é só para ingredientes');break}t.item=h;p.hold=null;t.prog=0;beep(450)}
+      else if(h&&t.item){
+        if(h.kind==='plate'&&t.item.kind==='ing'){if(addToPlate(h,t.item)){t.item=null;beep(600)}else toast(t.item.state!=='chopped'?'Pique primeiro 🔪':'Não combina')}
+        else if(h.kind==='ing'&&t.item.kind==='plate'){if(addToPlate(t.item,h)){p.hold=null;beep(600)}else toast(h.state!=='chopped'?'Pique primeiro 🔪':'Não combina')}
+      }
+  }
+}
+function canChop(p){const t=target(p);return t&&t.c==='K'&&!p.hold&&t.item&&t.item.kind==='ing'&&t.item.state==='raw'?t:null}
+function chop(p,dt){const t=canChop(p);if(!t)return false;
+  t.prog+=dt/1.6;if(Math.random()<dt*8)beep(300+Math.random()*80,.03,'triangle');
+  if(t.prog>=1){t.item.state='chopped';t.prog=0;beep(760)}return true}
+// auto-use when standing still facing a station: only when it would succeed
+function autoOK(p){const t=target(p),h=p.hold;if(!t||!h)return false;
+  if(t.c==='S'){const pot=t.pot;return (h.kind==='ing'&&h.state==='chopped'&&pot.items.length<3&&pot.state!=='cooked'&&pot.state!=='burnt')||(h.kind==='plate'&&!h.dish&&!h.contents.length&&pot.state==='cooked')}
+  if(t.c==='D'){const d=h.kind==='plate'&&plateDish(h);return !!d&&d!=='gororoba'&&S.orders.some(o=>o.r===d)}
+  return false}
+function deliver(p,pl){
+  const dish=plateDish(pl);
+  const fail=m=>{S.score=Math.max(0,S.score-20);S.wrong++;S.combo=0;pop(12,1.5,'-20','#c0392b');toast(m);beep(150,.2,'sawtooth')};
+  if(!dish||dish==='gororoba')return fail('Prato incompleto ou errado!');
+  const cand=S.orders.filter(o=>o.r===dish).sort((a,b)=>(a.n||0)-(b.n||0)||a.pat-b.pat)[0];
+  if(!cand)return fail('Ninguém pediu '+RECIPES[dish].name);
+  S.orders.splice(S.orders.indexOf(cand),1);
+  const tip=isFinite(cand.max)?Math.round(40*cand.pat/cand.max):20;S.combo++;
+  const pts=RECIPES[dish].pts+tip+(S.combo>1?10*(S.combo-1):0);
+  S.score+=pts;S.delivered++;S.served[dish]++;p.hold=null;
+  pop(12,1.5,'+'+pts,'#3f7d4e');toast((tip>25?'Magnifique! ':'Merci! ')+RECIPES[dish].icon+(S.combo>1?' Combo x'+S.combo:''));
+  beep(880,.08);setTimeout(()=>beep(1175,.12),90);
+  if(S.mode==='livre'&&S.queue.length)S.orders.push({id:S.nextId++,r:S.queue.shift(),pat:Infinity,max:Infinity});
+  if(S.mode==='desafio'){pushChal();if(!S.orders.length)endGame()}
+}
+
+// ---------- input: each player = 4 directions + 1 action ----------
+function keyMap(code){
+  const P1={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',Enter:'act',NumpadEnter:'act'};
+  const P2={KeyW:'up',KeyS:'down',KeyA:'left',KeyD:'right',Space:'act'};
+  if(P1[code])return[0,P1[code]];
+  if(P2[code])return[cfg.players===2?1:0,P2[code]];
+  if(code==='KeyE'&&cfg.players===1)return[0,'act'];
+  return null;
+}
+function actDown(p){if(!p||p.act)return;p.act=true;p.actT=0;p.actFired=false}
+function actUp(p){if(!p||!p.act)return;p.act=false;if(p.actT<HOLD_T&&!p.actFired&&S.running&&!S.paused)interact(p)}
+addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  const m=keyMap(e.code);
+  if(m){e.preventDefault();const p=S.players[m[0]];if(!p)return;if(m[1]==='act'){if(!e.repeat)actDown(p)}else p.dir[m[1]]=1;return}
+  if(e.code==='KeyP'||e.code==='Escape')togglePause();
+});
+addEventListener('keyup',e=>{const m=keyMap(e.code);if(!m)return;const p=S.players[m[0]];if(!p)return;if(m[1]==='act')actUp(p);else p.dir[m[1]]=0});
+addEventListener('blur',()=>S.players.forEach(p=>{p.dir={up:0,down:0,left:0,right:0};p.act=false}));
+document.querySelectorAll('.dpad button').forEach(b=>{
+  const k=b.dataset.k,on=e=>{e.preventDefault();S.players[0].dir[k]=1},off=e=>{e.preventDefault();S.players[0].dir[k]=0};
+  b.addEventListener('pointerdown',on);['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,off));
+});
+const act=$('#act');
+act.addEventListener('pointerdown',e=>{e.preventDefault();actDown(S.players[0])});
+['pointerup','pointercancel'].forEach(ev=>act.addEventListener(ev,()=>actUp(S.players[0])));
+act.addEventListener('pointerleave',()=>{S.players[0].act=false});
+
+// ---------- update ----------
+function movePlayer(p,dt){
+  const mx=p.dir.right-p.dir.left,my=p.dir.down-p.dir.up;p.moving=!!(mx||my);
+  if(!p.moving)return;
+  if(Math.abs(mx)>=Math.abs(my)&&mx){p.fx=Math.sign(mx);p.fy=0}else{p.fx=0;p.fy=Math.sign(my)}
+  const l=Math.hypot(mx,my),sp=4.2*dt,r=.32,vx=mx/l,vy=my/l;
+  const hitsChef=(x,y)=>S.players.some(o=>o!==p&&Math.hypot(o.x-x,o.y-y)<.66);
+  const nx=p.x+vx*sp;if(vx&&!solid(Math.floor(nx+Math.sign(vx)*r),Math.floor(p.y-r))&&!solid(Math.floor(nx+Math.sign(vx)*r),Math.floor(p.y+r))&&!hitsChef(nx,p.y))p.x=nx;
+  const ny=p.y+vy*sp;if(vy&&!solid(Math.floor(p.x-r),Math.floor(ny+Math.sign(vy)*r))&&!solid(Math.floor(p.x+r),Math.floor(ny+Math.sign(vy)*r))&&!hitsChef(p.x,ny))p.y=ny;
+  p.walk+=dt*10;
+}
+function update(dt){
+  S.elapsed+=dt;
+  if(S.mode==='classico'){S.time-=dt;if(S.time<=0){S.time=0;endGame();return}}else S.time=S.elapsed;
+  if(S.mode!=='desafio'){
+    S.spawn-=dt;const prog=Math.min(1,S.elapsed/180);
+    if(S.spawn<=0){if(S.mode==='livre')spawnOrder();else if(S.orders.length<5)spawnOrder();S.spawn=S.mode==='livre'?13+Math.random()*4:18-10*prog+Math.random()*4}
+    if(!S.orders.length&&S.spawn>3)S.spawn=3;
+  }
+  for(let i=S.orders.length-1;i>=0;i--){const o=S.orders[i];if(!isFinite(o.pat))continue;o.pat-=dt;if(o.pat<=0){S.orders.splice(i,1);S.lost++;S.combo=0;S.score=Math.max(0,S.score-30);pop(12,2.5,'-30','#c0392b');toast('Cliente foi embora 😤');beep(120,.3,'sawtooth')}}
+  for(const p of S.players){
+    movePlayer(p,dt);
+    p.autoCd-=dt;
+    let chopped=false;
+    if(p.act){p.actT+=dt;if(p.actT>=HOLD_T){chopped=chop(p,dt);if(!chopped&&!p.actFired){p.actFired=true;interact(p)}}}
+    if(!chopped&&!p.moving){            // standing still, facing a station → use it
+      if(canChop(p))chop(p,dt);
+      else if(p.autoCd<=0&&autoOK(p)){p.autoCd=.5;interact(p)}
+    }
+  }
+  for(const k in S.tiles){const t=S.tiles[k];if(!t.pot)continue;const pot=t.pot;
+    if(pot.state==='cooking'&&pot.items.length===3){pot.t+=dt;if(pot.t>=7){pot.state='cooked';pot.t=0;beep(990,.15)}}
+    else if(pot.state==='cooked'){pot.t+=dt;if(pot.t>=12){pot.state='burnt';toast('Panela queimou! 🔥');beep(100,.4,'sawtooth')}}}
+  S.fx.forEach(f=>{f.t-=dt;f.y-=dt*.6});S.fx=S.fx.filter(f=>f.t>0);
+}
+
+// ---------- render ----------
+const PCOL=['#7a1f2b','#2f6fb0'];
+function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,r):ctx.rect(x,y,w,h)}
+function emoji(e,x,y,s){ctx.font=s+'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(e,x,y)}
+function drawItem(it,cx,cy,s=1){
+  if(it.kind==='ing'){
+    if(it.state==='chopped'){ctx.fillStyle='#fff';rr(cx-18*s,cy-12*s,36*s,24*s,8*s);ctx.fill();emoji(ING[it.name],cx-7*s,cy,16*s);emoji(ING[it.name],cx+7*s,cy+2*s,14*s);}
+    else emoji(ING[it.name],cx,cy,30*s);
+  }else{
+    ctx.fillStyle='#fff';ctx.strokeStyle='#c9b9a0';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(cx,cy,22*s,17*s,0,0,7);ctx.fill();ctx.stroke();
+    ctx.strokeStyle='#e8ddcc';ctx.beginPath();ctx.ellipse(cx,cy,15*s,11*s,0,0,7);ctx.stroke();
+    if(it.dish)emoji(it.dish==='gororoba'?'🤢':RECIPES[it.dish].icon,cx,cy,22*s);
+    else it.contents.forEach((c,i)=>emoji(ING[c],cx+(i?8:-8)*s*(it.contents.length>1?1:0),cy,16*s));
+  }
+}
+function bar(x,y,w,v,col){ctx.fillStyle='rgba(0,0,0,.45)';rr(x,y,w,8,4);ctx.fill();ctx.fillStyle=col;rr(x+1,y+1,(w-2)*Math.min(1,v),6,3);ctx.fill()}
+function drawChef(p){
+  const x=p.x*TS,y=p.y*TS,bob=p.moving?Math.sin(p.walk)*2:0,two=S.players.length>1;
+  let hat=(HATS.find(h=>h.id===prefs.hat)||HATS[0]).c,apron=(APRONS.find(a=>a.id===prefs.apron)||APRONS[0]).c,coat='#fdfdfd';
+  if(p.i===1){hat='#e8f1fb';apron='#2f6fb0';coat='#dfeaf6'}
+  ctx.fillStyle='rgba(0,0,0,.18)';ctx.beginPath();ctx.ellipse(x,y+20,20,8,0,0,7);ctx.fill();
+  if(two){ctx.strokeStyle=PCOL[p.i];ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,y+20,21,9,0,0,7);ctx.stroke()}
+  ctx.fillStyle=coat;ctx.strokeStyle='#2b1d16';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y+6+bob*.3,18,16,0,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle=apron;rr(x-11,y+2+bob*.3,22,16,5);ctx.fill();
+  if(p.i===0&&prefs.apron==='listra'){ctx.fillStyle='#f3e6cc';for(let i=0;i<3;i++)ctx.fillRect(x-11+i*8,y+2+bob*.3,3,16)}
+  ctx.fillStyle=p.i===1?'#c98e62':'#f2c9a0';ctx.beginPath();ctx.arc(x,y-10+bob,12,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#2b1d16';const ex=p.fx*4,ey=p.fy*3;ctx.beginPath();ctx.arc(x-4+ex,y-10+ey+bob,1.8,0,7);ctx.arc(x+4+ex,y-10+ey+bob,1.8,0,7);ctx.fill();
+  ctx.fillStyle=hat;ctx.beginPath();ctx.arc(x-7,y-26+bob,7,0,7);ctx.arc(x,y-30+bob,8,0,7);ctx.arc(x+7,y-26+bob,7,0,7);ctx.fill();ctx.stroke();
+  ctx.fillRect(x-10,y-25+bob,20,6);ctx.strokeRect(x-10,y-25+bob,20,6);
+  if(p.i===0)emoji('🐀',x+12,y-36+bob,14);
+  if(two){ctx.font='900 12px Nunito';ctx.textAlign='center';ctx.fillStyle=PCOL[p.i];ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.strokeText('P'+(p.i+1),x-14,y-38);ctx.fillText('P'+(p.i+1),x-14,y-38)}
+  // facing indicator
+  ctx.fillStyle=PCOL[p.i];ctx.beginPath();ctx.arc(x+p.fx*22,y+4+p.fy*22,3,0,7);ctx.fill();
+  if(p.hold)drawItem(p.hold,x+p.fx*24,y+p.fy*20+4,.8);
+}
+function render(){
+  const th=theme();
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const c=MAP[y][x],px=x*TS,py=y*TS;
+    if(c==='.'){ctx.fillStyle=th.floor[(x+y)%2];ctx.fillRect(px,py,TS,TS);continue}
+    ctx.fillStyle=th.wall;ctx.fillRect(px,py,TS,TS);
+    ctx.fillStyle=th.counter;rr(px+2,py+2,TS-4,TS-4,8);ctx.fill();
+    ctx.fillStyle=th.top;rr(px+5,py+5,TS-10,TS-14,6);ctx.fill();
+    const cx=px+TS/2,cy=py+TS/2-3,t=S.tiles[x+','+y];
+    if(CRATE[c]){ctx.fillStyle='#a8743f';rr(px+8,py+8,TS-16,TS-20,4);ctx.fill();ctx.strokeStyle='#7a4f27';ctx.lineWidth=2;ctx.strokeRect(px+10,py+14,TS-20,2);emoji(ING[CRATE[c]],cx,cy,26);}
+    else if(c==='K'){ctx.fillStyle='#d6a46b';rr(px+10,py+10,TS-20,TS-24,6);ctx.fill();if(!t.item)emoji('🔪',cx,cy,22)}
+    else if(c==='S'){ctx.fillStyle='#333';rr(px+8,py+8,TS-16,TS-20,6);ctx.fill();const pot=t.pot,on=pot.state==='cooking'&&pot.items.length===3;
+      ctx.fillStyle=on?'#ff7a1a':'#555';ctx.beginPath();ctx.arc(cx,cy,16,0,7);ctx.fill();
+      ctx.fillStyle='#888';ctx.beginPath();ctx.arc(cx,cy,13,0,7);ctx.fill();
+      if(pot.state==='cooked')emoji(RECIPES[potDish(pot.items)]?.icon||'🤢',cx,cy,20);
+      else if(pot.state==='burnt')emoji('🔥',cx,cy,22);
+      else pot.items.forEach((n,i)=>emoji(ING[n],cx+(i-1)*8,cy,12));
+      if(on)bar(px+8,py+TS-12,TS-16,pot.t/7,'#3f7d4e');
+      if(pot.state==='cooked'){bar(px+8,py+TS-12,TS-16,1-pot.t/12,pot.t>8?'#c0392b':'#d9a441');if(pot.t>8&&Math.floor(S.elapsed*6)%2)emoji('⚠️',px+TS-10,py+10,14)}
+      if(on&&Math.random()<.3){ctx.fillStyle='rgba(255,255,255,.5)';ctx.beginPath();ctx.arc(cx+Math.random()*16-8,cy-16-Math.random()*8,3,0,7);ctx.fill()}
+    }
+    else if(c==='P'){for(let i=0;i<3;i++){ctx.fillStyle='#fff';ctx.strokeStyle='#c9b9a0';ctx.beginPath();ctx.ellipse(cx,cy-i*3,18,12,0,0,7);ctx.fill();ctx.stroke()}}
+    else if(c==='X'){ctx.fillStyle='#555';rr(px+14,py+10,TS-28,TS-22,5);ctx.fill();emoji('🗑️',cx,cy,22)}
+    else if(c==='D'){ctx.fillStyle='#d9a441';rr(px+6,py+6,TS-12,TS-16,6);ctx.fill();ctx.fillStyle='#7a1f2b';ctx.font='900 11px Nunito';ctx.textAlign='center';ctx.fillText('PASSE',cx,cy+10);emoji('🛎️',cx,cy-6,20)}
+    if(t&&t.item){drawItem(t.item,cx,cy);if(c==='K'&&t.prog>0)bar(px+8,py+TS-12,TS-16,t.prog,'#3f7d4e')}
+  }
+  if(S.running)S.players.forEach(p=>{const t=target(p);if(t){ctx.strokeStyle=S.players.length>1?PCOL[p.i]:'rgba(255,255,255,.95)';ctx.lineWidth=3;ctx.setLineDash([6,4]);rr(t.x*TS+3+p.i*3,t.y*TS+3+p.i*3,TS-6-p.i*6,TS-6-p.i*6,8);ctx.stroke();ctx.setLineDash([])}});
+  S.players.forEach(drawChef);
+  S.fx.forEach(f=>{ctx.globalAlpha=Math.min(1,f.t);ctx.fillStyle=f.col;ctx.font='900 26px Nunito';ctx.textAlign='center';ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.strokeText(f.txt,f.x*TS,f.y*TS);ctx.fillText(f.txt,f.x*TS,f.y*TS);ctx.globalAlpha=1});
+}
+
+// ---------- HUD ----------
+const fmt=s=>{s=Math.max(0,s);const m=Math.floor(s/60),r=Math.floor(s%60);return m+':'+String(r).padStart(2,'0')};
+function stars(){const tot=S.delivered+S.lost+S.wrong;if(!S.delivered)return 0;const r=S.delivered/tot;return r>=.9&&S.score>=500?3:r>=.7?2:1}
+let lastOrdersHTML='';
+function hud(){
+  $('#hScore').textContent=S.score;$('#hTime').textContent=S.mode==='livre'?'∞ '+fmt(S.time):fmt(S.time);
+  $('#hTimeL').textContent=S.mode==='desafio'?(S.delivered+'/'+CHAL_LIST.length):S.mode==='livre'?'livre':'tempo';
+  $('#hTime').style.color=S.mode==='classico'&&S.time<30?'#c0392b':'';
+  const st=stars();$('#hStars').textContent='★'.repeat(st)+'☆'.repeat(3-st);
+  const box=$('#orders');
+  if(!S.orders.length){const h='<div class="empty-orders">'+(S.running?'Aguardando pedidos…':'A cozinha está fechada.')+'</div>';if(h!==lastOrdersHTML){box.innerHTML=h;lastOrdersHTML=h}return}
+  const ids=S.orders.map(o=>o.id).join()+'|'+S.queue.length;
+  if(ids!==lastOrdersHTML){lastOrdersHTML=ids;box.innerHTML=S.orders.map(o=>{const r=RECIPES[o.r];const parts=(r.need||r.pot).map(n=>ING[n]).join('');return `<div class="ticket" data-id="${o.id}"><div class="t">${o.n?'#'+o.n+' ':''}${r.icon} ${r.name}</div><div class="ing">${parts}${r.pot?' → 🍳':''}</div><div class="bar"><i></i></div></div>`}).join('')+(S.queue.length?`<div class="queue">+${S.queue.length} na fila</div>`:'')}
+  S.orders.forEach(o=>{const el=box.querySelector(`[data-id="${o.id}"]`);if(!el)return;const v=isFinite(o.max)?o.pat/o.max:1;el.querySelector('i').style.width=(v*100)+'%';el.classList.toggle('warn',v<.5&&v>=.25);el.classList.toggle('danger',v<.25)});
+}
+function helpText(){
+  $('#help').innerHTML=cfg.players===2
+    ?'<b style="color:#7a1f2b">P1</b>: <kbd>setas</kbd> + <kbd>Enter</kbd> · <b style="color:#2f6fb0">P2</b>: <kbd>WASD</kbd> + <kbd>Espaço</kbd> · Toque = pegar/soltar · Segure = usar · Parado olhando = usa sozinho · <kbd>P</kbd> pausa'
+    :'Mover: <kbd>setas</kbd>/<kbd>WASD</kbd> · Ação: <kbd>Enter</kbd>/<kbd>Espaço</kbd>/<kbd>E</kbd> — toque = pegar/soltar · segure = usar (picar) · Parado olhando para uma estação = usa sozinho · <kbd>P</kbd> pausa';
+}
+
+let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(S.running&&!S.paused)update(dt);render();hud();requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+function fit(){const st=cv.parentElement,ctr=document.querySelector('.controls');const ch=getComputedStyle(ctr).display!=='none'?ctr.offsetHeight+8:0;const help=$('#help');const hh=getComputedStyle(help).display!=='none'?help.offsetHeight+6:0;const top=st.getBoundingClientRect().top+scrollY;const avH=Math.max(160,innerHeight-top-ch-hh-16);const avW=st.parentElement.clientWidth-8;const w=Math.min(avW,avH*W/H);cv.style.width=w+'px';st.style.width=(w+8)+'px'}
+addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,200));
+
+// ---------- flow / menu ----------
+const show=id=>$(id).classList.add('show'),hide=id=>$(id).classList.remove('show');
+function seg(id,key,conv){$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{cfg[key]=conv(b.dataset.v);syncMenu()})}
+seg('#segP','players',Number);seg('#segM','mode',String);
+function syncMenu(){
+  if(touch)cfg.players=1;
+  $('#segP').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',+b.dataset.v===cfg.players);if(touch&&b.dataset.v==='2'){b.disabled=true;b.title='2 jogadores só no teclado'}});
+  $('#segM').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===cfg.mode));
+  let d=MODES[cfg.mode].d;if(cfg.mode==='desafio'){const bt=store.get('bestTime_'+cfg.players+'p',null);d+=' Recorde ('+cfg.players+'P): '+(bt?fmt(bt)+'.'+String(Math.floor(bt%1*10)):'—')}
+  $('#modeDesc').textContent=d;$('#p2box').style.display=cfg.players===2?'':'none';helpText();
+}
+$('#name').value=prefs.name||'';$('#name2').value=prefs.name2||'';syncMenu();fit();setTimeout(fit,300);
+function start(){
+  prefs.name=($('#name').value.trim()||'Chef Anônimo').slice(0,16);prefs.name2=($('#name2').value.trim()||'Chef Dois').slice(0,16);store.set('prefs',prefs);
+  newGame();lastOrdersHTML='';['#ovStart','#ovEnd','#ovPause'].forEach(hide);
+  $('#bEnd').style.display=cfg.mode==='livre'?'inline-block':'none';helpText();fit();
+  toast(cfg.mode==='desafio'?'Valendo! 🏁':'Service! 🔔');
+}
+$('#bStart').onclick=start;$('#bAgain').onclick=start;
+$('#bMenu').onclick=()=>{hide('#ovEnd');syncMenu();show('#ovStart')};
+function togglePause(){if(!S.running)return;S.paused=!S.paused;S.paused?show('#ovPause'):hide('#ovPause')}
+$('#bPause').onclick=togglePause;$('#bResume').onclick=togglePause;
+$('#bQuit').onclick=()=>{hide('#ovPause');S.paused=false;endGame(true)};
+$('#bEnd').onclick=()=>{if(S.running)endGame(true)};
+function endGame(quit){
+  if(!S.running)return;S.running=false;$('#bEnd').style.display='none';
+  const prevBest=best,names=cfg.players===2?prefs.name+' & '+prefs.name2:prefs.name;
+  const finished=S.mode==='desafio'&&!quit&&S.delivered>=CHAL_LIST.length;
+  const board=store.get('board',[]);board.push({n:names,s:S.score,d:S.delivered,st:stars(),m:MODES[S.mode].n+' '+cfg.players+'P',dt:today});board.sort((a,b)=>b.s-a.s);store.set('board',board.slice(0,10));
+  if(S.score>best){best=S.score;store.set('best',best)}
+  const st=stars();let extra='';
+  if(S.mode==='desafio'){
+    const key='bestTime_'+cfg.players+'p',bt=store.get(key,null);
+    if(finished){const rec=!bt||S.time<bt;if(rec)store.set(key,S.time);
+      extra=`<br>⏱ Tempo final: <b>${fmt(S.time)}.${Math.floor(S.time%1*10)}</b> — ${rec?'🎉 <b>Novo recorde '+cfg.players+'P!</b>':'Recorde '+cfg.players+'P: '+fmt(bt)+'.'+Math.floor(bt%1*10)}`}
+    else extra=`<br>Desafio incompleto (${S.delivered}/${CHAL_LIST.length}). Recorde ${cfg.players}P: ${bt?fmt(bt)+'.'+Math.floor(bt%1*10):'—'}`;
+  }
+  $('#endTitle').textContent=S.mode==='desafio'?(finished?'Desafio concluído!':'Desafio encerrado'):S.mode==='livre'?'Resumo do turno livre':'Fim do expediente!';
+  $('#endText').innerHTML=`<b style="font-size:34px;color:var(--wine)">${S.score} pts</b> ${'★'.repeat(st)}${'☆'.repeat(3-st)}<br>Modo: <b>${MODES[S.mode].n} · ${cfg.players}P</b> · Duração: ${fmt(S.elapsed)}<br>Pratos entregues: <b>${S.delivered}</b> · Clientes perdidos: <b>${S.lost}</b> · Erros: <b>${S.wrong}</b>${extra}<br>${S.score>prevBest?'🎉 <b>Novo recorde de pontos!</b>':'Recorde de pontos: '+best}`;
+  const ok=CH.test(S);const done=store.get('ch_'+today,false)||ok;if(ok)store.set('ch_'+today,true);
+  $('#chEnd').innerHTML=`📅 <b>Desafio do dia:</b> ${CH.txt} — ${done?'✅ Concluído!':'❌ Tente novamente'}`;
+  const un=[...HATS,...APRONS,...THEMES].filter(i=>i.req>prevBest&&i.req<=best).map(i=>i.n);
+  $('#unlockText').innerHTML=un.length?`<p>🔓 Desbloqueado: <b>${un.join(', ')}</b></p>`:'';
+  show('#ovEnd');
+}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function renderBoard(){
+  const b=store.get('board',[]);
+  const bt1=store.get('bestTime_1p',null),bt2=store.get('bestTime_2p',null),f=t=>t?fmt(t)+'.'+Math.floor(t%1*10):'—';
+  $('#boardBody').innerHTML=`<div class="challenge">🏁 Melhor tempo no Desafio — 1P: <b>${f(bt1)}</b> · 2P: <b>${f(bt2)}</b></div>`+(b.length?`<table><tr><th>#</th><th>Chef</th><th>Modo</th><th>Pontos</th><th>★</th></tr>${b.map((r,i)=>`<tr><td>${['🥇','🥈','🥉'][i]||i+1}</td><td>${esc(r.n)}</td><td>${esc(r.m||'Clássico')}</td><td><b>${r.s}</b></td><td>${'★'.repeat(r.st)}</td></tr>`).join('')}</table>`:'<p>Nenhuma partida ainda. Seja o primeiro chef do placar!</p>');
+}
+function openBoard(){renderBoard();show('#ovBoard')}
+$('#bBoard').onclick=openBoard;$('#bBoard2').onclick=openBoard;
+function swatches(el,list,key,isTheme){
+  el.innerHTML=list.map(i=>{const lock=i.req>best;const ring=isTheme?`background:linear-gradient(135deg,${i.floor[0]} 50%,${i.counter} 50%)`:`background:${i.c}`;return `<button class="sw ${prefs[key]===i.id?'sel':''} ${lock?'lock':''}" data-id="${i.id}" ${lock?'disabled':''}><div class="dot" style="${ring}"></div>${i.n}${lock?'<br><small>'+i.req+' pts</small>':''}</button>`}).join('');
+  el.querySelectorAll('.sw').forEach(b=>b.onclick=()=>{prefs[key]=b.dataset.id;store.set('prefs',prefs);openCustom()});
+}
+function openCustom(){swatches($('#swHat'),HATS,'hat');swatches($('#swApron'),APRONS,'apron');swatches($('#swTheme'),THEMES,'theme',true);show('#ovCustom')}
+$('#bCustom').onclick=openCustom;$('#bCustom2').onclick=openCustom;
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.overlay').classList.remove('show'));
+})();
+</script>
+</body>
+</html>
