@@ -139,7 +139,7 @@ A estrutura completa está em SYSTEM_DESIGN §3. As fronteiras abaixo são impos
 - **Idioma:**
   - Identificadores e código em inglês.
   - Commits, PRs, issues e docs em PT-BR.
-  - Todo texto visível ao jogador passa pelo i18n (`i18n/pt-BR.json`), nunca como string literal no JSX.
+  - Todo texto visível ao jogador, no React ou no Phaser, passa pelo i18n (`i18n/pt-BR.json`, chaves `área.tela.texto` e `<tipo>.<id>.<campo>` para conteúdo), nunca como string literal. O `i18n.test.js` barra chave faltante ou sem uso.
 - **Estado:** TanStack Query para dados remotos (query keys em fábrica por feature), Context para a sessão, `localStorage` só via `services/storage.js` (versionado).
 - **UI:**
   - daisyUI 5 + Tailwind v4 com os tokens do tema; sem CSS-in-JS.
