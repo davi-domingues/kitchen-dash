@@ -32,6 +32,7 @@ Jogo arcade de culinária 2D em visão top-down, ambientado num bistrô parisien
 | [Arquitetura](docs/ARQUITETURA.md) | Visão de alto nível e decisões de stack |
 | [System Design](docs/SYSTEM_DESIGN.md) | Decisões técnicas: dados, segurança, confiabilidade, custos |
 | [Estudos e Decisões](docs/ESTUDOS_E_DECISOES.md) | Comparações, previsões e referências que embasaram as escolhas |
+| [Plano do MVP](docs/PLANO_MVP.md) | Tasks do MVP, dependências, ordem e paralelização |
 | [Roadmap](docs/ROADMAP.md) | Itens fora do MVP, por prioridade |
 
 ## Desenvolvimento orientado a especificação
