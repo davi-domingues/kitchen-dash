@@ -3,3 +3,26 @@
 !.claude/skills/
 .claude/skills/*
 !.claude/skills/speckit-*/
+
+# Dependências e build
+node_modules/
+dist/
+dev-dist/
+coverage/
+
+# Ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# Logs e sistema
+*.log
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/

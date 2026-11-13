@@ -1,6 +1,6 @@
 # PRD --- Kitchen Dash
 
-> Versão atualizada para refletir o protótipo `prototipo.html`.
+> Versão atualizada para refletir o protótipo `prototipo.html` (preservado no histórico da branch `init/spec-kit`).
 > Itens marcados como **(protótipo)** já estão implementados; os demais são
 > intenções de produto para versões futuras.
 
