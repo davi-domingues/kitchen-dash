@@ -135,7 +135,27 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
-## 8. Referências
+## 8. Acompanhamento de tasks: GitHub Issues × Linear
+
+| | GitHub Issues + Projects | Linear |
+|---|---|---|
+| Custo | Gratuito, sem limite de issues | Free: membros ilimitados, **2 times e 250 issues**; Basic ~US$ 10/usuário/mês |
+| Onde vive | No próprio repositório, ao lado do código e dos PRs | Ferramenta separada, sincronizada com o GitHub por integração |
+| Vínculo com código | Nativo: `Closes #12` fecha a issue no merge; PRs, branches e CI na mesma tela | Bom (branch e PR mudam o status), mas exige instalar e manter a integração |
+| Dependências | Nativas (*blocked by* / *blocking*), sub-issues e milestones | Nativas (*blocks*, sub-issues, projetos, ciclos) |
+| Board e planejamento | Projects: board, tabela, roadmap, campos customizados | Melhor UX: ciclos (sprints), triagem, atalhos, métricas de velocidade |
+| Acesso | Qualquer colaborador do repo já tem; repo público dá visibilidade a terceiros | Cada pessoa cria conta e entra no workspace; backlog fica privado |
+| Spec Kit | Os `tasks.md` e PRs já estão no GitHub; há automação comunitária para converter tasks em issues | Sem integração direta |
+| Agentes (MCP/CLI) | `gh` CLI e MCP oficial do GitHub, já usados localmente | MCP oficial do Linear (OAuth) |
+| Curva de aprendizado | Baixa: o time já usa GitHub | Baixa, mas é mais uma ferramenta |
+
+**Leitura:** o Linear é a ferramenta de gestão mais agradável, e brilha com times maiores fazendo sprints contínuos. Para um time acadêmico pequeno, com repositório público e um MVP de ~40 tasks, o ganho de UX não compensa ter uma segunda fonte da verdade, mais uma conta por pessoa e o teto de 250 issues no plano gratuito (o backlog do MVP + bugs + roadmap chega perto disso em um semestre).
+
+**Decisão:** GitHub Issues + GitHub Projects, com milestones por marco, labels por trilha e dependências nativas. Reavaliar o Linear se o time crescer ou passar a trabalhar em ciclos com métricas de velocidade.
+
+---
+
+## 9. Referências
 
 **Documentação oficial**
 - Supabase: [Pricing](https://supabase.com/pricing) · [Billing](https://supabase.com/docs/guides/platform/billing-on-supabase) · [Database size](https://supabase.com/docs/guides/platform/database-size) · [Disk size](https://supabase.com/docs/guides/platform/manage-your-usage/disk-size) · [MAU](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users) · [Egress](https://supabase.com/docs/guides/platform/manage-your-usage/egress.md) · [Passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless) · [Auth CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha) · [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security) · [API quickstart (leaderboard)](https://supabase.com/docs/guides/api/quickstart)
@@ -145,6 +165,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - [PostHog — Pricing](https://posthog.com/pricing)
 - [Sentry — Pricing](https://sentry.io/pricing/) · [Datadog — Pricing](https://www.datadoghq.com/pricing/)
 - [TheMealDB API](https://www.themealdb.com/api.php)
+- [Linear — Pricing](https://linear.app/pricing) · [GitHub — Issue dependencies (REST)](https://docs.github.com/en/rest/issues/issue-dependencies) · [GitHub Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects)
 
 **Fontes secundárias (agregadores, números divergentes, a confirmar nas páginas oficiais)**
 - [Sentry vs Datadog — agentdeals](https://agentdeals.dev/datadog-vs-sentry)
