@@ -34,6 +34,7 @@ Jogo arcade de culinária 2D em visão top-down, ambientado num bistrô parisien
 | [Estudos e Decisões](docs/ESTUDOS_E_DECISOES.md) | Comparações, previsões e referências que embasaram as escolhas |
 | [Plano do MVP](docs/PLANO_MVP.md) | Tasks do MVP, dependências, ordem e paralelização |
 | [Roadmap](docs/ROADMAP.md) | Itens fora do MVP, por prioridade |
+| [AGENTS.md](AGENTS.md) | Contrato de trabalho para pessoas e agentes de IA: workflow, padrões e gates |
 | [MCPs](docs/MCP.md) | Servidores MCP do time (Claude Code, OpenCode, Codex), desabilitados por padrão |
 
 ## Desenvolvimento orientado a especificação
