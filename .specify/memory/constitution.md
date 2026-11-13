@@ -1,50 +1,98 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Constituição do Kitchen Dash
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. O jogo funciona sem rede
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+- Uma partida completa (menu, jogo, resultado, recordes e cosméticos locais) MUST funcionar offline.
+- A rede só é exigida para identidade (login OTP), ranking global e sincronização.
+- Falhas de rede MUST degradar com aviso claro e nunca interromper uma partida em andamento.
+- Pontuações feitas sem rede vão para uma outbox local e são enviadas depois, de forma idempotente.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+*Por quê:* o produto é um jogo casual de sessões curtas, e a rede não pode ser um ponto único de falha.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. O cliente não é confiável
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+- Toda gravação que afete outros jogadores (pontuação, ranking, estatísticas, cosméticos) MUST passar por RPC no banco, com autenticação, idempotência, rate limit e validação de plausibilidade.
+- Toda tabela MUST ter RLS ligada.
+- Não existem policies de escrita direta nas tabelas de ranking e progresso.
+- O frontend usa somente a chave publicável. Segredos nunca chegam ao bundle nem a variáveis `VITE_*`.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+*Por quê:* qualquer valor enviado pelo navegador pode ser forjado, e o ranking só tem valor se for justo.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Regras separadas de renderização (NÃO NEGOCIÁVEL)
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- As regras do jogo vivem em `game/core`, em JavaScript puro e determinístico.
+  - MUST NOT importar Phaser, React, `services/` ou APIs do DOM.
+  - A aleatoriedade vem de um `rng` com seed.
+- O mesmo seed com o mesmo conteúdo MUST produzir o mesmo resultado.
+- Toda regra de pontuação, pedidos e paciência MUST ter teste no Vitest.
+- O ESLint impõe essas fronteiras, e o CI falha se elas forem violadas.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+*Por quê:* regras testáveis e reaproveitáveis no servidor permitem validar partidas por replay e evoluir sem reescrita.
+
+### IV. Conteúdo é dado, não código
+
+- Receitas, cozinhas, cosméticos e textos MUST viver em JSON versionado (`content/`, `i18n/`), validado por schema no build.
+- Valores de balanceamento MUST NOT ficar hardcoded em cenas ou componentes.
+- Cada partida registra o `content_version` usado.
+
+*Por quê:* ajustar o jogo não deve exigir mudança de lógica, e o servidor precisa saber contra qual conteúdo validar.
+
+### V. Fornecedores atrás de interfaces
+
+- Supabase, Sentry, storage local e analytics MUST ser acessados só por módulos em `services/`.
+- `features/` e `game/` não importam SDKs de fornecedor diretamente.
+- `game/phaser` comunica a aplicação apenas pelo `EventBus`.
+
+*Por quê:* trocar ou simular um fornecedor (em testes ou num plano futuro) deve afetar só um módulo.
+
+### VI. Caber no plano gratuito, com caminho claro para o pago
+
+- O MVP MUST operar nos planos gratuitos da Cloudflare Pages, do Supabase e do Sentry.
+- O orçamento de tamanho do SYSTEM_DESIGN §8.5 é obrigatório e verificado no CI.
+- Os gatilhos de custo do SYSTEM_DESIGN §9 MUST ser revisados mensalmente.
+
+*Por quê:* é um projeto de estudantes; custo inesperado ou build pesado inviabilizam o produto.
+
+## Restrições técnicas
+
+- **Stack aprovada:** React + JavaScript (sem TypeScript) + Vite, Phaser 3.90, Tailwind CSS v4 + daisyUI 5, React Router, TanStack Query, Supabase, Cloudflare Pages, Vitest, ESLint, Prettier, Sentry.
+- **Dependências:**
+  - Qualquer pacote fora da lista do SYSTEM_DESIGN §11 MUST ter aprovação e versão exata, com o lockfile no mesmo commit.
+  - Uma dependência estrutural MUST ser registrada em `docs/ESTUDOS_E_DECISOES.md`.
+- **Interface:**
+  - Todo texto visível ao jogador passa pelo i18n (pt-BR primeiro).
+  - As telas cumprem a acessibilidade básica do SYSTEM_DESIGN §8.2: teclado, contraste, foco visível e alternativas a cor.
+- **Privacidade:**
+  - Sem PII em logs, eventos do Sentry (`sendDefaultPii: false`), fixtures ou prompts de IA.
+  - A exclusão de conta e a política de privacidade fazem parte do MVP (LGPD).
+- **Banco:**
+  - O schema muda só por migration versionada em `supabase/migrations/`, testada localmente.
+  - Nada é alterado pelo painel.
+
+## Fluxo de desenvolvimento
+
+- **Spec antes do código:**
+  - Funcionalidades seguem o Spec Kit (`/speckit-specify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`).
+  - Pular a spec exige concordância explícita e só vale para correções triviais.
+- **Uma issue = uma branch** (`<tipo>/kd-XX-descricao`), criada a partir da `main` atualizada.
+- **Commits e títulos de PR** em Conventional Commits, em português e no imperativo, verificados por hook local e pelo CI.
+- **Merge na `main`:** só via PR, com 1 aprovação, threads resolvidas e os checks Convenções, Segredos e Qualidade verdes. Sem force push, sem `--no-verify` e sem merge feito por agente de IA.
+- **Definition of Done:**
+  - Os critérios de pronto estão ligados a testes ou a verificação descrita.
+  - Os gates rodaram e a saída foi mostrada.
+  - O diff não tem código morto, segredos nem TODO sem issue.
+  - Exceções e débitos estão registrados no PR.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- **Precedência:** esta constituição define os princípios e prevalece sobre qualquer outra prática. O [AGENTS.md](../../AGENTS.md) é o contrato operacional (o *como*) e MUST permanecer coerente com ela.
+- **Emendas:** só por PR que altere este arquivo, registre o motivo em `docs/ESTUDOS_E_DECISOES.md` e ajuste no mesmo PR os documentos afetados (AGENTS.md, SYSTEM_DESIGN, templates).
+- **Versionamento semântico:**
+  - MAJOR: remove ou redefine um princípio.
+  - MINOR: adiciona um princípio ou seção, ou amplia materialmente uma orientação.
+  - PATCH: esclarecimentos e redação.
+- **Conformidade:** toda spec, plano e PR MUST ser verificado contra estes princípios. O `/speckit-plan` registra o *Constitution Check*. Uma violação só entra com justificativa explícita no plano ou no PR.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-11-13 | **Last Amended**: 2026-11-13
