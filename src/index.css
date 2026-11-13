@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+
+@plugin 'daisyui' {
+  themes: false;
+}
+
+/* Paleta do bistrô (PRD: vinho, creme e dourado) */
+@plugin 'daisyui/theme' {
+  name: 'bistro';
+  default: true;
+  color-scheme: light;
+  --color-base-100: oklch(97% 0.02 85);
+  --color-base-200: oklch(93% 0.03 85);
+  --color-base-300: oklch(88% 0.04 85);
+  --color-base-content: oklch(28% 0.05 20);
+  --color-primary: oklch(42% 0.15 20);
+  --color-primary-content: oklch(97% 0.02 85);
+  --color-secondary: oklch(75% 0.14 85);
+  --color-secondary-content: oklch(28% 0.05 20);
+  --color-accent: oklch(55% 0.1 150);
+  --color-accent-content: oklch(97% 0.02 85);
+  --color-neutral: oklch(30% 0.03 30);
+  --color-neutral-content: oklch(95% 0.02 85);
+}

@@ -80,12 +80,13 @@ jobs:
           cache: npm
       - if: steps.app.outputs.existe == 'true'
         run: npm ci
+      # TODO(#3): remover --if-present quando lint, format:check e test existirem
       - if: steps.app.outputs.existe == 'true'
-        run: npm run format:check
+        run: npm run format:check --if-present
       - if: steps.app.outputs.existe == 'true'
-        run: npm run lint
+        run: npm run lint --if-present
       - if: steps.app.outputs.existe == 'true'
-        run: npm test
+        run: npm test --if-present
       - if: steps.app.outputs.existe == 'true'
         run: npm run build
       - if: steps.app.outputs.existe == 'true'
