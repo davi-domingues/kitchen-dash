@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import HomePage from './HomePage.jsx'
 
@@ -6,6 +7,8 @@ import HomePage from './HomePage.jsx'
 const PlayPage = lazy(() => import('./PlayPage.jsx'))
 
 export default function App() {
+  const { t } = useTranslation()
+
   return (
     <BrowserRouter>
       <Routes>
@@ -13,7 +16,11 @@ export default function App() {
         <Route
           path="/jogar"
           element={
-            <Suspense fallback={<span className="loading loading-dots loading-lg m-auto" />}>
+            <Suspense
+              fallback={
+                <span className="loading loading-dots loading-lg m-auto" aria-label={t('app.loading')} />
+              }
+            >
               <PlayPage />
             </Suspense>
           }
