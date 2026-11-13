@@ -2,7 +2,7 @@
 
 Jogo arcade de culinária 2D em visão top-down, ambientado num bistrô parisiense. Colete ingredientes, use as estações de preparo e entregue os pedidos antes que os clientes percam a paciência.
 
-> **Status:** em especificação (Spec Driven Development). Ainda não há código da aplicação.
+> **Status:** em desenvolvimento do MVP ([plano](docs/PLANO_MVP.md) · [board](https://github.com/users/davi-domingues/projects/3)).
 
 ## Funcionalidades previstas (MVP)
 
@@ -55,7 +55,15 @@ Pré-requisitos para rodar o CLI: Python 3.11+, [uv](https://docs.astral.sh/uv/)
 
 ## Como rodar
 
-As instruções de instalação e execução serão adicionadas quando a primeira funcionalidade for implementada.
+Pré-requisito: Node 24 (veja `.nvmrc`).
+
+```sh
+npm ci                                # instala as dependências exatas do lockfile
+git config core.hooksPath .githooks   # ativa os gates locais (uma vez por clone)
+npm run dev                           # http://localhost:5173 (home) e /jogar (canvas do Phaser)
+npm run build                         # build de produção em dist/
+npm run preview                       # serve o build localmente
+```
 
 ## Contribuição
 
