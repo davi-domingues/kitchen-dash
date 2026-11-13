@@ -23,7 +23,7 @@
       "oauth": false,
       "headers": {
         "Authorization": "Bearer {env:GITHUB_PAT}",
-        "X-MCP-Toolsets": "repos,issues,pull_requests,actions"
+        "X-MCP-Toolsets": "repos,issues,pull_requests,actions,projects"
       },
       "enabled": false
     },
@@ -47,7 +47,17 @@
       "command": [
         "npx",
         "-y",
-        "@playwright/mcp@latest",
+        "@playwright/mcp@0.0.85",
+        "--isolated"
+      ],
+      "enabled": false
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@1.13.0",
         "--isolated"
       ],
       "enabled": false

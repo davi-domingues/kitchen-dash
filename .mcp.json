@@ -17,7 +17,7 @@
       "url": "https://api.githubcopilot.com/mcp/",
       "headers": {
         "Authorization": "Bearer ${GITHUB_PAT}",
-        "X-MCP-Toolsets": "repos,issues,pull_requests,actions"
+        "X-MCP-Toolsets": "repos,issues,pull_requests,actions,projects"
       }
     },
     "linear": {
@@ -39,7 +39,12 @@
     "playwright": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest", "--isolated"]
+      "args": ["-y", "@playwright/mcp@0.0.85", "--isolated"]
+    },
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@1.13.0", "--isolated"]
     }
   }
 }

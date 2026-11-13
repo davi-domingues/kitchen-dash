@@ -1,0 +1,30 @@
+#!/bin/sh
+# Gate local antes de cada commit (ver AGENTS.md §3). Ative com: git config core.hooksPath .githooks
+set -eu
+
+branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+tipos='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert'
+
+if [ "$branch" = "main" ]; then
+  echo "✖ Commit direto na main é proibido. Crie uma branch: <tipo>/kd-XX-descricao" >&2
+  exit 1
+fi
+
+if [ -n "$branch" ] && ! printf '%s' "$branch" | grep -Eq "^($tipos)/(kd-[0-9]+-)?[a-z0-9]+(-[a-z0-9]+)*$"; then
+  echo "✖ Branch '$branch' fora do padrão <tipo>/kd-XX-descricao-curta (kebab-case)." >&2
+  echo "  Renomeie com: git branch -m <novo-nome>" >&2
+  exit 1
+fi
+
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --redact --no-banner || {
+    echo "✖ gitleaks encontrou um possível segredo nos arquivos staged." >&2
+    exit 1
+  }
+else
+  echo "⚠ gitleaks não instalado: o scan de segredos só vai rodar no CI. Instale: https://github.com/gitleaks/gitleaks#installing" >&2
+fi
+
+if [ -f package.json ] && [ -f node_modules/.bin/lint-staged ]; then
+  npx --no-install lint-staged
+fi

@@ -19,16 +19,21 @@ Somente servidores **oficiais** dos fornecedores, preferindo os remotos (HTTP) c
 | `context7` | Docs atualizadas de React, Phaser, Vite, Tailwind, daisyUI, Supabase etc. | Nenhum (API key opcional) | Baixo (só leitura) | ✅ | ✅ | ✅ |
 | `supabase` | Consultar schema, logs, advisors, docs e gerar tipos | OAuth (conta Supabase) | **Alto** se apontar para produção. Configurado `read_only=true` | ✅ | ✅ | ✅ |
 | `sentry` | Investigar erros de React/Phaser em produção | OAuth (conta Sentry) | Médio (lê dados de produção) | ✅ | ✅ | ✅ |
-| `github` | Issues, PRs, Actions, código do repositório | PAT em `GITHUB_PAT` | Médio (escreve em issues/PRs) | ✅ | ✅ | ✅ |
+| `github` | Issues, PRs, Actions, Projects (board do MVP), código do repositório | PAT em `GITHUB_PAT` | Médio (escreve em issues/PRs) | ✅ | ✅ | ✅ |
 | `linear` | Backlog e tarefas no Linear | OAuth (conta Linear) | Médio (escreve em issues) | ✅ | ✅ | ✅ |
 | `cloudflare-docs` | Docs da Cloudflare (Pages, Turnstile, Workers) | Nenhum | Baixo | ✅ | ✅ | ✅ |
 | `cloudflare` | API completa da Cloudflare (Pages, DNS, deploys) | OAuth (conta Cloudflare) | **Alto** (pode alterar a conta) | ✅ | ✅ | ✅ |
 | `figma` | Ler designs e gerar código a partir do Figma | OAuth (conta Figma) | Baixo | ✅ | ❌¹ | ✅ |
 | `playwright` | Controlar um navegador para testar o jogo (futuros testes E2E) | Nenhum (local, via `npx`) | Médio (navega e executa ações) | ✅ | ✅ | ✅ |
+| `chrome-devtools` | Console, rede, traces de performance e screenshots: FPS e canvas do Phaser, chamadas ao Supabase | Nenhum (local, via `npx`, Node 20.19+) | Médio (navegador real; páginas podem trazer *prompt injection*) | ✅ | ✅ | ✅ |
 
 ¹ O Figma só aceita clientes do catálogo oficial; o OpenCode não está listado.
 
-Fontes oficiais: [Context7](https://context7.com/docs/resources/all-clients) · [Supabase](https://supabase.com/docs/guides/getting-started/mcp) · [Sentry](https://mcp.sentry.dev/) · [GitHub](https://github.com/github/github-mcp-server/blob/main/docs/remote-server.md) · [Linear](https://linear.app/docs/mcp) · [Cloudflare](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) · [Figma](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/) · [Playwright](https://github.com/microsoft/playwright-mcp)
+Os servidores stdio (`playwright`, `chrome-devtools`) usam **versão exata**, nunca `@latest`. Para atualizar, troque a versão nas três configs no mesmo PR, depois de ler o changelog. Os dois rodam com `--isolated` (perfil temporário): nunca aponte para o seu perfil do navegador já logado.
+
+Fontes oficiais: [Context7](https://context7.com/docs/resources/all-clients) · [Supabase](https://supabase.com/docs/guides/getting-started/mcp) · [Sentry](https://mcp.sentry.dev/) · [GitHub](https://github.com/github/github-mcp-server/blob/main/docs/remote-server.md) · [Linear](https://linear.app/docs/mcp) · [Cloudflare](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) · [Figma](https://developers.figma.com/docs/figma-mcp-server/remote-server-installation/) · [Playwright](https://github.com/microsoft/playwright-mcp) · [Chrome DevTools](https://github.com/ChromeDevTools/chrome-devtools-mcp)
+
+Avaliados e **não** incluídos (2026-11): Socket, ESLint MCP (`npm run lint` basta), DeepWiki, Semgrep e Snyk (o CodeQL no CI cobre SAST), daisyUI Blueprint (pago), sequential-thinking e memory, além de MCPs da comunidade para Phaser, Vitest e MDN.
 
 ## Como habilitar
 
@@ -81,7 +86,21 @@ Ficam no ambiente do seu terminal (ou num gerenciador de segredos), **nunca** em
 
 | Variável | Usada por | Como obter |
 |---|---|---|
-| `GITHUB_PAT` | `github` | GitHub → Settings → Developer settings → *Fine-grained token*, só neste repositório, com Issues/PRs/Contents conforme a necessidade |
+| `GITHUB_PAT` | `github` | *Fine-grained token* (veja abaixo). Nunca use um token *classic* |
+
+**Como criar o `GITHUB_PAT`.** Vá em GitHub → Settings → Developer settings → *Fine-grained tokens* → *Generate new token* e configure:
+
+- **Resource owner:** `davi-domingues`.
+- **Repository access:** *Only select repositories* → `kitchen-dash`.
+- **Expiração:** até 30 dias.
+- **Permissões de repositório:**
+  - *Metadata*: Read (obrigatória);
+  - *Contents*: Read;
+  - *Issues*: Read and write;
+  - *Pull requests*: Read and write;
+  - *Actions*: Read.
+- **Permissões de conta**, para usar o board do MVP pela toolset `projects`: *Projects*: Read and write. Sem ela, o MCP continua funcionando, só não mexe no board.
+- **Só leitura:** dê Read em tudo e adicione o header `X-MCP-Readonly: true` no seu escopo local.
 | `CONTEXT7_API_KEY` (opcional) | `context7` | [context7.com/dashboard](https://context7.com/dashboard). Sem chave funciona com limite menor. Para usar, adicione o header `Authorization: Bearer ...` no seu escopo local |
 
 Os demais servidores usam OAuth no navegador e guardam o login na própria ferramenta.
