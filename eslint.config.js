@@ -108,7 +108,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['**/*.test.js', '*.config.js'],
+    files: ['**/*.test.js', '*.config.js', 'scripts/**/*.js'],
     languageOptions: { globals: globals.node },
   },
   prettier,
