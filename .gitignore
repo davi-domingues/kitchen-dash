@@ -1,9 +1,19 @@
-# Pasta local do Claude Code, exceto as skills do Spec Kit
+# Pasta local do Claude Code, exceto o settings e as skills do time (ver .agents/skills/SOURCES.md)
 .claude/*
 !.claude/settings.json
 !.claude/skills/
 .claude/skills/*
 !.claude/skills/speckit-*/
+!.claude/skills/supabase/
+!.claude/skills/supabase-postgres-best-practices/
+!.claude/skills/verification-before-completion/
+!.claude/skills/react-best-practices/
+!.claude/skills/composition-patterns/
+!.claude/skills/gha-security-review/
+!.claude/skills/security-best-practices/
+!.claude/skills/web-accessibility/
+!.claude/skills/gh-fix-ci/
+!.claude/skills/web-perf/
 
 # Dependências e build
 node_modules/
