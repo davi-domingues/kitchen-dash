@@ -44,22 +44,12 @@
     },
     "playwright": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@playwright/mcp@0.0.85",
-        "--isolated"
-      ],
+      "command": ["npx", "-y", "@playwright/mcp@0.0.85", "--isolated"],
       "enabled": false
     },
     "chrome-devtools": {
       "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "chrome-devtools-mcp@1.13.0",
-        "--isolated"
-      ],
+      "command": ["npx", "-y", "chrome-devtools-mcp@1.13.0", "--isolated"],
       "enabled": false
     }
   }
