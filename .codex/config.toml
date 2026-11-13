@@ -1,0 +1,42 @@
+# MCPs compartilhados do Kitchen Dash para o Codex CLI.
+# Todos começam desabilitados. Veja docs/MCP.md para habilitar.
+# O Codex só lê este arquivo em projetos marcados como confiáveis (trusted).
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+enabled = false
+
+[mcp_servers.supabase]
+url = "https://mcp.supabase.com/mcp?read_only=true&features=database,docs,debugging,development"
+enabled = false
+
+[mcp_servers.sentry]
+url = "https://mcp.sentry.dev/mcp"
+enabled = false
+
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+bearer_token_env_var = "GITHUB_PAT"
+http_headers = { "X-MCP-Toolsets" = "repos,issues,pull_requests,actions" }
+enabled = false
+
+[mcp_servers.linear]
+url = "https://mcp.linear.app/mcp"
+enabled = false
+
+[mcp_servers.cloudflare-docs]
+url = "https://docs.mcp.cloudflare.com/mcp"
+enabled = false
+
+[mcp_servers.cloudflare]
+url = "https://mcp.cloudflare.com/mcp"
+enabled = false
+
+[mcp_servers.figma]
+url = "https://mcp.figma.com/mcp"
+enabled = false
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["-y", "@playwright/mcp@latest", "--isolated"]
+enabled = false

@@ -33,6 +33,7 @@ Jogo arcade de culinária 2D em visão top-down, ambientado num bistrô parisien
 | [System Design](docs/SYSTEM_DESIGN.md) | Decisões técnicas: dados, segurança, confiabilidade, custos |
 | [Estudos e Decisões](docs/ESTUDOS_E_DECISOES.md) | Comparações, previsões e referências que embasaram as escolhas |
 | [Roadmap](docs/ROADMAP.md) | Itens fora do MVP, por prioridade |
+| [MCPs](docs/MCP.md) | Servidores MCP do time (Claude Code, OpenCode, Codex), desabilitados por padrão |
 
 ## Desenvolvimento orientado a especificação
 
