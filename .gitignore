@@ -1,1 +1,5 @@
-.claude/
+# Pasta local do Claude Code, exceto as skills do Spec Kit
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/speckit-*/
