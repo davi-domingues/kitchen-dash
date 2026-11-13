@@ -1,4 +1,4 @@
-# Atualiza as actions fixadas por SHA. O ecossistema npm entra com o scaffold (KD-04).
+# Atualizações semanais. Os PRs passam pelos mesmos checks e revisão de qualquer outro PR.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -10,3 +10,25 @@ updates:
     groups:
       actions:
         patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    versioning-strategy: increase
+    commit-message:
+      prefix: 'build(deps)'
+      prefix-development: 'build(deps-dev)'
+    groups:
+      # Ferramentas de desenvolvimento juntas em um PR; minor e patch de produção em outro
+      desenvolvimento:
+        dependency-type: development
+        update-types: ['minor', 'patch']
+      producao:
+        dependency-type: production
+        update-types: ['minor', 'patch']
+    ignore:
+      # Phaser fica em 3.90 por decisão (SYSTEM_DESIGN §11); mudar de major exige registro em ESTUDOS_E_DECISOES
+      - dependency-name: 'phaser'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
