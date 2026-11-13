@@ -1,12 +1,12 @@
-# PRD --- Ratatouille: Kitchen Dash
+# PRD --- Kitchen Dash
 
-> Versão atualizada para refletir o protótipo `kitchen_dash.html`.
+> Versão atualizada para refletir o protótipo `prototipo.html`.
 > Itens marcados como **(protótipo)** já estão implementados; os demais são
 > intenções de produto para versões futuras.
 
 ## Visão geral
 
-**Ratatouille: Kitchen Dash** é um jogo casual de culinária inspirado na
+**Kitchen Dash** é um jogo casual de culinária inspirado na
 atmosfera de uma cozinha francesa movimentada. O jogador entra numa cozinha
 vista de cima e precisa atender pedidos com agilidade, organização e
 reflexos rápidos, sozinho ou em dupla no mesmo teclado.
