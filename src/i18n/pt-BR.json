@@ -1,1 +1,5 @@
-{}
+{
+  "ui.error.title": "Algo deu errado",
+  "ui.error.description": "Tivemos um problema inesperado. Recarregue a página para continuar.",
+  "ui.error.reload": "Recarregar"
+}
