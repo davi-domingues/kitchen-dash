@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { BootScene } from './scenes/BootScene.js'
 import { KitchenScene } from './scenes/KitchenScene.js'
 
@@ -7,6 +8,7 @@ const GAME_WIDTH = 960
 const GAME_HEIGHT = 540
 
 export default function PhaserGame() {
+  const { t } = useTranslation()
   const containerRef = useRef(null)
 
   useEffect(() => {
@@ -23,5 +25,5 @@ export default function PhaserGame() {
     return () => game.destroy(true)
   }, [])
 
-  return <div ref={containerRef} className="aspect-video w-full max-w-5xl" aria-label="Área do jogo" />
+  return <div ref={containerRef} className="aspect-video w-full max-w-5xl" aria-label={t('play.gameArea')} />
 }

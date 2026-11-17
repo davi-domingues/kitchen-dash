@@ -1,5 +1,26 @@
 {
-  "ui.error.title": "Algo deu errado",
-  "ui.error.description": "Tivemos um problema inesperado. Recarregue a página para continuar.",
-  "ui.error.reload": "Recarregar"
+  "app": {
+    "name": "Kitchen Dash",
+    "loading": "Carregando…"
+  },
+  "home": {
+    "tagline": "Colete, prepare e entregue os pedidos antes que os clientes percam a paciência.",
+    "play": "Jogar"
+  },
+  "play": {
+    "back": "Voltar",
+    "gameArea": "Área do jogo"
+  },
+  "game": {
+    "kitchen": {
+      "underConstruction": "Cozinha em construção"
+    }
+  },
+  "ui": {
+    "error": {
+      "title": "Algo deu errado",
+      "description": "Tivemos um problema inesperado. Recarregue a página para continuar.",
+      "reload": "Recarregar"
+    }
+  }
 }
