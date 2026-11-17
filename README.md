@@ -65,6 +65,13 @@ npm run build                         # build de produção em dist/
 npm run preview                       # serve o build localmente
 ```
 
+## Deploy (Cloudflare Pages)
+
+- **Build command:** `npm run build` · **Output:** `dist` · **Variável `NODE_VERSION`:** a do `.nvmrc` (24).
+- Produção sai da `main`; cada branch/PR ganha um preview automático.
+- `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` ficam no painel (são públicas, nunca segredos).
+- `public/_redirects` faz o fallback da SPA e `public/_headers` define CSP, cabeçalhos de segurança e cache imutável de `/assets/*`. O `src/deploy/headers.test.js` valida esse arquivo.
+
 ## Contribuição
 
 Veja o [guia de contribuição](.github/CONTRIBUTING.md). Para relatar vulnerabilidades, siga a [política de segurança](.github/SECURITY.md).
