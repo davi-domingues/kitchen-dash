@@ -65,6 +65,21 @@ npm run build                         # build de produção em dist/
 npm run preview                       # serve o build localmente
 ```
 
+### Banco local (Supabase)
+
+Pré-requisito: Docker Desktop aberto, com cerca de 8 GB livres em disco para as imagens. O Supabase CLI já vem nas devDependencies.
+
+```sh
+npm run db:start    # sobe Postgres, Auth, Studio e Mailpit; imprime URL e chaves locais
+npm run db:reset    # recria o banco aplicando supabase/migrations/ e supabase/seed.sql
+npm run db:status   # mostra as URLs e chaves da stack local
+npm run db:stop     # para os containers
+```
+
+- Copie a URL da API e a chave publicável do `db:status` para o seu arquivo de ambiente local (veja `.env.example`). As chaves locais são de desenvolvimento e não valem em produção.
+- O Studio fica em http://127.0.0.1:54323 e os e-mails de OTP chegam no Mailpit, em http://127.0.0.1:54324.
+- Schema muda só por migration: `npx supabase migration new <nome>`, depois `npm run db:reset` para testar (AGENTS.md §6).
+
 ## Contribuição
 
 Veja o [guia de contribuição](.github/CONTRIBUTING.md). Para relatar vulnerabilidades, siga a [política de segurança](.github/SECURITY.md).
