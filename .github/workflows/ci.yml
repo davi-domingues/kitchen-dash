@@ -89,6 +89,6 @@ jobs:
       - if: steps.app.outputs.existe == 'true'
         run: npm run build
       - if: steps.app.outputs.existe == 'true'
-        run: npm run check-size --if-present
+        run: npm run check-size
       - if: steps.app.outputs.existe == 'true'
         run: npm audit --audit-level=high --omit=dev

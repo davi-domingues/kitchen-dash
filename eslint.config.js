@@ -36,6 +36,16 @@ export default defineConfig([
         'error',
         { patterns: [{ group: FORNECEDORES, message: 'Acesse fornecedores só por src/services (§3).' }] },
       ],
+      'no-restricted-globals': [
+        'error',
+        { name: 'localStorage', message: 'Use services/storage.js (§7.2).' },
+        { name: 'sessionStorage', message: 'Use services/storage.js (§7.2).' },
+      ],
+      'no-restricted-properties': [
+        'error',
+        { object: 'window', property: 'localStorage', message: 'Use services/storage.js (§7.2).' },
+        { object: 'globalThis', property: 'localStorage', message: 'Use services/storage.js (§7.2).' },
+      ],
     },
   },
   {
@@ -98,7 +108,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['**/*.test.js', '*.config.js'],
+    files: ['**/*.test.js', '*.config.js', 'scripts/**/*.js'],
     languageOptions: { globals: globals.node },
   },
   prettier,

@@ -15,10 +15,12 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "git config core.hooksPath .githooks || true",
+    "check-size": "node scripts/check-size.js"
   },
   "dependencies": {
     "@sentry/react": "11.10.0",
+    "@supabase/supabase-js": "2.119.0",
     "i18next": "27.1.1",
     "lucide-react": "1.72.0",
     "phaser": "3.90.0",
