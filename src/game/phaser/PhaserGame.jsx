@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import { useEffect, useRef } from 'react'
 import { BootScene } from './scenes/BootScene.js'
 import { KitchenScene } from './scenes/KitchenScene.js'
+import { PreloadScene } from './scenes/PreloadScene.js'
 
 const GAME_WIDTH = 960
 const GAME_HEIGHT = 540
@@ -17,7 +18,8 @@ export default function PhaserGame() {
       height: GAME_HEIGHT,
       backgroundColor: '#2b1d1a',
       scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-      scene: [BootScene, KitchenScene],
+      // Só a primeira cena inicia sozinha; as demais seguem SCENE_ORDER via scene.start
+      scene: [BootScene, PreloadScene, KitchenScene],
     })
     // Destrói o jogo ao sair da rota para não vazar canvas, listeners e loops
     return () => game.destroy(true)
