@@ -18,6 +18,7 @@
     "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.119.0",
     "i18next": "27.1.1",
     "lucide-react": "1.72.0",
     "phaser": "3.90.0",
