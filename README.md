@@ -35,6 +35,7 @@ Jogo arcade de culinária 2D em visão top-down, ambientado num bistrô parisien
 | [Plano do MVP](docs/PLANO_MVP.md) | Tasks do MVP, dependências, ordem e paralelização |
 | [Roadmap](docs/ROADMAP.md) | Itens fora do MVP, por prioridade |
 | [AGENTS.md](AGENTS.md) | Contrato de trabalho para pessoas e agentes de IA: workflow, padrões e gates |
+| [Deploy](docs/DEPLOY.md) | Cloudflare Pages: produção, previews por branch, variáveis e headers |
 | [MCPs](docs/MCP.md) | Servidores MCP do time (Claude Code, OpenCode, Codex), desabilitados por padrão |
 
 ## Desenvolvimento orientado a especificação
@@ -65,11 +66,25 @@ npm run build                         # build de produção em dist/
 npm run preview                       # serve o build localmente
 ```
 
+### Banco local (Supabase)
+
+Pré-requisito: Docker Desktop aberto, com cerca de 8 GB livres em disco para as imagens. O Supabase CLI já vem nas devDependencies.
+
+```sh
+npm run db:start    # sobe Postgres, Auth, Studio e Mailpit; imprime URL e chaves locais
+npm run db:reset    # recria o banco aplicando supabase/migrations/ e supabase/seed.sql
+npm run db:status   # mostra as URLs e chaves da stack local
+npm run db:stop     # para os containers
+```
+
+- Copie a URL da API e a chave publicável do `db:status` para o seu arquivo de ambiente local (veja `.env.example`). As chaves locais são de desenvolvimento e não valem em produção.
+- O Studio fica em http://127.0.0.1:54323 e os e-mails de OTP chegam no Mailpit, em http://127.0.0.1:54324.
+- Schema muda só por migration: `npx supabase migration new <nome>`, depois `npm run db:reset` para testar (AGENTS.md §6).
+
 ## Deploy (Cloudflare Pages)
 
-- **Build command:** `npm run build` · **Output:** `dist` · **Variável `NODE_VERSION`:** a do `.nvmrc` (24).
-- Produção sai da `main`; cada branch/PR ganha um preview automático.
-- `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` ficam no painel (são públicas, nunca segredos).
+- Produção sai da `main` em https://kitchen-dash-015.pages.dev e cada branch com push ganha um **preview** automático.
+- Como abrir o preview de uma branch, variáveis de ambiente e headers: veja [docs/DEPLOY.md](docs/DEPLOY.md).
 - `public/_redirects` faz o fallback da SPA e `public/_headers` define CSP, cabeçalhos de segurança e cache imutável de `/assets/*`. O `src/deploy/headers.test.js` valida esse arquivo.
 
 ## Contribuição
