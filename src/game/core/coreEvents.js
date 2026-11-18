@@ -18,7 +18,7 @@ export const CORE_EVENTS = Object.freeze({
   POT_BURNT: 'pot:burnt',
   DISH_SERVED: 'dish:served',
   ACTION_REJECTED: 'action:rejected',
-  // Payload: `{ seed, contentVersion, mode, score, durationMs }`.
+  // Payload: `{ mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`.
   MATCH_ENDED: 'match:ended',
 })
 

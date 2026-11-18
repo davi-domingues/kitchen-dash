@@ -1,5 +1,5 @@
 import { CORE_EVENTS, createEvent } from './coreEvents.js'
-import { MATCH_STATUS } from './matchState.js'
+import { MATCH_STATUS, matchEndedPayload } from './matchState.js'
 import { createRng } from './rng.js'
 
 // Um frame travado (aba em segundo plano) não pode avançar a partida de uma vez só.
@@ -28,15 +28,7 @@ export function createUpdate(systems = []) {
     next = { ...next, rngState: rng.getState() }
     if (next.durationMs !== null && next.elapsedMs >= next.durationMs) {
       next = { ...next, status: MATCH_STATUS.ENDED, elapsedMs: next.durationMs }
-      events.push(
-        createEvent(CORE_EVENTS.MATCH_ENDED, {
-          seed: next.seed,
-          contentVersion: next.contentVersion,
-          mode: next.mode,
-          score: next.score,
-          durationMs: next.elapsedMs,
-        }),
-      )
+      events.push(createEvent(CORE_EVENTS.MATCH_ENDED, matchEndedPayload(next)))
     }
     return { state: next, events }
   }
