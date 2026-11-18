@@ -13,6 +13,28 @@
   "placeholder": {
     "comingSoon": "Esta página chega em breve."
   },
+  "profile": {
+    "local": {
+      "visitorHint": "Seu progresso fica salvo neste navegador.",
+      "notPersistent": "O navegador bloqueou o armazenamento: o progresso some ao fechar a aba.",
+      "empty": "Você ainda não jogou nenhuma partida.",
+      "statsTitle": "Estatísticas",
+      "matches": "Partidas",
+      "playTime": "Tempo jogado",
+      "boardTitle": "Placar dos chefs",
+      "boardEmpty": "Nenhuma partida entrou no placar ainda.",
+      "boardCaption": "{{mode}} · {{players}}P",
+      "date": "Data"
+    },
+    "settings": {
+      "title": "Configurações",
+      "clear": "Apagar progresso local",
+      "clearConfirmTitle": "Apagar o progresso?",
+      "clearConfirmText": "Recordes, placar e estatísticas deste navegador serão apagados. Não dá para desfazer.",
+      "cancel": "Cancelar",
+      "confirm": "Apagar"
+    }
+  },
   "notFound": {
     "title": "Página não encontrada",
     "message": "O endereço não existe. Que tal voltar para a cozinha?"
