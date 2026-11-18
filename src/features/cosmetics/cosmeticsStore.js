@@ -1,7 +1,7 @@
 // Leitura e gravação dos cosméticos em `kd:v1:cosmetics` (SYSTEM_DESIGN §7.2), sempre via storage.js.
 // Chave separada de `progress` para não mudar o formato da KD-22.
 import { storage as defaultStorage } from '../../services/storage.js'
-import { applyScore, equip, getLook, mergeUnlocked, sanitizeCosmetics } from './cosmetics.js'
+import { applyScore, equip, equipP2, getLook, mergeUnlocked, sanitizeCosmetics } from './cosmetics.js'
 
 export const COSMETICS_KEY = 'cosmetics'
 
@@ -27,6 +27,11 @@ export function mergeUnlockedCosmetics(ids, store = defaultStorage) {
 
 export function equipCosmetic(id, store = defaultStorage) {
   return update(store, (state) => ({ state: equip(state, id) })).state
+}
+
+/** Escolha do P2: fica só neste navegador, nunca vai para a conta. */
+export function equipCosmeticP2(id, store = defaultStorage) {
+  return update(store, (state) => ({ state: equipP2(state, id) })).state
 }
 
 export function loadCosmeticLook(store = defaultStorage) {

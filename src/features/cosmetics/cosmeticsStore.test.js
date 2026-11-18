@@ -4,6 +4,7 @@ import {
   COSMETICS_KEY,
   clearCosmetics,
   equipCosmetic,
+  equipCosmeticP2,
   loadCosmeticLook,
   loadCosmetics,
   mergeUnlockedCosmetics,
@@ -45,6 +46,30 @@ describe('cosmeticsStore', () => {
     equipCosmetic('theme_provence', store)
 
     expect(loadCosmeticLook(store).theme).toBe('#8a7fc0')
+  })
+
+  it('grava a escolha do P2 na mesma chave sem mexer no P1', () => {
+    const { store } = memoryStore()
+    recordScore(320, store)
+
+    equipCosmeticP2('hat_bordeaux', store)
+
+    expect(loadCosmetics(store).equippedP2.hat).toBe('hat_bordeaux')
+    expect(loadCosmetics(store).equipped.hat).toBe('hat_classic')
+  })
+
+  it('migra o registro antigo sem P2 e regrava no formato novo', () => {
+    const { store } = memoryStore()
+    store.set(COSMETICS_KEY, {
+      bestScore: 320,
+      unlocked: ['hat_bordeaux'],
+      equipped: { hat: 'hat_bordeaux', apron: 'apron_cream', theme: 'theme_bistro' },
+    })
+
+    equipCosmetic('apron_cream', store)
+
+    expect(store.get(COSMETICS_KEY).equippedP2).toEqual({ hat: 'hat_bordeaux', apron: 'apron_cream' })
+    expect(store.get(COSMETICS_KEY).bestScore).toBe(320)
   })
 
   it('dado corrompido volta ao padrão e apagar limpa a chave', () => {

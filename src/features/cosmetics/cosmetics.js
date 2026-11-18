@@ -11,11 +11,15 @@ const DEFAULTS = Object.freeze(
 const FREE_IDS = Object.freeze(Object.values(DEFAULTS))
 const byId = new Map(COSMETICS.map((c) => [c.id, c]))
 
+// Slots que cada chef escolhe; o tema pinta a cozinha inteira e fica com o P1
+export const CHEF_SLOTS = Object.freeze(['hat', 'apron'])
+const chefPart = (equipped) => Object.fromEntries(CHEF_SLOTS.map((slot) => [slot, equipped[slot]]))
+
 // Ordem do catálogo para o resultado não depender da ordem de chegada
 const inCatalogOrder = (ids) => COSMETICS.map((c) => c.id).filter((id) => ids.has(id))
 
 export function createEmptyCosmetics() {
-  return { bestScore: 0, unlocked: [...FREE_IDS], equipped: { ...DEFAULTS } }
+  return { bestScore: 0, unlocked: [...FREE_IDS], equipped: { ...DEFAULTS }, equippedP2: chefPart(DEFAULTS) }
 }
 
 function withUnlocked(state, ids) {
@@ -40,14 +44,22 @@ export function sanitizeCosmetics(raw) {
   const bestScore = Number.isInteger(raw.bestScore) && raw.bestScore > 0 ? raw.bestScore : 0
   const ids = Array.isArray(raw.unlocked) ? raw.unlocked.filter((id) => byId.has(id)) : []
   const unlocked = inCatalogOrder(new Set([...FREE_IDS, ...ids]))
-  const state = { bestScore, unlocked, equipped: empty.equipped }
+  const state = { bestScore, unlocked }
   const equipped = Object.fromEntries(
     COSMETIC_SLOTS.map((slot) => {
       const id = raw.equipped?.[slot]
       return [slot, isEquippable(state, id, slot) ? id : DEFAULTS[slot]]
     }),
   )
-  return { ...state, equipped }
+  // Formato antigo (sem equippedP2): o P2 herda o visual do P1, que era o que ele já usava
+  const p2Source = raw.equippedP2 && typeof raw.equippedP2 === 'object' ? raw.equippedP2 : equipped
+  const equippedP2 = Object.fromEntries(
+    CHEF_SLOTS.map((slot) => {
+      const id = p2Source[slot]
+      return [slot, isEquippable(state, id, slot) ? id : DEFAULTS[slot]]
+    }),
+  )
+  return { ...state, equipped, equippedP2 }
 }
 
 /** Registra a pontuação de uma partida; só o máximo conta. */
@@ -69,9 +81,22 @@ export function equip(state, id) {
   return { ...state, equipped: { ...state.equipped, [item.slot]: id } }
 }
 
+/** Equipa no P2 um item ganho (os mesmos itens do P1); tema não é por chef e não muda nada. */
+export function equipP2(state, id) {
+  const item = byId.get(id)
+  if (!item || !CHEF_SLOTS.includes(item.slot) || !isEquippable(state, id, item.slot)) return state
+  return { ...state, equippedP2: { ...state.equippedP2, [item.slot]: id } }
+}
+
 export const isUnlocked = (state, id) => state.unlocked.includes(id)
 
-/** Cores dos itens equipados, no formato que a cena recebe pelo registry. */
+const colorsOf = (equipped) =>
+  Object.fromEntries(CHEF_SLOTS.map((slot) => [slot, byId.get(equipped[slot]).color]))
+
+/** Cores equipadas no formato que a cena recebe pelo registry: tema único e visual por chef. */
 export function getLook(state) {
-  return Object.fromEntries(COSMETIC_SLOTS.map((slot) => [slot, byId.get(state.equipped[slot]).color]))
+  return {
+    theme: byId.get(state.equipped.theme).color,
+    chefs: { p1: colorsOf(state.equipped), p2: colorsOf(state.equippedP2) },
+  }
 }

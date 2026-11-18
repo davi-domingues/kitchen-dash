@@ -3,6 +3,7 @@ import {
   applyScore,
   createEmptyCosmetics,
   equip,
+  equipP2,
   getLook,
   isUnlocked,
   mergeUnlocked,
@@ -124,6 +125,66 @@ describe('getLook', () => {
   it('devolve as cores dos itens equipados', () => {
     const state = equip(applyScore(createEmptyCosmetics(), 1000).state, 'hat_gold')
 
-    expect(getLook(state)).toEqual({ hat: '#c9a227', apron: '#f5ead6', theme: '#7b1e3a' })
+    expect(getLook(state)).toEqual({
+      theme: '#7b1e3a',
+      chefs: { p1: { hat: '#c9a227', apron: '#f5ead6' }, p2: { hat: '#f5ead6', apron: '#f5ead6' } },
+    })
+  })
+
+  it('separa o visual de cada chef', () => {
+    const state = equipP2(equip(applyScore(createEmptyCosmetics(), 1000).state, 'hat_gold'), 'apron_herbs')
+
+    const { chefs } = getLook(state)
+
+    expect(chefs.p1).toEqual({ hat: '#c9a227', apron: '#f5ead6' })
+    expect(chefs.p2.hat).toBe('#f5ead6')
+    expect(chefs.p2.apron).not.toBe('#f5ead6')
+  })
+})
+
+describe('equipP2', () => {
+  it('equipa no P2 sem mexer no P1', () => {
+    const start = applyScore(createEmptyCosmetics(), 320).state
+
+    const state = equipP2(start, 'hat_bordeaux')
+
+    expect(state.equippedP2.hat).toBe('hat_bordeaux')
+    expect(state.equipped.hat).toBe('hat_classic')
+  })
+
+  it('equipar o P1 não muda o P2', () => {
+    const start = equipP2(applyScore(createEmptyCosmetics(), 320).state, 'hat_bordeaux')
+
+    expect(equip(start, 'apron_herbs').equippedP2).toEqual({ hat: 'hat_bordeaux', apron: 'apron_cream' })
+  })
+
+  it('não equipa item bloqueado, desconhecido nem tema', () => {
+    const start = applyScore(createEmptyCosmetics(), 5000).state
+
+    expect(equipP2(start, 'hat_gold').equippedP2.hat).toBe('hat_gold')
+    expect(equipP2(createEmptyCosmetics(), 'hat_gold')).toEqual(createEmptyCosmetics())
+    expect(equipP2(start, 'nope')).toBe(start)
+    expect(equipP2(start, 'theme_bistro')).toBe(start)
+  })
+})
+
+describe('sanitizeCosmetics — P2', () => {
+  it('migra o formato antigo: o P2 herda chapéu e avental do P1', () => {
+    const old = {
+      bestScore: 320,
+      unlocked: ['hat_bordeaux'],
+      equipped: { hat: 'hat_bordeaux', apron: 'apron_cream', theme: 'theme_bistro' },
+    }
+
+    const state = sanitizeCosmetics(old)
+
+    expect(state.equipped.hat).toBe('hat_bordeaux')
+    expect(state.equippedP2).toEqual({ hat: 'hat_bordeaux', apron: 'apron_cream' })
+  })
+
+  it('descarta P2 bloqueado ou de outro slot', () => {
+    const state = sanitizeCosmetics({ unlocked: [], equippedP2: { hat: 'hat_gold', apron: 'theme_bistro' } })
+
+    expect(state.equippedP2).toEqual({ hat: 'hat_classic', apron: 'apron_cream' })
   })
 })
