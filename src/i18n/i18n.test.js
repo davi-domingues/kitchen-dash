@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { COSMETICS, contentKey, INGREDIENTS, KITCHENS, RECIPES } from '../content/index.js'
 import { t } from './index.js'
 import ptBR from './pt-BR.json'
 
@@ -20,11 +21,20 @@ function flatKeys(obj, prefix = '') {
   )
 }
 
-const usedKeys = new Set(
-  sourceFiles(SRC).flatMap((file) =>
+// Nomes de conteúdo são chaves dinâmicas `<tipo>.<id>.name`, derivadas dos JSON
+const contentKeys = [
+  ['ingredient', INGREDIENTS],
+  ['recipe', RECIPES],
+  ['kitchen', KITCHENS],
+  ['cosmetic', COSMETICS],
+].flatMap(([type, items]) => items.map(({ id }) => contentKey(type, id)))
+
+const usedKeys = new Set([
+  ...contentKeys,
+  ...sourceFiles(SRC).flatMap((file) =>
     [...readFileSync(file, 'utf8').matchAll(/\bt\(\s*['"]([\w.]+)['"]/g)].map((m) => m[1]),
   ),
-)
+])
 const dictionaryKeys = flatKeys(ptBR)
 
 describe('i18n pt-BR', () => {
