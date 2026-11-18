@@ -9,6 +9,9 @@ export const CORE_EVENTS = Object.freeze({
   ORDER_EXPIRED: 'order:expired',
   // Payload: `{ recipeId, elapsedMs }`. Prato entregue sem comanda visível da receita.
   ORDER_WRONG: 'order:wrong',
+  // Payload (ScoreChange): `{ reason, delta, base, tip, comboBonus, combo, score, orderId, elapsedMs }`.
+  // `delta` é a variação efetiva, já com o piso zero (KD-14).
+  SCORE_CHANGED: 'score:changed',
   // Payload: `{ seed, contentVersion, mode, score, durationMs }`.
   MATCH_ENDED: 'match:ended',
 })
