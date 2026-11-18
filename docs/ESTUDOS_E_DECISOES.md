@@ -165,7 +165,18 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
-## 10. Referências
+## 10. RPC `submit_score` (KD-31)
+
+- **Assinatura validada contra `match:ended`:** entram `matchId`, `score`, `durationMs`, `seed`, `contentVersion` e `ordersCompleted` (este último porque `player_stats.orders_completed` precisa dele); `board` e `origin` vêm do React. `mode`, `players` e `ordersFailed` não vão ao banco: o `board` já os codifica e o schema não os guarda.
+- **Erros por exceção com SQLSTATE estável** (`28000`, `22023`, `23505`, `54000`) e mensagem fixa: a outbox (KD-35) só reenvia em `54000` e descarta o resto.
+- **Idempotência antes do rate limit:** o reenvio de uma partida já aceita nunca é barrado e devolve o estado atual sem novos desbloqueios. `match_id` de outro usuário dá `match_conflict`, sem revelar o resultado.
+- **Rate limit contando `scores` dos últimos 60 s**, com `pg_advisory_xact_lock` por usuário para serializar envios concorrentes. Sem tabela extra.
+- **Desbloqueio pelo maior recorde pessoal** (qualquer placar), com limiares do PRD em `game_rules.cosmetic_unlocks`. Os ids são provisórios até o catálogo da KD-23, que deve usar os mesmos ids.
+- **`content_version` só por pertinência** à lista aceita, sem impor formato: a lista recebe o hash real quando o conteúdo for versionado.
+
+---
+
+## 11. Referências
 
 **Documentação oficial**
 - Supabase: [Pricing](https://supabase.com/pricing) · [Billing](https://supabase.com/docs/guides/platform/billing-on-supabase) · [Database size](https://supabase.com/docs/guides/platform/database-size) · [Disk size](https://supabase.com/docs/guides/platform/manage-your-usage/disk-size) · [MAU](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users) · [Egress](https://supabase.com/docs/guides/platform/manage-your-usage/egress.md) · [Passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless) · [Auth CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha) · [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security) · [API quickstart (leaderboard)](https://supabase.com/docs/guides/api/quickstart)

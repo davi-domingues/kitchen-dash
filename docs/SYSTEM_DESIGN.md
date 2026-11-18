@@ -132,7 +132,7 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 
 ### 6.2 RPCs (`security definer`, `set search_path = ''`, `execute` revogado de `anon`)
 
-**`submit_score(match_id, board, score, duration_ms, seed, content_version, origin)`**
+**`submit_score(p_match_id, p_board, p_score, p_duration_ms, p_seed, p_content_version, p_origin, p_orders_completed)`** → `{ match_id, is_new_best, best_score, unlocked_cosmetics }`. Contrato completo (tipos, erros e ação do cliente) em `specs/001-rpc-submit-score/contracts/submit_score.md`.
 1. Rejeita se `auth.uid()` for nulo.
 2. **Idempotência:** se `match_id` já existe, retorna o resultado anterior.
 3. **Rate limit:** no máximo N envios por usuário em 60 s.
