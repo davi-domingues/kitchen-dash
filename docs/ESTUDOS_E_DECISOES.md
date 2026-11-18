@@ -156,6 +156,9 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Outbox de pontuação (KD-35) | `kd:v1:outbox` guarda só `{ matchId, userId, attempts, nextAt }`; o payload vem de `progress.pending`. Backoff 2 s × 2ⁿ⁻¹ (teto 5 min) com _equal jitter_, 8 tentativas e descarte; 22023/23505 descartam, 28000/42501 param sem descartar | Sem payload duplicado; partida de uma conta nunca vai pela sessão de outra; reenvio no login, na abertura e no evento `online` |
 | Board e origem (KD-35) | `p_board = <mode>_<players>p` (ex.: `classic_1p`); `origin = 'online'` só para partidas terminadas com sessão. Partidas de visitante ficam para a KD-37 (`local`) | Um placar por modo e nº de jogadores, como o recorde local da KD-22 |
 | TanStack Query na KD-35 | Não usado | O retry precisa sobreviver ao fechamento da aba; `useMutation` retentaria só em memória e duplicaria a fila |
+| `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
+| Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
+| `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
 
 ---
 
