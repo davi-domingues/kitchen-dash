@@ -85,7 +85,9 @@
       "error": "Não foi possível ler o resultado da partida.",
       "newRecord": "Novo recorde!",
       "recordScore": "Seu recorde: {{score}} pontos",
-      "recordTime": "Seu melhor tempo: {{time}}"
+      "recordTime": "Seu melhor tempo: {{time}}",
+      "unlocked": "Desbloqueado: {{items}}.",
+      "customize": "Personalizar no perfil"
     }
   },
   "game": {
