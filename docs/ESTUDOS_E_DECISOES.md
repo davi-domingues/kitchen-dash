@@ -139,6 +139,11 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | `match:ended` do core (KD-11) | Payload sem `matchId` (campos finais na linha da KD-15) | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
 | Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
 | `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
+| Panela no fogão (KD-12) | Panela fixa em cada fogão; o chef serve com prato vazio | Menos estados e ações no MVP; panela carregável fica para depois |
+| Conteúdo no core (KD-12) | `createStationsSystem({ recipes, ingredients, stoveBurnAfterMs })` recebe o conteúdo | Core testável com dados fictícios e sem acoplar ao loader |
+| Entregas (KD-12) | O passe grava `state.deliveries` e emite `dish:served`; o KD-13 consome a lista | Sistemas só enxergam o estado, não os eventos de outros sistemas |
+| Movimento (KD-18) | Grade de tiles, 1 passo a cada `CHEF_STEP_MS = 150` ms, horizontal vence na diagonal; posições no `MatchState` | Determinístico e reproduzível por replay, sem física; colisão por tile |
+| Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
 | Fila de pedidos (KD-13) | Padrões do Clássico: 4 comandas, fila 20, chegada 13–17 s, paciência 60 s; a paciência só corre em comandas visíveis | O PRD só fixa os números do Livre; a KD-15 ajusta por modo. A fila é espera da cozinha, não do cliente |
 | Eventos de pedido (KD-13) | `order:delivered`/`order:expired` com `{ orderId, number, recipeId, points, patienceMs, remainingMs, elapsedMs }` e `order:wrong` `{ recipeId, elapsedMs }` | A pontuação (KD-14) calcula base, gorjeta, combo e penalidades só a partir dos eventos |
 | Combo e gorjeta (KD-14) | Combo de +10 fixo a partir da 2ª entrega seguida, zerado por prato errado ou cliente perdido; gorjeta `round(40 × restante/paciência)`, 0 sem paciência | Leitura literal do PRD; um bônus limitado deixa o teto de plausibilidade calculável |
