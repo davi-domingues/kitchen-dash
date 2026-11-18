@@ -134,6 +134,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | RNFs do MVP | i18n (pt-BR), acessibilidade básica, PWA, orçamento de tamanho | Performance de runtime vai para o ROADMAP |
 | E-mail OTP | SMTP padrão agora, Resend antes do lançamento | O SMTP padrão tem limite baixo de envios por hora |
 | Payload de `match:ended` (KD-21) | `{ matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`; `matchId` UUID gerado pela cena | Cobre o `submit_score` (idempotência, plausibilidade), `player_stats.orders_completed` e o recorde do Desafio separado por nº de jogadores; `board`/`origin` ficam com o React |
+| Login OTP (KD-33) | Template próprio (`supabase/templates/otp_code.html`) com `{{ .Token }}` em _magic link_ e _confirmation_; `[auth.captcha]` Turnstile desligado no local por padrão, secret via `env()`; sessão em Context (`useAuth`), sem TanStack Query | Conta nova recebe o template de confirmação; `supabase start` funciona sem a secret; a sessão não é dado remoto em cache |
 | Estado do RNG (KD-11) | `rngState` dentro do `MatchState`; `createRng` expõe `getState()` | Estado 100% serializável, base para salvar/retomar e replay por seed |
 | Passo de tempo do core (KD-11) | Teto `MAX_DT_MS = 250` por `update` | Aba em segundo plano não encerra a partida de 3 min num único quadro |
 | `match:ended` do core (KD-11) | Payload sem `matchId` (campos finais na linha da KD-15) | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
@@ -176,6 +177,9 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
 | `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
 | Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
+| `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
+| Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
+| `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
 
 ---
 
