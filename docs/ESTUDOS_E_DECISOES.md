@@ -160,7 +160,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - **`public_profiles` com `security_invoker`:** uma view `security definer` é apontada como erro pelos advisors do Supabase. Em vez disso, `anon` recebe `select` só nas colunas `id`, `display_name` e `equipped` de `profiles` (grant por coluna) e a view herda essa permissão.
 - **`settings` em `user_settings`:** o ranking exige que autenticados leiam todos os profiles e o grant por coluna não distingue linhas. Para não expor preferências de outros jogadores, `settings` saiu de `profiles` para `user_settings` (PK `user_id`, RLS só da própria linha, criada pelo mesmo trigger). Diverge da §5 da SYSTEM_DESIGN, atualizada neste PR.
 - **`best_scores.match_id` sem FK:** `scores` expira em 90 dias e o recorde precisa sobreviver.
-- **`game_rules` com valores provisórios:** `max_points_per_second = 10` até a KD-14 fechar as regras; duração aceita de 170 s a 200 s (turno de 3 min).
+- **`game_rules` de plausibilidade:** duração aceita de 170 s a 200 s (turno de 3 min). A KD-31 aplica a regra fechada na KD-14: `max_points_per_second = 15` e folga fixa `score_allowance = 180`, com `score ≤ 180 + ceil(duration_s) × 15`.
 - **`display_name` padrão:** o trigger gera `player_<12 hex do id>`; a regra é `^[A-Za-z0-9_]{3,20}$`.
 
 ---

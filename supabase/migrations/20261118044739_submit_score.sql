@@ -5,6 +5,12 @@
 -- migration atualizando esta lista, senão os envios saem como unknown_content_version.
 update public.game_rules set value = '["7691008a"]' where key = 'accepted_content_versions';
 
+-- Plausibilidade fechada na KD-14: score <= score_allowance + ceil(duração em s) * max_points_per_second.
+update public.game_rules set value = '15', description = 'Teto de pontos por segundo (KD-14)'
+  where key = 'max_points_per_second';
+insert into public.game_rules (key, value, description) values
+  ('score_allowance', '180', 'Folga fixa de pontos na checagem de plausibilidade (KD-14)');
+
 -- Mesmos ids e unlockScore de src/content/cosmetics.json (KD-10). Itens com
 -- unlockScore 0 não entram: ninguém precisa desbloqueá-los.
 insert into public.game_rules (key, value, description) values
@@ -84,7 +90,8 @@ begin
     raise exception 'implausible_duration' using errcode = '22023';
   end if;
 
-  if p_score > floor(p_duration_ms / 1000.0 * (v_rules ->> 'max_points_per_second')::numeric) then
+  if p_score > (v_rules ->> 'score_allowance')::integer
+               + ceil(p_duration_ms / 1000.0)::integer * (v_rules ->> 'max_points_per_second')::integer then
     raise exception 'implausible_score' using errcode = '22023';
   end if;
 

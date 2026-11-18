@@ -35,7 +35,7 @@ set local role anon;
 
 select is((select count(*)::int from public.public_profiles), 2, 'anon lê public_profiles');
 select is((select count(*)::int from public.best_scores), 2, 'anon lê best_scores');
-select is((select count(*)::int from public.game_rules), 6, 'anon lê game_rules');
+select is((select count(*)::int from public.game_rules), 7, 'anon lê game_rules');
 select throws_ok('select * from public.user_settings', '42501', null, 'anon não lê user_settings');
 select throws_ok('select * from public.scores', '42501', null, 'anon não lê scores');
 select throws_ok('select * from public.player_stats', '42501', null, 'anon não lê player_stats');

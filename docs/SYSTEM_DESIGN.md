@@ -138,7 +138,7 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 3. **Rate limit:** no máximo N envios por usuário em 60 s.
 4. **Plausibilidade:**
    - `duration_ms` entre a duração mínima e a máxima da partida;
-   - `score ≤ duration_s × MAX_PONTOS_POR_SEGUNDO` (constante derivada do conteúdo);
+   - `score ≤ score_allowance + ceil(duration_s) × MAX_PONTOS_POR_SEGUNDO` (15 e folga de 180, regras da KD-14);
    - `content_version` dentro de uma lista aceita.
 5. Insere em `scores`, faz upsert em `best_scores` se for maior e atualiza `player_stats`.
 6. Avalia desbloqueios de cosméticos a partir de `player_stats`.

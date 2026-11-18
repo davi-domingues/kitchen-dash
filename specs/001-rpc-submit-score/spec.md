@@ -80,7 +80,7 @@ Ao atingir um recorde pessoal que alcança o limiar de um cosmético, o item fic
 - **FR-001**: Rejeitar envio sem usuário autenticado.
 - **FR-002**: Ser idempotente por identificador de partida, devolvendo o resultado anterior ao mesmo dono, antes de aplicar o limite de frequência.
 - **FR-003**: Limitar envios novos por usuário numa janela de 60 s ao valor configurado.
-- **FR-004**: Aceitar só duração entre mínimo e máximo configurados, pontuação ≤ duração em segundos × teto de pontos por segundo e versão de conteúdo da lista aceita.
+- **FR-004**: Aceitar só duração entre mínimo e máximo configurados, pontuação ≤ folga configurada + duração em segundos (arredondada para cima) × teto de pontos por segundo e versão de conteúdo da lista aceita.
 - **FR-005**: Gravar a partida, atualizar o recorde do placar só se for maior e somar partidas, pontuação, pedidos concluídos e tempo nas estatísticas.
 - **FR-006**: Desbloquear cosméticos cujo limiar seja ≤ ao maior recorde pessoal, sem duplicar.
 - **FR-007**: Devolver: se é novo recorde, o recorde do placar e a lista de cosméticos desbloqueados nesta chamada.

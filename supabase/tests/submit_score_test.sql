@@ -1,9 +1,9 @@
 -- KD-31 (#25): submit_score (SYSTEM_DESIGN §6.2). Rode com `npm run db:test`.
 -- Dados fictícios (@example.com). Regras de game_rules da migration:
--- duração 170000..200000 ms, 10 pontos/s, versão "7691008a", 10 envios/min.
+-- duração 170000..200000 ms, score <= 180 + ceil(s) * 15, versão "7691008a", 10 envios/min.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(31);
+select plan(32);
 
 insert into auth.users (id, email) values
   ('11111111-1111-1111-1111-111111111111', 'ana@example.com'),
@@ -96,11 +96,14 @@ select throws_ok(
   $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000011', 'global', 100, 200001, 1, '7691008a', 'online', 1)$$,
   '22023', 'implausible_duration', 'duração acima do máximo é recusada');
 select throws_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000012', 'global', 1801, 180000, 1, '7691008a', 'online', 1)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000012', 'global', 2881, 180000, 1, '7691008a', 'online', 1)$$,
   '22023', 'implausible_score', 'pontuação acima do teto por segundo é recusada');
 select lives_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000013', 'global', 1800, 180000, 1, '7691008a', 'online', 1)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000013', 'global', 2880, 180000, 1, '7691008a', 'online', 1)$$,
   'pontuação exatamente no teto é aceita');
+select lives_ok(
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000019', 'global', 2820, 175001, 1, '7691008a', 'online', 1)$$,
+  'segundo parcial arredonda para cima (180 + 176 × 15)');
 select throws_ok(
   $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000014', 'global', 100, 180000, 1, 'deadbeef', 'online', 1)$$,
   '22023', 'unknown_content_version', 'versão de conteúdo fora da lista é recusada');
@@ -118,7 +121,7 @@ select lives_ok(
   'pontuação zero é aceita');
 select is(
   (select count(*)::int from public.scores where user_id = '11111111-1111-1111-1111-111111111111'),
-  5, 'envios recusados não gravam nada');
+  6, 'envios recusados não gravam nada');
 
 -- ---------------------------------------------------------------- outro dono e rate limit
 set local request.jwt.claims = '{"sub": "33333333-3333-3333-3333-333333333333", "role": "authenticated"}';
