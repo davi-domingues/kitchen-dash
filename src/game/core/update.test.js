@@ -98,10 +98,13 @@ describe('update', () => {
     expect(first.state.status).toBe(MATCH_STATUS.ENDED)
     expect(first.events).toEqual([
       createEvent(CORE_EVENTS.MATCH_ENDED, {
+        mode: 'classic',
+        players: 1,
         seed: 42,
         contentVersion: 'v1',
-        mode: 'classic',
         score: 30,
+        ordersCompleted: 0,
+        ordersFailed: 0,
         durationMs: 100,
       }),
     ])

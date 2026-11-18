@@ -12,7 +12,13 @@ export const CORE_EVENTS = Object.freeze({
   // Payload (ScoreChange): `{ reason, delta, base, tip, comboBonus, combo, score, orderId, elapsedMs }`.
   // `delta` é a variação efetiva, já com o piso zero (KD-14).
   SCORE_CHANGED: 'score:changed',
-  // Payload: `{ seed, contentVersion, mode, score, durationMs }`.
+  // Eventos das estações (KD-12). Payloads em specs/kd-12-core-estacoes/contracts/stations-api.md.
+  INGREDIENT_CHOPPED: 'ingredient:chopped',
+  POT_COOKED: 'pot:cooked',
+  POT_BURNT: 'pot:burnt',
+  DISH_SERVED: 'dish:served',
+  ACTION_REJECTED: 'action:rejected',
+  // Payload: `{ mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`.
   MATCH_ENDED: 'match:ended',
 })
 
