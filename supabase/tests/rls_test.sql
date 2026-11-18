@@ -2,7 +2,7 @@
 -- Rode com `npm run db:test`. Dados fictícios (@example.com).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(24);
+select plan(29);
 
 insert into auth.users (id, email) values
   ('11111111-1111-1111-1111-111111111111', 'ana@example.com'),
@@ -22,11 +22,12 @@ insert into public.user_cosmetics (user_id, cosmetic_id) values
 -- Trigger
 select is((select count(*)::int from public.profiles), 2, 'trigger cria um profile por usuário');
 select is((select count(*)::int from public.player_stats), 2, 'trigger cria player_stats por usuário');
+select is((select count(*)::int from public.user_settings), 2, 'trigger cria user_settings por usuário');
 
 select ok(
   (select bool_and(relrowsecurity) from pg_class
    where oid in ('public.profiles'::regclass, 'public.scores'::regclass, 'public.best_scores'::regclass,
-                 'public.player_stats'::regclass, 'public.user_cosmetics'::regclass, 'public.game_rules'::regclass)),
+                 'public.player_stats'::regclass, 'public.user_cosmetics'::regclass, 'public.user_settings'::regclass, 'public.game_rules'::regclass)),
   'RLS ligada em todas as tabelas');
 
 -- ---------------------------------------------------------------- anon
@@ -35,7 +36,7 @@ set local role anon;
 select is((select count(*)::int from public.public_profiles), 2, 'anon lê public_profiles');
 select is((select count(*)::int from public.best_scores), 2, 'anon lê best_scores');
 select is((select count(*)::int from public.game_rules), 5, 'anon lê game_rules');
-select throws_ok('select settings from public.profiles', '42501', null, 'anon não lê settings');
+select throws_ok('select * from public.user_settings', '42501', null, 'anon não lê user_settings');
 select throws_ok('select * from public.scores', '42501', null, 'anon não lê scores');
 select throws_ok('select * from public.player_stats', '42501', null, 'anon não lê player_stats');
 select throws_ok('select * from public.user_cosmetics', '42501', null, 'anon não lê user_cosmetics');
@@ -56,6 +57,16 @@ select is((select count(*)::int from public.scores), 1, 'autenticado lê só os 
 select is((select count(*)::int from public.player_stats), 1, 'autenticado lê só o próprio player_stats');
 select is((select count(*)::int from public.user_cosmetics), 1, 'autenticado lê só os próprios cosméticos');
 select is((select count(*)::int from public.best_scores), 2, 'autenticado lê o ranking inteiro');
+select is((select count(*)::int from public.user_settings), 1, 'autenticado lê só o próprio user_settings');
+select lives_ok($$update public.user_settings set settings = '{"lang":"pt-BR"}' where user_id = '11111111-1111-1111-1111-111111111111'$$,
+  'autenticado altera as próprias settings');
+update public.user_settings set settings = '{"x":1}' where user_id = '22222222-2222-2222-2222-222222222222';
+reset role;
+select is((select settings from public.user_settings where user_id = '22222222-2222-2222-2222-222222222222'),
+  '{}'::jsonb, 'autenticado não altera settings de outro');
+set local role authenticated;
+select throws_ok($$insert into public.user_settings (user_id) values (gen_random_uuid())$$, '42501', null,
+  'autenticado não insere user_settings');
 
 select lives_ok($$update public.profiles set display_name = 'ana_chef' where id = '11111111-1111-1111-1111-111111111111'$$,
   'autenticado altera o próprio display_name');

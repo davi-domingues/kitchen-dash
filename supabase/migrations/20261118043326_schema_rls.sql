@@ -13,7 +13,6 @@ create table public.profiles (
   display_name text not null unique
     constraint profiles_display_name_format
     check (display_name ~ '^[A-Za-z0-9_]{3,20}$'),
-  settings jsonb not null default '{}'::jsonb,
   equipped jsonb not null default '{}'::jsonb,
   created_at timestamptz not null default now()
 );
@@ -24,14 +23,14 @@ revoke all on public.profiles from anon, authenticated;
 -- anon só enxerga as colunas públicas (via public_profiles).
 grant select (id, display_name, equipped) on public.profiles to anon;
 grant select on public.profiles to authenticated;
-grant update (display_name, settings, equipped) on public.profiles to authenticated;
+grant update (display_name, equipped) on public.profiles to authenticated;
 
 create policy "profiles: leitura pública das colunas permitidas"
   on public.profiles for select to anon
   using (true);
 
 -- authenticated lê todas as linhas porque o ranking mostra nomes de outros
--- jogadores; settings só guarda preferências não sensíveis (ver ESTUDOS_E_DECISOES).
+-- jogadores; dados privados ficam em user_settings.
 create policy "profiles: leitura por autenticados"
   on public.profiles for select to authenticated
   using (true);
@@ -47,6 +46,28 @@ create view public.public_profiles
 
 revoke all on public.public_profiles from anon, authenticated;
 grant select on public.public_profiles to anon, authenticated;
+
+-- ---------------------------------------------------------------------------
+-- user_settings (preferências privadas, separadas de profiles que é legível)
+-- ---------------------------------------------------------------------------
+create table public.user_settings (
+  user_id uuid primary key references public.profiles (id) on delete cascade,
+  settings jsonb not null default '{}'::jsonb
+);
+
+alter table public.user_settings enable row level security;
+revoke all on public.user_settings from anon, authenticated;
+grant select on public.user_settings to authenticated;
+grant update (settings) on public.user_settings to authenticated;
+
+create policy "user_settings: lê a própria linha"
+  on public.user_settings for select to authenticated
+  using ((select auth.uid()) = user_id);
+
+create policy "user_settings: atualiza a própria linha"
+  on public.user_settings for update to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 -- ---------------------------------------------------------------------------
 -- scores (retenção de 90 dias, job fica para a KD de retenção)
@@ -165,7 +186,7 @@ insert into public.game_rules (key, value, description) values
   ('rate_limit_per_minute', '10', 'Envios de pontuação por usuário em 60 s');
 
 -- ---------------------------------------------------------------------------
--- Trigger: cria profile e player_stats no cadastro
+-- Trigger: cria profile, user_settings e player_stats no cadastro
 -- ---------------------------------------------------------------------------
 create function public.handle_new_user()
 returns trigger
@@ -177,6 +198,7 @@ begin
   insert into public.profiles (id, display_name)
   values (new.id, 'player_' || substr(replace(new.id::text, '-', ''), 1, 12));
 
+  insert into public.user_settings (user_id) values (new.id);
   insert into public.player_stats (user_id) values (new.id);
 
   return new;
