@@ -47,7 +47,8 @@
       "title": "Pausado",
       "hint": "Esc também volta para a partida.",
       "resume": "Continuar",
-      "quit": "Sair da partida"
+      "quit": "Sair da partida",
+      "end": "Encerrar turno"
     },
     "result": {
       "title": "Fim de turno",
