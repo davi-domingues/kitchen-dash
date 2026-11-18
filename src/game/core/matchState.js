@@ -33,6 +33,8 @@ export function createMatchState({
     stations,
     items: [],
     orders: [],
+    // Entregas no passe ainda não consumidas pelo sistema de pedidos (KD-13)
+    deliveries: [],
   }
 }
 

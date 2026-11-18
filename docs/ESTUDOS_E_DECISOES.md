@@ -142,6 +142,9 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Combo e gorjeta (KD-14) | Combo de +10 fixo a partir da 2ª entrega seguida, zerado por prato errado ou cliente perdido; gorjeta `round(40 × restante/paciência)`, 0 sem paciência | Leitura literal do PRD; um bônus limitado deixa o teto de plausibilidade calculável |
 | Integração da pontuação (KD-14) | `withScoring(system)` envolve o sistema de pedidos; `applyScoreEvents` para os eventos de `deliverDish` | O contrato da KD-11 não repassa eventos entre sistemas; não muda `update` nem `orders` |
 | Teto de plausibilidade (KD-14) | `max_points_per_second = 15` mais folga de 180 pontos: `score ≤ 180 + ⌈duração_s⌉ × 15` | Entrega máxima de 180 (130 + 40 + 10) ÷ 13 s de chegada mínima ≈ 13,8/s; a folga cobre partidas curtas. Se a KD-15 encurtar o intervalo de chegada, o teto precisa ser recalculado |
+| Panela no fogão (KD-12) | Panela fixa em cada fogão; o chef serve com prato vazio | Menos estados e ações no MVP; panela carregável fica para depois |
+| Conteúdo no core (KD-12) | `createStationsSystem({ recipes, ingredients, stoveBurnAfterMs })` recebe o conteúdo | Core testável com dados fictícios e sem acoplar ao loader |
+| Entregas (KD-12) | O passe grava `state.deliveries` e emite `dish:served`; o KD-13 consome a lista | Sistemas só enxergam o estado, não os eventos de outros sistemas |
 
 ---
 
