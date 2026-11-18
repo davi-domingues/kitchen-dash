@@ -168,6 +168,9 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | TanStack Query na KD-35 | Não usado | O retry precisa sobreviver ao fechamento da aba; `useMutation` retentaria só em memória e duplicaria a fila |
 | Cosméticos na conta (KD-38) | `equipped` só pela RPC `set_equipped`, que valida posse (gratuito = fora de `cosmetic_unlocks`); `update(equipped)` revogado. No login, une `user_cosmetics` ao local e o equipado da conta vence slot a slot; desbloqueios do `submit_score` entram por `onSubmitted` da outbox; falha remota só avisa | AGENTS §6 (escrita de cosméticos só por RPC); antecipa a validação que a KD-31 deixou para a KD-34; offline primeiro, sem fila própria (a KD-37 usa `pushEquipped`) |
 | P2 fora da conta (KD-38) | `set_equipped` e o pull da conta tratam só `equipped` (P1); `equippedP2` fica no navegador | A conta é de uma pessoa; o schema não muda e não há migration nova |
+| `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
+| Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
+| `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
 
 ---
 
