@@ -3,13 +3,64 @@
     "name": "Kitchen Dash",
     "loading": "Carregando…"
   },
+  "nav": {
+    "label": "Navegação principal",
+    "home": "Início",
+    "ranking": "Ranking",
+    "profile": "Perfil",
+    "privacy": "Privacidade"
+  },
+  "placeholder": {
+    "comingSoon": "Esta página chega em breve."
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "message": "O endereço não existe. Que tal voltar para a cozinha?"
+  },
   "home": {
     "tagline": "Colete, prepare e entregue os pedidos antes que os clientes percam a paciência.",
-    "play": "Jogar"
+    "play": "Jogar",
+    "howTo": {
+      "move": "Jogador 1: setas e Enter. Jogador 2: WASD e Espaço.",
+      "action": "Toque para pegar e entregar, segure para picar.",
+      "pause": "P pausa a partida."
+    }
   },
   "play": {
     "back": "Voltar",
-    "gameArea": "Área do jogo"
+    "gameArea": "Área do jogo",
+    "setup": {
+      "title": "Nova partida",
+      "playersLegend": "Jogadores",
+      "onePlayer": "1 jogador",
+      "twoPlayers": "2 jogadores",
+      "modeLegend": "Modo",
+      "modeClassic": "Clássico",
+      "modeClassicHint": "3 minutos de pressão crescente. Faça o máximo de pontos.",
+      "modeFree": "Livre",
+      "modeFreeHint": "Sem tempo nem perda de paciência. Encerre quando quiser.",
+      "modeChallenge": "Desafio",
+      "modeChallengeHint": "12 pedidos fixos no menor tempo possível.",
+      "start": "Começar"
+    },
+    "pause": {
+      "title": "Pausado",
+      "hint": "Esc também volta para a partida.",
+      "resume": "Continuar",
+      "quit": "Sair da partida"
+    },
+    "result": {
+      "title": "Fim de turno",
+      "score": "Pontos",
+      "orders": "Pedidos entregues",
+      "ordersFailed": "Perdidos: {{count}}",
+      "duration": "Duração",
+      "empty": "Nenhum pedido entregue desta vez. Tente de novo!",
+      "replay": "Jogar de novo",
+      "changeMode": "Trocar modo",
+      "home": "Início",
+      "error": "Não foi possível ler o resultado da partida."
+    }
   },
   "game": {
     "kitchen": {

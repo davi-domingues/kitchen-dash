@@ -171,7 +171,7 @@ sequenceDiagram
     participant R as React (features)
     participant O as scoreOutbox (localStorage)
     participant S as Supabase RPC
-    P->>R: EventBus match:ended {match_id, score, ...}
+    P->>R: EventBus match:ended {matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs}
     R->>O: enqueue(payload)
     R->>S: submit_score(payload)
     alt sucesso ou match_id duplicado
