@@ -133,6 +133,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Controles (KD-17) | Botão único de ação contextual (toque < 220 ms × segurar); P1 setas + Enter, P2 WASD + Espaço, P pausa | Segue o PRD; SYSTEM_DESIGN citava `drop` e `E`/`Esc`, o que daria dois botões e conflitaria com P2 |
 | RNFs do MVP | i18n (pt-BR), acessibilidade básica, PWA, orçamento de tamanho | Performance de runtime vai para o ROADMAP |
 | E-mail OTP | SMTP padrão agora, Resend antes do lançamento | O SMTP padrão tem limite baixo de envios por hora |
+| Payload de `match:ended` (KD-21) | `{ matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`; `matchId` UUID gerado pela cena | Cobre o `submit_score` (idempotência, plausibilidade), `player_stats.orders_completed` e o recorde do Desafio separado por nº de jogadores; `board`/`origin` ficam com o React |
 | Estado do RNG (KD-11) | `rngState` dentro do `MatchState`; `createRng` expõe `getState()` | Estado 100% serializável, base para salvar/retomar e replay por seed |
 | Passo de tempo do core (KD-11) | Teto `MAX_DT_MS = 250` por `update` | Aba em segundo plano não encerra a partida de 3 min num único quadro |
 | `match:ended` do core (KD-11) | Payload sem `matchId` (campos finais na linha da KD-15) | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
@@ -147,7 +148,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Conteúdo no core (KD-12) | `createStationsSystem({ recipes, ingredients, stoveBurnAfterMs })` recebe o conteúdo | Core testável com dados fictícios e sem acoplar ao loader |
 | Entregas (KD-12) | O passe grava `state.deliveries` e emite `dish:served`; o KD-13 consome a lista | Sistemas só enxergam o estado, não os eventos de outros sistemas |
 | Modos (KD-15) | `createMatch(config)` monta estado e sistemas; Clássico 180 s/paciência 60 s/4 comandas, Livre e Desafio sem tempo e sem paciência (6 e 3 comandas); chegada 13–17 s em todos | Ponto único para a cena; o intervalo igual mantém o teto da KD-14 (180 + s×15). Desafio sem paciência porque um cliente perdido impediria completar a sequência |
-| Sequência do Desafio (KD-15) | 12 receitas sorteadas com `CHALLENGE_SEED` fixa sobre todas as receitas; a partida usa essa seed | Determinística sem mudar o JSON (CONTENT_VERSION); curadoria manual no conteúdo fica para decisão de produto |
+| Sequência do Desafio (KD-15) | 12 receitas sorteadas com `CHALLENGE_SEED` fixa sobre todas as receitas; a partida usa essa seed | Determinística sem mudar o JSON (CONTENT_VERSION); curadoria manual no conteúdo fica para decisão de produto. Seed fixa (20260115) confirmada para o MVP; seed semanal fica no ROADMAP |
 | `match:ended` final (KD-15) | `{ mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }` via `matchEndedPayload`; Livre encerra por `endMatch(state)` | Mesmo payload nos três jeitos de terminar (tempo, sequência, botão); `matchId` continua na cena |
 | Payload de `match:ended` (KD-21) | `{ matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`; `matchId` UUID gerado pela cena | Cobre o `submit_score` (idempotência, plausibilidade), `player_stats.orders_completed` e o recorde do Desafio separado por nº de jogadores; `board`/`origin` ficam com o React |
 | Progresso local (KD-22) | `kd:v1:progress` = `{ board, stats, pending }`; recorde = 1º do placar por modo e nº de jogadores (10 por grupo); Desafio por menor tempo e só com os 12 pedidos; `pending` (≤ 50) guarda o payload com `matchId`/`seed`/`contentVersion`/`endedAt` | Sem dado duplicado; a KD-35 envia e remove por `removePending`, a KD-37 revalida pelo mesmo payload. Idempotente por `matchId` |
@@ -171,6 +172,10 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
 | Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
 | `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
+| `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
+| Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
+| `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
+| Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
 
 ---
 
