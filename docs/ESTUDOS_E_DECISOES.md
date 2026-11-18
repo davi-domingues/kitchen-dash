@@ -171,6 +171,9 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Conflito de configurações (KD-37) | Por campo de primeiro nível de `settings`: a conta vence quando já tem o campo; o que só existe no local é gravado em `user_settings` | ARQUITETURA §5.1 ("o local passa a refletir a conta") e mesma regra do equipado (KD-38). "Mais recente vence" exigiria relógio confiável nos dois lados; "local vence" apagaria a configuração de outro dispositivo |
 | P2 fora da conta (KD-38) | `set_equipped` e o pull da conta tratam só `equipped` (P1); `equippedP2` fica no navegador | A conta é de uma pessoa; o schema não muda e não há migration nova |
 | P2 fora da migração (KD-37) | A migração visitante → conta sobe só itens e o equipado do P1; `equippedP2` continua no navegador | Mesma regra da KD-38: a conta é de uma pessoa e o P2 é local |
+| `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
+| Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
+| `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
 
 ---
 
