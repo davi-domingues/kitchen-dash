@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { COSMETIC_SLOTS, COSMETICS, contentKey } from '../../content/index.js'
 import { storage } from '../../services/storage.js'
 import { isUnlocked } from './cosmetics.js'
-import { equipCosmetic, loadCosmetics } from './cosmeticsStore.js'
+import { useAuth } from '../auth/AuthContext.js'
+import { loadCosmetics } from './cosmeticsStore.js'
+import { equipAndSync } from './cosmeticsSync.js'
 
 // O localStorage é síncrono, então não há estado de carregamento; erro de leitura vira aviso
 function readCosmetics() {
@@ -67,9 +69,10 @@ function SlotGroup({ slot, state, onEquip }) {
 
 export default function CosmeticsPicker() {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const [{ state, failed }, setData] = useState(readCosmetics)
 
-  const onEquip = (id) => setData({ state: equipCosmetic(id), failed: false })
+  const onEquip = (id) => setData({ state: equipAndSync(id, user), failed: false })
 
   return (
     <section aria-labelledby="cosmetics-title" className="card w-full max-w-2xl bg-base-100 shadow">
