@@ -215,5 +215,13 @@
       "network": "Sem conexão com o servidor. Verifique a internet.",
       "generic": "Algo deu errado. Tente de novo."
     }
+  },
+  "migration": {
+    "notice": {
+      "progress": "Salvando seus dados na conta: {{done}} de {{total}} partidas…",
+      "done": "Dados deste navegador salvos na conta ({{count}} partidas enviadas).",
+      "discarded": "{{count}} partidas antigas não puderam ser validadas e ficaram de fora.",
+      "dismiss": "Fechar aviso"
+    }
   }
 }
