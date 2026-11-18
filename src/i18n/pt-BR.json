@@ -15,5 +15,79 @@
     "kitchen": {
       "underConstruction": "Cozinha em construção"
     }
+  },
+  "ingredient": {
+    "tomato": {
+      "name": "Tomate"
+    },
+    "lettuce": {
+      "name": "Alface"
+    },
+    "eggplant": {
+      "name": "Berinjela"
+    },
+    "zucchini": {
+      "name": "Abobrinha"
+    },
+    "bread": {
+      "name": "Pão"
+    },
+    "cheese": {
+      "name": "Queijo"
+    }
+  },
+  "recipe": {
+    "salad": {
+      "name": "Salada"
+    },
+    "tartine": {
+      "name": "Tartine"
+    },
+    "tomato_soup": {
+      "name": "Sopa de Tomate"
+    },
+    "ratatouille": {
+      "name": "Ratatouille"
+    }
+  },
+  "kitchen": {
+    "bistro": {
+      "name": "Bistrô"
+    }
+  },
+  "cosmetic": {
+    "hat_classic": {
+      "name": "Chapéu Clássico"
+    },
+    "hat_bordeaux": {
+      "name": "Chapéu Bordeaux"
+    },
+    "hat_navy": {
+      "name": "Chapéu Marinho"
+    },
+    "hat_gold": {
+      "name": "Chapéu Dourado"
+    },
+    "apron_cream": {
+      "name": "Avental Creme"
+    },
+    "apron_herbs": {
+      "name": "Avental Ervas"
+    },
+    "apron_bistro": {
+      "name": "Avental Bistrô"
+    },
+    "apron_macaron": {
+      "name": "Avental Macaron"
+    },
+    "theme_bistro": {
+      "name": "Tema Bistrô"
+    },
+    "theme_marble": {
+      "name": "Tema Mármore"
+    },
+    "theme_provence": {
+      "name": "Tema Provence"
+    }
   }
 }
