@@ -141,6 +141,8 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Panela no fogão (KD-12) | Panela fixa em cada fogão; o chef serve com prato vazio | Menos estados e ações no MVP; panela carregável fica para depois |
 | Conteúdo no core (KD-12) | `createStationsSystem({ recipes, ingredients, stoveBurnAfterMs })` recebe o conteúdo | Core testável com dados fictícios e sem acoplar ao loader |
 | Entregas (KD-12) | O passe grava `state.deliveries` e emite `dish:served`; o KD-13 consome a lista | Sistemas só enxergam o estado, não os eventos de outros sistemas |
+| Movimento (KD-18) | Grade de tiles, 1 passo a cada `CHEF_STEP_MS = 150` ms, horizontal vence na diagonal; posições no `MatchState` | Determinístico e reproduzível por replay, sem física; colisão por tile |
+| Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
 
 ---
 
