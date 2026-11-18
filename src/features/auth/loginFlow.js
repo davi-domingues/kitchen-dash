@@ -47,9 +47,9 @@ export function loginReducer(state, action) {
 }
 
 // Validação local antes de chamar o servidor; devolve o motivo ou null
-export function validateEmailStep({ email, captchaToken }) {
+export function validateEmailStep({ email, captchaToken }, captchaRequired = true) {
   if (!isValidEmail(email)) return 'invalidEmail'
-  if (!captchaToken) return 'captchaPending'
+  if (captchaRequired && !captchaToken) return 'captchaPending'
   return null
 }
 

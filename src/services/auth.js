@@ -73,4 +73,7 @@ export function createAuthService(client) {
   }
 }
 
+// Site key pública do Turnstile; sem ela o widget some (ambiente local com captcha desligado)
+export const captchaSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim() || null
+
 export const authService = supabase ? createAuthService(supabase) : null

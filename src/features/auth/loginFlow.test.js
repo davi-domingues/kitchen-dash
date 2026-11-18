@@ -32,6 +32,7 @@ describe('validações', () => {
     expect(validateEmailStep({ email: 'x', captchaToken: 't' })).toBe('invalidEmail')
     expect(validateEmailStep({ email: 'jogador@example.com', captchaToken: null })).toBe('captchaPending')
     expect(validateEmailStep({ email: 'jogador@example.com', captchaToken: 't' })).toBeNull()
+    expect(validateEmailStep({ email: 'jogador@example.com', captchaToken: null }, false)).toBeNull()
   })
 
   it('exige 6 dígitos no código', () => {

@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Route, Routes } from 'react-router'
+import LoginPage from '../features/auth/LoginPage.jsx'
 import HomePage from './HomePage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 import PrivacyPage from './PrivacyPage.jsx'
@@ -29,6 +30,7 @@ export default function App() {
             </Suspense>
           }
         />
+        <Route path="/entrar" element={<LoginPage />} />
         <Route path="/ranking" element={<RankingPage />} />
         <Route path="/perfil" element={<ProfilePage />} />
         <Route path="/privacidade" element={<PrivacyPage />} />
