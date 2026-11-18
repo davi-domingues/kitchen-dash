@@ -1,15 +1,22 @@
 import Phaser from 'phaser'
-import { CONTENT_VERSION, INGREDIENTS, KITCHENS, RECIPES, getKitchen } from '../../../content/index.js'
+import { CONTENT_VERSION, INGREDIENTS, KITCHENS, RECIPES } from '../../../content/index.js'
 import { canInteract } from '../../core/stations.js'
 import { findTargetStation } from '../../core/kitchenMap.js'
-import { createKitchenMatch, createKitchenUpdate, toStationInputs } from '../../core/kitchenUpdate.js'
+import { toStationInputs } from '../../core/kitchenUpdate.js'
+import { createMatch, endMatch } from '../../core/match.js'
+import { DEFAULT_MATCH_CONFIG } from '../../core/matchModes.js'
+import { MATCH_STATUS, pauseMatch, resumeMatch } from '../../core/matchState.js'
 import { MOVE_ACTION } from '../../core/movementSystem.js'
 import { STATION_ACTIONS } from '../../core/stationsSystem.js'
 import { DEFAULT_KEY_BINDINGS } from '../../input/keyBindings.js'
 import { INPUT_EVENTS, createInputMap } from '../../input/inputMap.js'
 import { EventBus } from '../EventBus.js'
 import { GAME_EVENTS } from '../events.js'
+import { buildHudModel } from '../hudModel.js'
+import { HUD_HEIGHT, createHudView } from '../hudView.js'
 import { createKitchenView } from '../kitchenView.js'
+import { createMatchEndGuard } from '../matchEndGuard.js'
+import { KEY_BINDINGS_KEY, MATCH_CONFIG_KEY } from '../registryKeys.js'
 import { SCENE_KEYS } from '../sceneKeys.js'
 
 const ACTION_BY_EVENT = Object.freeze({
@@ -18,42 +25,49 @@ const ACTION_BY_EVENT = Object.freeze({
   [INPUT_EVENTS.HOLD_END]: STATION_ACTIONS.HOLD_END,
 })
 
-// Seed fixa até o KD-15/KD-21 passarem a do modo escolhido
-const DEFAULT_SEED = 1
+// Seed nova a cada partida; o Desafio troca pela seed fixa dentro do core
+const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0] >>> 1
 
 export class KitchenScene extends Phaser.Scene {
   constructor() {
     super(SCENE_KEYS.KITCHEN)
   }
 
-  /**
-   * Dados opcionais até o React (KD-21) escolher modo e jogadores. As teclas vêm do React
-   * (services/settings), porque a cena não acessa services.
-   */
-  init({ kitchenId = KITCHENS[0].id, playerCount = 1, seed = DEFAULT_SEED, mode = 'free', bindings } = {}) {
-    this.kitchen = getKitchen(kitchenId)
-    this.match = createKitchenMatch({
-      kitchen: this.kitchen,
-      playerCount,
-      seed,
+  // Modo, jogadores e teclas vêm do React pelo registry (game/phaser não importa services)
+  init() {
+    const { mode, players } = this.registry.get(MATCH_CONFIG_KEY) ?? DEFAULT_MATCH_CONFIG
+    this.kitchen = KITCHENS[0]
+    this.content = { recipes: RECIPES, ingredients: INGREDIENTS, kitchen: this.kitchen }
+    const match = createMatch({
       mode,
+      players,
+      seed: randomSeed(),
       contentVersion: CONTENT_VERSION,
+      content: this.content,
     })
-    this.content = {
-      recipes: RECIPES,
-      ingredients: INGREDIENTS,
-      stoveBurnAfterMs: this.kitchen.stoveBurnAfterMs,
-    }
-    this.step = createKitchenUpdate({ kitchen: this.kitchen, content: this.content })
-    this.inputMap = createInputMap({ bindings: bindings ?? DEFAULT_KEY_BINDINGS, playerCount })
+    this.match = match.state
+    this.step = match.update
+    // Identificador da partida para a idempotência do submit_score (KD-21)
+    this.takeMatchEnded = createMatchEndGuard(crypto.randomUUID())
+    const bindings = this.registry.get(KEY_BINDINGS_KEY) ?? DEFAULT_KEY_BINDINGS
+    this.inputMap = createInputMap({ bindings, playerCount: players })
     this.pendingActions = []
   }
 
   create() {
-    this.view = createKitchenView(this, this.kitchen, this.match)
+    const { width, height } = this.scale
+    this.hud = createHudView(this, { onEnd: this.requestEnd })
+    this.view = createKitchenView(this, this.kitchen, this.match, {
+      x: 0,
+      y: HUD_HEIGHT,
+      width,
+      height: height - HUD_HEIGHT,
+    })
     this.input.keyboard.on('keydown', this.onKeyDown, this)
     this.input.keyboard.on('keyup', this.onKeyUp, this)
     this.game.events.on(Phaser.Core.Events.BLUR, this.onBlur, this)
+    EventBus.on(GAME_EVENTS.MATCH_RESUMED, this.resume, this)
+    EventBus.on(GAME_EVENTS.MATCH_END_REQUESTED, this.requestEnd, this)
     // Listeners, timers e tweens não podem sobreviver ao fim da cena (AGENTS.md §4)
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanup, this)
     this.draw()
@@ -72,15 +86,41 @@ export class KitchenScene extends Phaser.Scene {
     this.inputMap.releaseAll()
   }
 
-  // Pausa (KD-20) ainda não tem tela: só as ações de estação seguem para o core
   queue(inputEvents) {
     for (const { type, player } of inputEvents) {
+      if (type === INPUT_EVENTS.PAUSE) this.pause()
       const action = ACTION_BY_EVENT[type]
       if (action) this.pendingActions.push({ chefId: player, action })
     }
   }
 
+  pause() {
+    if (this.match.status !== MATCH_STATUS.RUNNING) return
+    this.match = pauseMatch(this.match)
+    // Teclas seguradas durante o menu não chegam como keyup: soltar evita chef andando ao retomar
+    this.inputMap.releaseAll()
+    this.pendingActions = []
+    EventBus.emit(GAME_EVENTS.MATCH_PAUSED)
+  }
+
+  resume() {
+    this.match = resumeMatch(this.match)
+  }
+
+  // Arrow function: vira handler do botão do HUD sem bind
+  requestEnd = () => {
+    this.apply(endMatch(this.match))
+  }
+
+  // Aplica o resultado do core; o guard garante um único match:ended por partida
+  apply({ state, events }) {
+    this.match = state
+    const payload = this.takeMatchEnded(events)
+    if (payload) EventBus.emit(GAME_EVENTS.MATCH_ENDED, payload)
+  }
+
   update(time, delta) {
+    if (this.match.status !== MATCH_STATUS.RUNNING) return
     this.queue(this.inputMap.update(time))
     const moves = this.match.chefs.map(({ id }) => ({
       chefId: id,
@@ -89,18 +129,20 @@ export class KitchenScene extends Phaser.Scene {
     }))
     const inputs = [...moves, ...toStationInputs(this.match, this.pendingActions)]
     this.pendingActions = []
-    this.match = this.step(this.match, inputs, delta).state
+    this.apply(this.step(this.match, inputs, delta))
     this.draw()
   }
 
   draw() {
+    const stationContent = { ...this.content, stoveBurnAfterMs: this.kitchen.stoveBurnAfterMs }
     const targets = this.match.chefs.flatMap(({ id }) => {
       const station = findTargetStation(this.match, id)
       return station
-        ? [{ chefId: id, station, ready: canInteract(this.match, this.content, id, station.id) }]
+        ? [{ chefId: id, station, ready: canInteract(this.match, stationContent, id, station.id) }]
         : []
     })
     this.view.render(this.match, targets)
+    this.hud.render(buildHudModel(this.match))
   }
 
   cleanup() {
@@ -108,6 +150,8 @@ export class KitchenScene extends Phaser.Scene {
     this.tweens.killAll()
     this.input.keyboard?.removeAllListeners()
     this.game.events.off(Phaser.Core.Events.BLUR, this.onBlur, this)
+    EventBus.off(GAME_EVENTS.MATCH_RESUMED, this.resume, this)
+    EventBus.off(GAME_EVENTS.MATCH_END_REQUESTED, this.requestEnd, this)
     this.inputMap.releaseAll()
   }
 }
