@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { FAILURE_KINDS, ScoreFailure } from '../../services/scoreFailure.js'
 import { loadSettings } from '../../services/settings.js'
 import { createStorage } from '../../services/storage.js'
-import { loadCosmetics } from '../cosmetics/cosmeticsStore.js'
+import { equipCosmeticP2, loadCosmetics, recordScore } from '../cosmetics/cosmeticsStore.js'
 import { loadProgress, recordMatchResult } from '../progress/progressStore.js'
 import {
   BATCH_SIZE,
@@ -218,6 +218,28 @@ describe('runAccountMigration: cosméticos e configurações', () => {
 
     expect(deps.pullCosmetics).toHaveBeenCalledWith(USER.id)
     expect(deps.pushEquipped).toHaveBeenCalledWith(USER)
+  })
+
+  it('não sobe o cosmético do P2, que continua no navegador', async () => {
+    const { store, deps } = setup()
+    recordScore(320, store)
+    equipCosmeticP2('hat_bordeaux', store)
+    const cosmeticsService = {
+      fetchAccountCosmetics: vi.fn(async () => ({ unlocked: [], equipped: {} })),
+      saveEquipped: vi.fn(async () => null),
+    }
+    // Usa o pull/push reais da KD-38 sobre um serviço falso
+    delete deps.pullCosmetics
+    delete deps.pushEquipped
+
+    await runAccountMigration(USER, { ...deps, loadCosmeticsService: async () => cosmeticsService })
+
+    expect(cosmeticsService.saveEquipped).toHaveBeenCalledWith({
+      hat: 'hat_classic',
+      apron: 'apron_cream',
+      theme: 'theme_bistro',
+    })
+    expect(loadCosmetics(store).equippedP2.hat).toBe('hat_bordeaux')
   })
 
   it('falha nos cosméticos não marca a etapa e não segue para as configurações', async () => {

@@ -17,6 +17,7 @@ Resolvidas pelos docs (o agente não pergunta à pessoa nesta rodada):
 - Q: A migração roda de novo para o mesmo usuário no mesmo dispositivo? → A: Não. Um marcador local por usuário encerra a migração. Partidas de visitante feitas depois disso não são migradas automaticamente (fora do escopo).
 - Q: Se duas contas logam no mesmo dispositivo, quem recebe as partidas de visitante? → A: A primeira que logar depois delas; ao serem aceitas, saem do local e não vão para outra conta.
 - Q: Limite de envios? → A: O servidor aceita 10 envios por minuto. A migração envia em lotes de até 10 e espera a janela antes do próximo lote.
+- Q: O cosmético do P2 sobe para a conta? → A: Não. A migração sobe só o equipado do P1 (`pushEquipped`); o `equippedP2` fica no navegador (decisão da KD-23/KD-38).
 
 ## User Scenarios & Testing *(mandatory)*
 
