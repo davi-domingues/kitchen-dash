@@ -104,7 +104,8 @@ erDiagram
 
 | Tabela | Colunas principais | Observações |
 |---|---|---|
-| `profiles` | `id` (PK, FK `auth.users` on delete cascade), `display_name` (único, 3–20, regex), `settings jsonb`, `equipped jsonb`, `created_at` | Criada por trigger no cadastro |
+| `profiles` | `id` (PK, FK `auth.users` on delete cascade), `display_name` (único, 3–20, regex), `equipped jsonb`, `created_at` | Criada por trigger no cadastro |
+| `user_settings` | `user_id` (PK, FK `profiles`), `settings jsonb` | Privada: só o dono lê e altera. Criada pelo mesmo trigger |
 | `scores` | `id bigint identity`, `match_id uuid UNIQUE`, `user_id`, `board text default 'global'`, `score int`, `duration_ms int`, `seed`, `content_version`, `origin ('online'\|'local')`, `created_at` | Retida por 90 dias. Índices: `(user_id, created_at desc)`, `(created_at)` |
 | `best_scores` | PK `(board, user_id)`, `score`, `match_id`, `achieved_at` | Índice `(board, score desc, achieved_at)`. `board` permite rankings por desafio/cozinha no futuro |
 | `player_stats` | `user_id` PK, `matches_played`, `total_score`, `orders_completed`, `play_time_ms` | Sobrevive à retenção; base para desbloqueio de cosméticos |
@@ -122,6 +123,7 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 |---|---|---|
 | `profiles` | `select` (só `id`, `display_name`, `equipped` via view `public_profiles`) | `select`/`update` da própria linha |
 | `scores` | — | `select` das próprias linhas |
+| `user_settings` | — | `select`/`update` da própria linha |
 | `best_scores` | `select` | `select` |
 | `player_stats` | — | `select` da própria linha |
 | `user_cosmetics` | — | `select` das próprias linhas |
@@ -130,13 +132,13 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 
 ### 6.2 RPCs (`security definer`, `set search_path = ''`, `execute` revogado de `anon`)
 
-**`submit_score(match_id, board, score, duration_ms, seed, content_version, origin)`**
+**`submit_score(p_match_id, p_board, p_score, p_duration_ms, p_seed, p_content_version, p_origin, p_orders_completed)`** → `{ match_id, is_new_best, best_score, unlocked_cosmetics }`. Contrato completo (tipos, erros e ação do cliente) em `specs/001-rpc-submit-score/contracts/submit_score.md`.
 1. Rejeita se `auth.uid()` for nulo.
 2. **Idempotência:** se `match_id` já existe, retorna o resultado anterior.
 3. **Rate limit:** no máximo N envios por usuário em 60 s.
 4. **Plausibilidade:**
    - `duration_ms` entre a duração mínima e a máxima da partida;
-   - `score ≤ duration_s × MAX_PONTOS_POR_SEGUNDO` (constante derivada do conteúdo);
+   - `score ≤ score_allowance + ceil(duration_s) × MAX_PONTOS_POR_SEGUNDO` (15 e folga de 180, regras da KD-14);
    - `content_version` dentro de uma lista aceita.
 5. Insere em `scores`, faz upsert em `best_scores` se for maior e atualiza `player_stats`.
 6. Avalia desbloqueios de cosméticos a partir de `player_stats`.

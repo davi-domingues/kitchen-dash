@@ -186,5 +186,34 @@
     "theme_provence": {
       "name": "Tema Provence"
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "intro": "Receba um código de 6 dígitos no seu e-mail. Sem senha.",
+      "emailLabel": "E-mail",
+      "sendCode": "Enviar código",
+      "codeSent": "Enviamos um código para {{email}}. Ele vale por 10 minutos.",
+      "codeLabel": "Código",
+      "verify": "Entrar",
+      "resend": "Trocar e-mail ou pedir outro código",
+      "unavailable": "O login está indisponível agora. Você pode continuar jogando como visitante."
+    },
+    "account": {
+      "signIn": "Entrar para salvar no ranking",
+      "signedInAs": "Conectado como {{email}}",
+      "signOut": "Sair",
+      "signOutError": "Não foi possível sair. Tente de novo."
+    },
+    "error": {
+      "invalidEmail": "Digite um e-mail válido.",
+      "captchaPending": "Conclua a verificação anti-robô.",
+      "codeFormat": "O código tem 6 dígitos.",
+      "invalidCode": "Código inválido ou expirado. Confira ou peça outro.",
+      "rateLimit": "Muitas tentativas. Aguarde alguns minutos.",
+      "captcha": "A verificação anti-robô falhou. Tente de novo.",
+      "network": "Sem conexão com o servidor. Verifique a internet.",
+      "generic": "Algo deu errado. Tente de novo."
+    }
   }
 }

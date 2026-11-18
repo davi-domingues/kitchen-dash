@@ -7,6 +7,7 @@ import MatchResult from '../features/match/MatchResult.jsx'
 import MatchSetup from '../features/match/MatchSetup.jsx'
 import PauseDialog from '../features/match/PauseDialog.jsx'
 import { useRecordedResult } from '../features/progress/useRecordedResult.js'
+import { useSubmitMatch } from '../features/progress/useScoreSync.js'
 import { PLAY_PHASES, initialPlayState, playFlowReducer } from '../features/match/playFlow.js'
 import { EventBus } from '../game/phaser/EventBus.js'
 import PhaserGame from '../game/phaser/PhaserGame.jsx'
@@ -21,6 +22,7 @@ export default function PlayPage() {
   // Lidas uma vez por visita: a cena recebe as teclas pelo registry
   const [keyBindings] = useState(loadKeyBindings)
   const [cosmeticLook] = useState(loadCosmeticLook)
+  useSubmitMatch(recorded ? state.result.matchId : null)
   const inMatch = state.phase === PLAY_PHASES.PLAYING || state.phase === PLAY_PHASES.PAUSED
 
   useEffect(() => {

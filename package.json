@@ -20,9 +20,11 @@
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
-    "db:status": "supabase status"
+    "db:status": "supabase status",
+    "db:test": "supabase test db"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "1.6.3",
     "@supabase/supabase-js": "2.119.0",
     "i18next": "27.1.1",
     "lucide-react": "1.72.0",
