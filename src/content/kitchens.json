@@ -1,0 +1,38 @@
+{
+  "kitchens": [
+    {
+      "id": "bistro",
+      "tiles": [
+        "#############",
+        "#TLEZBC#....#",
+        "#.........S.#",
+        "#K.........S#",
+        "#K...AAA....#",
+        "#...........#",
+        "#P.........X#",
+        "#####HHH#####"
+      ],
+      "legend": {
+        "#": { "kind": "wall" },
+        ".": { "kind": "floor" },
+        "T": { "kind": "crate", "ingredient": "tomato" },
+        "L": { "kind": "crate", "ingredient": "lettuce" },
+        "E": { "kind": "crate", "ingredient": "eggplant" },
+        "Z": { "kind": "crate", "ingredient": "zucchini" },
+        "B": { "kind": "crate", "ingredient": "bread" },
+        "C": { "kind": "crate", "ingredient": "cheese" },
+        "K": { "kind": "cutting" },
+        "S": { "kind": "stove" },
+        "A": { "kind": "counter" },
+        "P": { "kind": "plates" },
+        "X": { "kind": "trash" },
+        "H": { "kind": "pass" }
+      },
+      "spawns": [
+        [3, 2],
+        [9, 5]
+      ],
+      "stoveBurnAfterMs": 6000
+    }
+  ]
+}
