@@ -133,6 +133,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | RNFs do MVP | i18n (pt-BR), acessibilidade básica, PWA, orçamento de tamanho | Performance de runtime vai para o ROADMAP |
 | E-mail OTP | SMTP padrão agora, Resend antes do lançamento | O SMTP padrão tem limite baixo de envios por hora |
 | Payload de `match:ended` (KD-21) | `{ matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`; `matchId` UUID gerado pela cena | Cobre o `submit_score` (idempotência, plausibilidade), `player_stats.orders_completed` e o recorde do Desafio separado por nº de jogadores; `board`/`origin` ficam com o React |
+| Login OTP (KD-33) | Template próprio (`supabase/templates/otp_code.html`) com `{{ .Token }}` em _magic link_ e _confirmation_; `[auth.captcha]` Turnstile desligado no local por padrão, secret via `env()`; sessão em Context (`useAuth`), sem TanStack Query | Conta nova recebe o template de confirmação; `supabase start` funciona sem a secret; a sessão não é dado remoto em cache |
 
 ---
 
