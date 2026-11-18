@@ -167,6 +167,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Board e origem (KD-35) | `p_board = <mode>_<players>p` (ex.: `classic_1p`); `origin = 'online'` só para partidas terminadas com sessão. Partidas de visitante ficam para a KD-37 (`local`) | Um placar por modo e nº de jogadores, como o recorde local da KD-22 |
 | TanStack Query na KD-35 | Não usado | O retry precisa sobreviver ao fechamento da aba; `useMutation` retentaria só em memória e duplicaria a fila |
 | Cosméticos na conta (KD-38) | `equipped` só pela RPC `set_equipped`, que valida posse (gratuito = fora de `cosmetic_unlocks`); `update(equipped)` revogado. No login, une `user_cosmetics` ao local e o equipado da conta vence slot a slot; desbloqueios do `submit_score` entram por `onSubmitted` da outbox; falha remota só avisa | AGENTS §6 (escrita de cosméticos só por RPC); antecipa a validação que a KD-31 deixou para a KD-34; offline primeiro, sem fila própria (a KD-37 usa `pushEquipped`) |
+| P2 fora da conta (KD-38) | `set_equipped` e o pull da conta tratam só `equipped` (P1); `equippedP2` fica no navegador | A conta é de uma pessoa; o schema não muda e não há migration nova |
 
 ---
 
