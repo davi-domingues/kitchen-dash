@@ -41,7 +41,10 @@
       "slotApron": "Avental",
       "slotTheme": "Tema da cozinha",
       "locked": "Faça {{score}} pontos",
-      "error": "Não foi possível carregar a personalização."
+      "error": "Não foi possível carregar a personalização.",
+      "p1Title": "Jogador 1",
+      "p2Title": "Jogador 2",
+      "p2Hint": "Chapéu e avental do Jogador 2, entre os itens já desbloqueados. O tema da cozinha é o do Jogador 1. Esta escolha fica só neste navegador."
     }
   },
   "notFound": {

@@ -5,6 +5,7 @@ import {
   applyAccountEquipped,
   applyScore,
   equip,
+  equipP2,
   getLook,
   mergeUnlocked,
   sanitizeCosmetics,
@@ -52,6 +53,11 @@ export function applyAccountCosmetics({ unlocked, equipped }, store = defaultSto
 
 export function equipCosmetic(id, store = defaultStorage) {
   return update(store, (state) => ({ state: equip(state, id) })).state
+}
+
+/** Escolha do P2: fica só neste navegador, nunca vai para a conta. */
+export function equipCosmeticP2(id, store = defaultStorage) {
+  return update(store, (state) => ({ state: equipP2(state, id) })).state
 }
 
 export function loadCosmeticLook(store = defaultStorage) {

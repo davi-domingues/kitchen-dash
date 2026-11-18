@@ -28,6 +28,14 @@
 
 - [X] T010 Registrar decisões em docs/ESTUDOS_E_DECISOES.md; gates
 
+## Phase 7: Cosmético por jogador (decisão da pessoa)
+
+- [X] T011 `equippedP2`, `equipP2`, migração do formato antigo e `getLook` por chef em src/features/cosmetics/cosmetics.js (+ teste)
+- [X] T012 `equipCosmeticP2` em src/features/cosmetics/cosmeticsStore.js (+ teste de migração)
+- [X] T013 `resolveLook` por chef e kitchenView com chapéu/avental do chef (+ teste)
+- [X] T014 Seção do Jogador 2 no CosmeticsPicker com textos no i18n
+- [X] T015 Atualizar spec, data-model, contrato e ESTUDOS_E_DECISOES
+
 ## Dependencies
 
 T002 → T003 → (T004, T006, T008). US1/US2/US3 são independentes depois da Phase 2.

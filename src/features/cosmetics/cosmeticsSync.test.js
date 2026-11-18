@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createStorage } from '../../services/storage.js'
-import { equipCosmetic, loadCosmetics, mergeUnlockedCosmetics } from './cosmeticsStore.js'
+import { equipCosmetic, equipCosmeticP2, loadCosmetics, mergeUnlockedCosmetics } from './cosmeticsStore.js'
 import { equipAndSync, pullAccountCosmetics, pushEquipped } from './cosmeticsSync.js'
 
 const USER = { id: '11111111-1111-1111-1111-111111111111', email: 'ana@example.com' }
@@ -66,6 +66,21 @@ describe('pushEquipped e equipAndSync', () => {
 
     expect(state.equipped.hat).toBe('hat_navy')
     expect(service.saveEquipped).toHaveBeenCalledWith(expect.objectContaining({ hat: 'hat_navy' }))
+  })
+
+  it('envia só o equipado do P1, nunca o do P2', async () => {
+    const service = { saveEquipped: vi.fn(async (e) => e) }
+    const d = deps(service)
+    mergeUnlockedCosmetics(['hat_navy'], d.store)
+    equipCosmeticP2('hat_navy', d.store)
+
+    await pushEquipped(USER, d)
+
+    expect(service.saveEquipped).toHaveBeenCalledWith({
+      hat: 'hat_classic',
+      apron: 'apron_cream',
+      theme: 'theme_bistro',
+    })
   })
 
   it('visitante equipa só no local', async () => {
