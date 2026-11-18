@@ -30,9 +30,18 @@
       "title": "Configurações",
       "clear": "Apagar progresso local",
       "clearConfirmTitle": "Apagar o progresso?",
-      "clearConfirmText": "Recordes, placar e estatísticas deste navegador serão apagados. Não dá para desfazer.",
+      "clearConfirmText": "Recordes, placar, estatísticas e cosméticos deste navegador serão apagados. Não dá para desfazer.",
       "cancel": "Cancelar",
       "confirm": "Apagar"
+    },
+    "cosmetics": {
+      "title": "Personalização",
+      "hint": "Sua maior pontuação: {{score}}. Faça mais pontos para desbloquear itens.",
+      "slotHat": "Chapéu",
+      "slotApron": "Avental",
+      "slotTheme": "Tema da cozinha",
+      "locked": "Faça {{score}} pontos",
+      "error": "Não foi possível carregar a personalização."
     }
   },
   "notFound": {
