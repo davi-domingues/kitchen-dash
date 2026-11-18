@@ -152,6 +152,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Progresso local (KD-22) | `kd:v1:progress` = `{ board, stats, pending }`; recorde = 1º do placar por modo e nº de jogadores (10 por grupo); Desafio por menor tempo e só com os 12 pedidos; `pending` (≤ 50) guarda o payload com `matchId`/`seed`/`contentVersion`/`endedAt` | Sem dado duplicado; a KD-35 envia e remove por `removePending`, a KD-37 revalida pelo mesmo payload. Idempotente por `matchId` |
 | Fonte única de modos (KD-22) | `MATCH_MODES`, `PLAYER_COUNTS` e `CHALLENGE_LENGTH` em `core/matchModes.js`; `match.js` importa | O React lê os modos sem puxar o core e o conteúdo para o bundle inicial |
 | Configurações locais (KD-22) | Só "apagar progresso"; `settings.keyBindings` continua com a KD-17 | Evita criar `services/settings.js` em paralelo à KD-17 (conflito e duplicação) |
+| Login OTP (KD-33) | Template próprio (`supabase/templates/otp_code.html`) com `{{ .Token }}` em _magic link_ e _confirmation_; `[auth.captcha]` Turnstile desligado no local por padrão, secret via `env()`; sessão em Context (`useAuth`), sem TanStack Query | Conta nova recebe o template de confirmação; `supabase start` funciona sem a secret; a sessão não é dado remoto em cache |
 
 ---
 
