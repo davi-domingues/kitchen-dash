@@ -11,4 +11,6 @@ export const GAME_EVENTS = Object.freeze({
   MATCH_PAUSED: 'match:paused',
   // Sem payload. O React fechou a pausa e a cena retoma.
   MATCH_RESUMED: 'match:resumed',
+  // Sem payload. O React pediu o fim do turno ("Encerrar" do Livre); a cena responde com match:ended.
+  MATCH_END_REQUESTED: 'match:endRequested',
 })

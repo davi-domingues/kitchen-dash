@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // <dialog> nativo com showModal: prende o foco e trata Esc sem código extra (SYSTEM_DESIGN §8.2)
-export default function PauseDialog({ onResume, onQuit }) {
+// `onEnd` só existe no Livre: fecha o turno com resumo em vez de descartar a partida
+export default function PauseDialog({ onResume, onQuit, onEnd }) {
   const { t } = useTranslation()
   const dialogRef = useRef(null)
 
@@ -28,6 +29,11 @@ export default function PauseDialog({ onResume, onQuit }) {
           <button type="button" className="btn btn-primary" onClick={onResume} autoFocus>
             {t('play.pause.resume')}
           </button>
+          {onEnd && (
+            <button type="button" className="btn btn-secondary" onClick={onEnd}>
+              {t('play.pause.end')}
+            </button>
+          )}
           <button type="button" className="btn btn-ghost" onClick={onQuit}>
             {t('play.pause.quit')}
           </button>

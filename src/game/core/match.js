@@ -1,14 +1,12 @@
 // Modos de jogo (KD-15): ponto único em que a cena monta a partida (estado + sistemas) por modo.
 import { INGREDIENTS, KITCHENS, RECIPES } from '../../content/index.js'
 import { CORE_EVENTS, createEvent } from './coreEvents.js'
+import { createKitchenMatch, createKitchenUpdate } from './kitchenUpdate.js'
 import { CHALLENGE_LENGTH, MATCH_MODES, isPlayerCount } from './matchModes.js'
-import { MATCH_STATUS, createMatchState, matchEndedPayload } from './matchState.js'
+import { MATCH_STATUS, matchEndedPayload } from './matchState.js'
 import { createOrdersSystem, deliverDish, isSequenceComplete, withOrderQueue } from './orders.js'
 import { createRng, pickInt } from './rng.js'
 import { withScoreTracking, withScoring } from './scoring.js'
-import { createChef, createStations } from './stations.js'
-import { createStationsSystem } from './stationsSystem.js'
-import { createUpdate } from './update.js'
 
 export { CHALLENGE_LENGTH }
 // Seed fixa: "Tentar de novo" repete a mesma sequência e os mesmos intervalos de chegada.
@@ -93,6 +91,7 @@ export function createModeSystems({ mode, players, seed, recipes = RECIPES }) {
   }
 }
 
+// Ponto único que a cena usa: cozinha (KD-18) + sistemas do modo (KD-15).
 export function createMatch({
   mode,
   players,
@@ -102,23 +101,21 @@ export function createMatch({
 }) {
   const { recipes, ingredients, kitchen } = content
   const modeSystems = createModeSystems({ mode, players, seed, recipes })
-  const base = createMatchState({
+  const base = createKitchenMatch({
+    kitchen,
+    playerCount: players,
     seed: modeSystems.seed,
     mode,
     contentVersion,
     durationMs: modeSystems.durationMs,
-    players,
-    chefs: Array.from({ length: players }, (_, i) => createChef(`p${i + 1}`)),
-    stations: createStations(kitchen),
-  })
-  const stationsSystem = createStationsSystem({
-    recipes,
-    ingredients,
-    stoveBurnAfterMs: kitchen.stoveBurnAfterMs,
   })
   return {
     state: modeSystems.setup(base),
-    update: createUpdate([stationsSystem, ...modeSystems.systems]),
+    update: createKitchenUpdate({
+      kitchen,
+      content: { recipes, ingredients, stoveBurnAfterMs: kitchen.stoveBurnAfterMs },
+      extraSystems: modeSystems.systems,
+    }),
   }
 }
 
