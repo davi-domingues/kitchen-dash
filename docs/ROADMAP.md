@@ -16,6 +16,7 @@ Itens fora do MVP, com prioridade relativa. Detalhes técnicos em [SYSTEM_DESIGN
 - Desafios diários/semanais com seed compartilhada (o núcleo já é determinístico).
 - Ranking por desafio usando a coluna `board` de `best_scores`.
 - Rotação agendada via Supabase Cron.
+- Seed semanal no modo Desafio: o MVP usa a seed fixa `CHALLENGE_SEED` (20260115). Trocar a seed toda semana exige ranking versionado por seed (um `board` por seed), senão recordes de sequências diferentes se misturam.
 
 ### Anti-trapaça avançado
 - Validação por replay: Edge Function reexecuta o `game/core` com seed + log de inputs.
