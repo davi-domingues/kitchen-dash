@@ -1,11 +1,11 @@
 import { Lock } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COSMETIC_SLOTS, COSMETICS, contentKey } from '../../content/index.js'
 import { storage } from '../../services/storage.js'
 import { isUnlocked } from './cosmetics.js'
 import { useAuth } from '../auth/AuthContext.js'
-import { loadCosmetics } from './cosmeticsStore.js'
+import { loadCosmetics, subscribeCosmetics } from './cosmeticsStore.js'
 import { equipAndSync } from './cosmeticsSync.js'
 
 // O localStorage é síncrono, então não há estado de carregamento; erro de leitura vira aviso
@@ -71,6 +71,8 @@ export default function CosmeticsPicker() {
   const { t } = useTranslation()
   const { user } = useAuth()
   const [{ state, failed }, setData] = useState(readCosmetics)
+
+  useEffect(() => subscribeCosmetics((next) => setData({ state: next, failed: false })), [])
 
   const onEquip = (id) => setData({ state: equipAndSync(id, user), failed: false })
 

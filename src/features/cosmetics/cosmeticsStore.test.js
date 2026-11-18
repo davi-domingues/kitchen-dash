@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createStorage } from '../../services/storage.js'
 import {
   COSMETICS_KEY,
@@ -9,6 +9,7 @@ import {
   loadCosmetics,
   mergeUnlockedCosmetics,
   recordScore,
+  subscribeCosmetics,
 } from './cosmeticsStore.js'
 
 function memoryStore() {
@@ -71,5 +72,20 @@ describe('applyAccountCosmetics', () => {
     expect(newlyUnlocked).toEqual(['hat_navy'])
     expect(state.unlocked).toContain('apron_herbs')
     expect(loadCosmetics(store).equipped.hat).toBe('hat_navy')
+  })
+})
+
+describe('subscribeCosmetics', () => {
+  it('avisa a cada gravação e para após cancelar', () => {
+    const { store } = memoryStore()
+    const listener = vi.fn()
+    const unsubscribe = subscribeCosmetics(listener)
+
+    applyAccountCosmetics({ unlocked: ['hat_navy'], equipped: { hat: 'hat_navy' } }, store)
+    unsubscribe()
+    equipCosmetic('hat_classic', store)
+
+    expect(listener).toHaveBeenCalledTimes(1)
+    expect(listener.mock.calls[0][0].equipped.hat).toBe('hat_navy')
   })
 })

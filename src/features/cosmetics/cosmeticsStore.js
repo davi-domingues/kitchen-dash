@@ -16,9 +16,19 @@ export function loadCosmetics(store = defaultStorage) {
   return sanitizeCosmetics(store.get(COSMETICS_KEY, null))
 }
 
+// Telas abertas (ex.: o seletor no /perfil) se atualizam quando a sincronização da conta grava
+const listeners = new Set()
+
+/** @returns {() => void} cancela a inscrição */
+export function subscribeCosmetics(listener) {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
 function update(store, change) {
   const result = change(loadCosmetics(store))
   store.set(COSMETICS_KEY, result.state)
+  listeners.forEach((listener) => listener(result.state))
   return result
 }
 
