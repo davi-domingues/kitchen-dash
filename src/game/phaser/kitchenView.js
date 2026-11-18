@@ -1,6 +1,7 @@
 // Desenho placeholder da cozinha (retângulos e emojis) até a arte do KD-19. Só lê o estado.
 import { getIngredient, getRecipe } from '../../content/index.js'
 import { t } from '../../i18n/index.js'
+import { resolveLook } from './cosmeticLook.js'
 import { POT_STATUS, STATION_KINDS } from '../core/stations.js'
 
 const COLORS = Object.freeze({
@@ -57,8 +58,9 @@ const textStyle = (size) => ({
  * @param {object} kitchen conteúdo da cozinha (KD-10)
  * @param {object} state MatchState inicial
  * @param {{x: number, y: number, width: number, height: number}} [area] região livre (abaixo do HUD)
+ * @param {{hat: number, apron: number, theme: number}} [look] cores equipadas (KD-23); tema pinta as paredes
  */
-export function createKitchenView(scene, kitchen, state, area) {
+export function createKitchenView(scene, kitchen, state, area, look = resolveLook()) {
   const box = area ?? { x: 0, y: 0, width: scene.scale.width, height: scene.scale.height }
   const rows = kitchen.tiles.length
   const cols = kitchen.tiles[0].length
@@ -71,7 +73,7 @@ export function createKitchenView(scene, kitchen, state, area) {
   kitchen.tiles.forEach((row, y) =>
     [...row].forEach((symbol, x) => {
       const kind = kitchen.legend[symbol].kind
-      const color = COLORS[kind] ?? COLORS.station
+      const color = kind === 'wall' ? look.theme : (COLORS[kind] ?? COLORS.station)
       floor.fillStyle(color).fillRect(at(x, y).x, at(x, y).y, tile, tile)
     }),
   )
@@ -86,9 +88,12 @@ export function createKitchenView(scene, kitchen, state, area) {
   const chefs = new Map(
     state.chefs.map((c) => {
       const body = scene.add.rectangle(0, 0, tile * 0.8, tile * 0.8, COLORS[c.id])
+      // Placeholder até a KD-19: faixa do chapéu em cima e avental na metade de baixo
+      const hat = scene.add.rectangle(0, 0, tile * 0.6, tile * 0.18, look.hat).setStrokeStyle(1, 0x1b1b1b)
+      const apron = scene.add.rectangle(0, 0, tile * 0.5, tile * 0.32, look.apron).setStrokeStyle(1, 0x1b1b1b)
       const label = scene.add.text(0, 0, chefLabel(c.id), textStyle(tile * 0.25)).setOrigin(0.5)
       const holding = scene.add.text(0, 0, '', textStyle(tile * 0.35)).setOrigin(0.5, 1)
-      return [c.id, { body, label, holding }]
+      return [c.id, { body, hat, apron, label, holding }]
     }),
   )
 
@@ -106,6 +111,8 @@ export function createKitchenView(scene, kitchen, state, area) {
       const view = chefs.get(c.id)
       const { x, y } = center(c.x, c.y)
       view.body.setPosition(x, y)
+      view.hat.setPosition(x, y - tile * 0.4)
+      view.apron.setPosition(x, y + tile * 0.22)
       view.label.setPosition(x, y)
       view.holding.setPosition(x, y - tile * 0.3).setText(itemIcon(c.holding))
     })

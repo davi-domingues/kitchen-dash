@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useEffect, useReducer, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import { loadCosmeticLook } from '../features/cosmetics/cosmeticsStore.js'
 import MatchResult from '../features/match/MatchResult.jsx'
 import MatchSetup from '../features/match/MatchSetup.jsx'
 import PauseDialog from '../features/match/PauseDialog.jsx'
@@ -19,6 +20,7 @@ export default function PlayPage() {
   const recorded = useRecordedResult(state.phase === PLAY_PHASES.RESULT ? state.result : null)
   // Lidas uma vez por visita: a cena recebe as teclas pelo registry
   const [keyBindings] = useState(loadKeyBindings)
+  const [cosmeticLook] = useState(loadCosmeticLook)
   const inMatch = state.phase === PLAY_PHASES.PLAYING || state.phase === PLAY_PHASES.PAUSED
 
   useEffect(() => {
@@ -51,7 +53,14 @@ export default function PlayPage() {
         <MatchSetup initialConfig={state.config} onStart={(config) => dispatch({ type: 'start', config })} />
       )}
 
-      {inMatch && <PhaserGame key={state.run} matchConfig={state.config} keyBindings={keyBindings} />}
+      {inMatch && (
+        <PhaserGame
+          key={state.run}
+          matchConfig={state.config}
+          keyBindings={keyBindings}
+          cosmeticLook={cosmeticLook}
+        />
+      )}
       {state.phase === PLAY_PHASES.PAUSED && (
         <PauseDialog
           onResume={resume}
