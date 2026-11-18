@@ -30,6 +30,8 @@ Reavaliado após o design: sem violações.
 ## Project Structure
 
 ```text
+src/services/supabaseConfig.js         # config sem o SDK (isBackendConfigured)
+src/services/authLoader.js (+test)     # import() dinâmico do serviço: fora do JS inicial (§8.5)
 src/services/auth.js (+test)           # requestOtp, verifyOtp, signOut, getUser, onUserChange, erros
 src/features/auth/loginFlow.js (+test) # reducer do fluxo e validações de e-mail/código
 src/features/auth/AuthContext.js       # contexto + useAuth

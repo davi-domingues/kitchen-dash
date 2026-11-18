@@ -7,4 +7,5 @@
 - `getUser()` → `Promise<{ id, email } | null>`
 - `onUserChange(callback)` → função que cancela a inscrição
 - `authService` → instância com o cliente do app, ou `null` sem backend
+- `loadAuthService()` (services/authLoader.js) → `Promise<authService | null>` por `import()` dinâmico; é a única forma de obter o serviço fora de `features/auth/LoginPage.jsx` (já lazy), para manter o supabase-js fora do JS inicial
 - `useAuth()` (features/auth) → `{ status, user, signOut }`
