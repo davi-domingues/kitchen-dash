@@ -34,3 +34,15 @@ describe('pickInt', () => {
     expect([...values].sort()).toEqual([1, 2, 3])
   })
 })
+
+describe('getState', () => {
+  it('permite retomar a sequência a partir do estado salvo', () => {
+    const rng = createRng(99)
+    rng()
+    rng()
+
+    const resumed = createRng(rng.getState())
+
+    expect(resumed()).toBe(rng())
+  })
+})

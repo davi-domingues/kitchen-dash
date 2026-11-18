@@ -133,6 +133,11 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Controles (KD-17) | Botão único de ação contextual (toque < 220 ms × segurar); P1 setas + Enter, P2 WASD + Espaço, P pausa | Segue o PRD; SYSTEM_DESIGN citava `drop` e `E`/`Esc`, o que daria dois botões e conflitaria com P2 |
 | RNFs do MVP | i18n (pt-BR), acessibilidade básica, PWA, orçamento de tamanho | Performance de runtime vai para o ROADMAP |
 | E-mail OTP | SMTP padrão agora, Resend antes do lançamento | O SMTP padrão tem limite baixo de envios por hora |
+| Estado do RNG (KD-11) | `rngState` dentro do `MatchState`; `createRng` expõe `getState()` | Estado 100% serializável, base para salvar/retomar e replay por seed |
+| Passo de tempo do core (KD-11) | Teto `MAX_DT_MS = 250` por `update` | Aba em segundo plano não encerra a partida de 3 min num único quadro |
+| `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
+| Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
+| `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
 
 ---
 
@@ -156,7 +161,17 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
-## 9. Referências
+## 9. Schema do banco (KD-30)
+
+- **`public_profiles` com `security_invoker`:** uma view `security definer` é apontada como erro pelos advisors do Supabase. Em vez disso, `anon` recebe `select` só nas colunas `id`, `display_name` e `equipped` de `profiles` (grant por coluna) e a view herda essa permissão.
+- **`settings` em `user_settings`:** o ranking exige que autenticados leiam todos os profiles e o grant por coluna não distingue linhas. Para não expor preferências de outros jogadores, `settings` saiu de `profiles` para `user_settings` (PK `user_id`, RLS só da própria linha, criada pelo mesmo trigger). Diverge da §5 da SYSTEM_DESIGN, atualizada neste PR.
+- **`best_scores.match_id` sem FK:** `scores` expira em 90 dias e o recorde precisa sobreviver.
+- **`game_rules` com valores provisórios:** `max_points_per_second = 10` até a KD-14 fechar as regras; duração aceita de 170 s a 200 s (turno de 3 min).
+- **`display_name` padrão:** o trigger gera `player_<12 hex do id>`; a regra é `^[A-Za-z0-9_]{3,20}$`.
+
+---
+
+## 10. Referências
 
 **Documentação oficial**
 - Supabase: [Pricing](https://supabase.com/pricing) · [Billing](https://supabase.com/docs/guides/platform/billing-on-supabase) · [Database size](https://supabase.com/docs/guides/platform/database-size) · [Disk size](https://supabase.com/docs/guides/platform/manage-your-usage/disk-size) · [MAU](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users) · [Egress](https://supabase.com/docs/guides/platform/manage-your-usage/egress.md) · [Passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless) · [Auth CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha) · [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security) · [API quickstart (leaderboard)](https://supabase.com/docs/guides/api/quickstart)

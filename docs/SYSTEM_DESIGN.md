@@ -104,7 +104,8 @@ erDiagram
 
 | Tabela | Colunas principais | Observações |
 |---|---|---|
-| `profiles` | `id` (PK, FK `auth.users` on delete cascade), `display_name` (único, 3–20, regex), `settings jsonb`, `equipped jsonb`, `created_at` | Criada por trigger no cadastro |
+| `profiles` | `id` (PK, FK `auth.users` on delete cascade), `display_name` (único, 3–20, regex), `equipped jsonb`, `created_at` | Criada por trigger no cadastro |
+| `user_settings` | `user_id` (PK, FK `profiles`), `settings jsonb` | Privada: só o dono lê e altera. Criada pelo mesmo trigger |
 | `scores` | `id bigint identity`, `match_id uuid UNIQUE`, `user_id`, `board text default 'global'`, `score int`, `duration_ms int`, `seed`, `content_version`, `origin ('online'\|'local')`, `created_at` | Retida por 90 dias. Índices: `(user_id, created_at desc)`, `(created_at)` |
 | `best_scores` | PK `(board, user_id)`, `score`, `match_id`, `achieved_at` | Índice `(board, score desc, achieved_at)`. `board` permite rankings por desafio/cozinha no futuro |
 | `player_stats` | `user_id` PK, `matches_played`, `total_score`, `orders_completed`, `play_time_ms` | Sobrevive à retenção; base para desbloqueio de cosméticos |
@@ -122,6 +123,7 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 |---|---|---|
 | `profiles` | `select` (só `id`, `display_name`, `equipped` via view `public_profiles`) | `select`/`update` da própria linha |
 | `scores` | — | `select` das próprias linhas |
+| `user_settings` | — | `select`/`update` da própria linha |
 | `best_scores` | `select` | `select` |
 | `player_stats` | — | `select` da própria linha |
 | `user_cosmetics` | — | `select` das próprias linhas |
