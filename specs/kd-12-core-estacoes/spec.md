@@ -15,6 +15,8 @@ Resolvidas pelos docs (PRD "Experiência principal" e "Plataforma e controles"),
 - Q: Quem decide a estação alvo e o "ficar parado"? → A: A cena (KD-18). O core recebe a ação já com a estação alvo; para "parado", a cena consulta `canInteract` e envia a ação só quando ela daria certo.
 - Q: Ingrediente que não serve a nenhuma receita entra no prato ou na panela? → A: Não; a ação é recusada (evita prato impossível).
 - Q: Onde a entrega no passe vira pedido/pontos? → A: Fora desta task. O core registra a entrega e emite evento; KD-13/KD-14 a consomem.
+- Q: Segurar a ação fora da tábua faz o quê? → A: Vale como um toque rápido (PRD: um único botão; segurar só é contínuo na tábua).
+- Q: Dois chefs picando na mesma tábua aceleram o corte? → A: Não; o corte avança uma vez por quadro. Ações do mesmo quadro são aplicadas na ordem recebida.
 
 ## User Scenarios & Testing _(mandatory)_
 
@@ -54,6 +56,8 @@ O chef monta pratos frios no balcão e pratos quentes no fogão, que queima se p
 - Ação inválida (estação ocupada, mão cheia, ingrediente incompatível) não muda o estado e emite evento de ação recusada.
 - Chef ou estação desconhecidos: erro de programação (exceção).
 - Pegar o ingrediente da tábua interrompe o corte.
+- Dois chefs na mesma tábua não somam velocidade; ações do mesmo quadro seguem a ordem recebida.
+- Segurar a ação em estação que não é tábua equivale a um toque.
 - Panela só aceita ingredientes picados que ainda formam alguma receita de panela.
 
 ## Requirements _(mandatory)_
