@@ -130,6 +130,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Estado React | TanStack Query + Context | Cache, retry e loading prontos |
 | Testes | Vitest no core + lint no CI | Cobre as regras e a migração com custo baixo; E2E depois |
 | Plataforma | Só desktop; joystick com prioridade baixíssima | Foco do MVP; o `InputMap` abstrai o input |
+| Controles (KD-17) | Botão único de ação contextual (toque < 220 ms × segurar); P1 setas + Enter, P2 WASD + Espaço, P pausa | Segue o PRD; SYSTEM_DESIGN citava `drop` e `E`/`Esc`, o que daria dois botões e conflitaria com P2 |
 | RNFs do MVP | i18n (pt-BR), acessibilidade básica, PWA, orçamento de tamanho | Performance de runtime vai para o ROADMAP |
 | E-mail OTP | SMTP padrão agora, Resend antes do lançamento | O SMTP padrão tem limite baixo de envios por hora |
 | Estado do RNG (KD-11) | `rngState` dentro do `MatchState`; `createRng` expõe `getState()` | Estado 100% serializável, base para salvar/retomar e replay por seed |
@@ -152,6 +153,12 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Progresso local (KD-22) | `kd:v1:progress` = `{ board, stats, pending }`; recorde = 1º do placar por modo e nº de jogadores (10 por grupo); Desafio por menor tempo e só com os 12 pedidos; `pending` (≤ 50) guarda o payload com `matchId`/`seed`/`contentVersion`/`endedAt` | Sem dado duplicado; a KD-35 envia e remove por `removePending`, a KD-37 revalida pelo mesmo payload. Idempotente por `matchId` |
 | Fonte única de modos (KD-22) | `MATCH_MODES`, `PLAYER_COUNTS` e `CHALLENGE_LENGTH` em `core/matchModes.js`; `match.js` importa | O React lê os modos sem puxar o core e o conteúdo para o bundle inicial |
 | Configurações locais (KD-22) | Só "apagar progresso"; `settings.keyBindings` continua com a KD-17 | Evita criar `services/settings.js` em paralelo à KD-17 (conflito e duplicação) |
+| Movimento (KD-18) | Grade de tiles, 1 passo a cada `CHEF_STEP_MS = 150` ms, horizontal vence na diagonal; posições no `MatchState` | Determinístico e reproduzível por replay, sem física; colisão por tile |
+| Teclas na cena (KD-18) | A cena recebe as teclas do React, que lê `services/settings` (via registry desde a KD-20) | `game/phaser` não importa `services` (§4) |
+| Teclas e config na cena (KD-20) | O React grava `matchConfig` e `keyBindings` (`loadKeyBindings()`) no registry antes do boot | Boot e Preload iniciam a cozinha por `scene.start` sem dados; substitui o `init` da KD-18 |
+| Composição da partida (KD-20) | `createMatch` monta `createKitchenMatch` + `createKitchenUpdate({ extraSystems })`, com os sistemas do modo depois das estações | Um ponto só para a cena; remove a duplicação entre `match.js` e `kitchenUpdate.js` |
+| HUD (KD-20) | Faixa superior no Phaser a partir de `buildHudModel(state)`; paciência verde > 50%, amarela > 25%, vermelha ≤ 25%; relógio regressivo só com duração | Sem re-render do React por frame; o PRD só define as três cores |
+| Encerrar do Livre (KD-20) | Botão no HUD e no menu de pausa; o React emite `match:endRequested` e a cena chama `endMatch` | Acessível por teclado no `<dialog>`, visível como o PRD pede |
 
 ---
 

@@ -51,7 +51,7 @@ src/
 ├── game/
 │   ├── core/            # JS puro: MatchState, OrderQueue, Recipe, Patience, Scoring, rng com seed
 │   ├── phaser/          # PhaserGame.jsx, EventBus, cenas (Boot, Preload, Kitchen, HUD)
-│   └── input/           # InputMap: ações abstratas (move, interact, drop) ← teclado hoje, toque depois
+│   └── input/           # InputMap: ações abstratas (move, interact, pause) ← teclado hoje, toque depois
 ├── content/             # recipes.json, kitchens.json, cosmetics.json + schemas
 ├── services/            # supabase.js, storage.js, scoreOutbox.js, monitoring.js, analytics.js (stub)
 ├── i18n/                # pt-BR.json
@@ -210,7 +210,8 @@ sequenceDiagram
 ## 8. Usabilidade e eficiência
 
 ### 8.1 Plataforma e input
-- Desktop com teclado: WASD/setas, `E`/`Espaço` para interagir, `Esc` para pausar.
+- Desktop com teclado (PRD): P1 setas + `Enter`, P2 WASD + `Espaço`, `P` pausa. Em 1 jogador, os dois conjuntos controlam o mesmo chef.
+- Um único botão de ação contextual (sem `drop` separado): toque rápido (< 220 ms) pega, solta, monta ou serve; segurar pica.
 - `InputMap` traduz teclas em ações. As teclas podem ser remapeadas e ficam salvas em `settings`. O joystick virtual entra no mesmo mapa no futuro.
 - Em telas de toque, a home funciona normalmente e a tela de jogo mostra um aviso.
 
