@@ -59,7 +59,10 @@
       "replay": "Jogar de novo",
       "changeMode": "Trocar modo",
       "home": "Início",
-      "error": "Não foi possível ler o resultado da partida."
+      "error": "Não foi possível ler o resultado da partida.",
+      "newRecord": "Novo recorde!",
+      "recordScore": "Seu recorde: {{score}} pontos",
+      "recordTime": "Seu melhor tempo: {{time}}"
     }
   },
   "game": {

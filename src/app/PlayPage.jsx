@@ -5,6 +5,7 @@ import { Link } from 'react-router'
 import MatchResult from '../features/match/MatchResult.jsx'
 import MatchSetup from '../features/match/MatchSetup.jsx'
 import PauseDialog from '../features/match/PauseDialog.jsx'
+import { useRecordedResult } from '../features/progress/useRecordedResult.js'
 import { PLAY_PHASES, initialPlayState, playFlowReducer } from '../features/match/playFlow.js'
 import { EventBus } from '../game/phaser/EventBus.js'
 import PhaserGame from '../game/phaser/PhaserGame.jsx'
@@ -13,6 +14,7 @@ import { GAME_EVENTS } from '../game/phaser/events.js'
 export default function PlayPage() {
   const { t } = useTranslation()
   const [state, dispatch] = useReducer(playFlowReducer, initialPlayState)
+  const recorded = useRecordedResult(state.phase === PLAY_PHASES.RESULT ? state.result : null)
   const inMatch = state.phase === PLAY_PHASES.PLAYING || state.phase === PLAY_PHASES.PAUSED
 
   useEffect(() => {
@@ -49,6 +51,7 @@ export default function PlayPage() {
       {state.phase === PLAY_PHASES.RESULT && (
         <MatchResult
           result={state.result}
+          recorded={recorded}
           onReplay={() => dispatch({ type: 'replay' })}
           onChangeMode={backToSetup}
         />
