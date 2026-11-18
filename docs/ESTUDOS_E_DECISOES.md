@@ -137,6 +137,8 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
 | Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
 | `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
+| Fila de pedidos (KD-13) | Padrões do Clássico: 4 comandas, fila 20, chegada 13–17 s, paciência 60 s; a paciência só corre em comandas visíveis | O PRD só fixa os números do Livre; a KD-15 ajusta por modo. A fila é espera da cozinha, não do cliente |
+| Eventos de pedido (KD-13) | `order:delivered`/`order:expired` com `{ orderId, number, recipeId, points, patienceMs, remainingMs, elapsedMs }` e `order:wrong` `{ recipeId, elapsedMs }` | A pontuação (KD-14) calcula base, gorjeta, combo e penalidades só a partir dos eventos |
 
 ---
 
