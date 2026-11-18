@@ -16,7 +16,7 @@ Os eventos trazem os dados de que a KD-14 precisa para base, gorjeta, combo e pe
 **Testing**: Vitest, seed fixa, sem rede
 **Target Platform**: navegador (core é JS puro)
 **Project Type**: jogo web; camada `game/core`
-**Performance Goals**: O(comandas) por passo; ≤ 26 pedidos vivos
+**Performance Goals**: O(comandas) por passo; ≤ 24 pedidos vivos (4 visíveis + 20 na fila)
 **Constraints**: determinístico, sem `Math.random`/`Date.now`, sem mutar o estado
 **Scale/Scope**: 1 módulo + testes
 
