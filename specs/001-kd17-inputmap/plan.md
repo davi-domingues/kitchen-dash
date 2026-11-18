@@ -33,6 +33,8 @@ Módulo puro em `src/game/input/` que recebe `keydown`/`keyup` com o tempo e dev
 specs/001-kd17-inputmap/
 ├── spec.md
 ├── plan.md
+├── research.md
+├── quickstart.md
 ├── data-model.md
 ├── contracts/input-api.md
 ├── checklists/requirements.md

@@ -5,6 +5,17 @@
 **Status**: Ready for planning
 **Input**: Issue #16 (KD-17). Ações abstratas move/interact/pause; P1 setas + Enter, P2 WASD + Espaço, P pausa; em 1 jogador os dois conjuntos controlam o mesmo chef; toque rápido (< 0,22 s) × segurar; teclas remapeáveis salvas em `settings`.
 
+## Clarifications
+
+### Session 2026-11-18
+
+Resolvidas pelos docs, sem perguntar à pessoa (orientação da sessão):
+
+- Q: Existe uma ação `drop` separada do botão de ação? → A: Não; botão único contextual (PRD).
+- Q: Movimento diagonal é permitido? → A: Sim; cada eixo vale -1, 0 ou 1.
+- Q: Exatamente 0,22 s é toque ou segurar? → A: Segurar (limite inclusivo).
+- Q: A tecla de pausa é remapeável? → A: Sim, como os demais controles.
+
 ## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Dois jogadores no mesmo teclado (Priority: P1)
