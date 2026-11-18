@@ -104,6 +104,6 @@ Ao atingir um recorde pessoal que alcança o limiar de um cosmético, o item fic
 - `players`, `mode` e `ordersFailed` do payload não são gravados: o `board` (decidido pelo React) já distingue modo/jogadores, e o schema da KD-30 não tem colunas para eles.
 - `ordersCompleted` entra como parâmetro, porque `player_stats.orders_completed` precisa dele (ajuste da assinatura de SYSTEM_DESIGN §6.2).
 - "Recorde pessoal" = maior pontuação do jogador em qualquer placar (PRD: cosméticos liberados pelo recorde de pontos).
-- Limiares de cosméticos ficam em `game_rules.cosmetic_unlocks` com os valores do PRD; ids provisórios até o catálogo (KD-23) existir. Itens grátis não geram linha.
-- A RPC valida só a pertinência da versão à lista `accepted_content_versions`, sem impor formato. A lista precisa receber o hash real de 8 hex quando o conteúdo for versionado (KD-21/KD-14); até lá vale o `"1"` da KD-30 (pendência registrada).
+- Limiares de cosméticos ficam em `game_rules.cosmetic_unlocks` com os ids e `unlockScore` de `src/content/cosmetics.json` (KD-10). Itens grátis não geram linha.
+- A RPC valida só a pertinência da versão à lista `accepted_content_versions`, sem impor formato. A lista passa a `["7691008a"]` (CONTENT_VERSION da KD-10); cada mudança de conteúdo exige migration atualizando a lista.
 - Partidas com `origin = 'local'` (migração, KD-37) passam pela mesma validação e pelo mesmo rate limit.

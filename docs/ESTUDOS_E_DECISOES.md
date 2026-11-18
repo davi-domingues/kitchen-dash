@@ -171,8 +171,8 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - **Erros por exceção com SQLSTATE estável** (`28000`, `22023`, `23505`, `54000`) e mensagem fixa: a outbox (KD-35) só reenvia em `54000` e descarta o resto.
 - **Idempotência antes do rate limit:** o reenvio de uma partida já aceita nunca é barrado e devolve o estado atual sem novos desbloqueios. `match_id` de outro usuário dá `match_conflict`, sem revelar o resultado.
 - **Rate limit contando `scores` dos últimos 60 s**, com `pg_advisory_xact_lock` por usuário para serializar envios concorrentes. Sem tabela extra.
-- **Desbloqueio pelo maior recorde pessoal** (qualquer placar), com limiares do PRD em `game_rules.cosmetic_unlocks`. Os ids são provisórios até o catálogo da KD-23, que deve usar os mesmos ids.
-- **`content_version` só por pertinência** à lista aceita, sem impor formato: a lista recebe o hash real quando o conteúdo for versionado.
+- **Desbloqueio pelo maior recorde pessoal** (qualquer placar): `game_rules.cosmetic_unlocks` repete os ids e `unlockScore` de `src/content/cosmetics.json` (KD-10), sem os itens grátis.
+- **`content_version` só por pertinência** à lista aceita, que começa com o `CONTENT_VERSION` da KD-10 (`7691008a`). Toda mudança em `src/content/*.json` exige uma migration atualizando a lista (automação em issue `débito`).
 
 ---
 

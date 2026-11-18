@@ -27,7 +27,7 @@ Uma migration cria `public.submit_score` (plpgsql, `security definer`, `set sear
 - **Idempotência**: `insert ... on conflict (match_id) do nothing returning`. Sem linha → replay: se o dono for o mesmo, devolve o estado atual (`is_new_best` = recorde aponta para esta partida; `unlocked` vazio); se for outro, `match_conflict`. O replay é checado antes do rate limit.
 - **Concorrência**: `pg_advisory_xact_lock` por usuário serializa o rate limit e o upsert do recorde.
 - **Rate limit**: contagem em `scores` do usuário nos últimos 60 s (índice `(user_id, created_at desc)` já existe). Sem tabela extra.
-- **Desbloqueio**: `game_rules.cosmetic_unlocks` = `{ "<id>": limiar }` com os valores do PRD; libera todo item com limiar ≤ maior `best_scores.score` do usuário, `on conflict do nothing`.
+- **Desbloqueio**: `game_rules.cosmetic_unlocks` = `{ "<id>": limiar }` com os ids e `unlockScore` de `src/content/cosmetics.json` (KD-10); libera todo item com limiar ≤ maior `best_scores.score` do usuário, `on conflict do nothing`.
 - **Assinatura × `match:ended`**: `matchId→p_match_id`, `score→p_score`, `durationMs→p_duration_ms`, `seed→p_seed` (bigint, 0..2³²−1), `contentVersion→p_content_version`, `ordersCompleted→p_orders_completed`; `board`/`origin` vêm do React. `mode`, `players` e `ordersFailed` não são enviados (o `board` os codifica; o schema não guarda).
 
 ## Design (Phase 1)
