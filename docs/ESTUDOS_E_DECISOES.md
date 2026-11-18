@@ -133,9 +133,10 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Controles (KD-17) | Botão único de ação contextual (toque < 220 ms × segurar); P1 setas + Enter, P2 WASD + Espaço, P pausa | Segue o PRD; SYSTEM_DESIGN citava `drop` e `E`/`Esc`, o que daria dois botões e conflitaria com P2 |
 | RNFs do MVP | i18n (pt-BR), acessibilidade básica, PWA, orçamento de tamanho | Performance de runtime vai para o ROADMAP |
 | E-mail OTP | SMTP padrão agora, Resend antes do lançamento | O SMTP padrão tem limite baixo de envios por hora |
+| Payload de `match:ended` (KD-21) | `{ matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`; `matchId` UUID gerado pela cena | Cobre o `submit_score` (idempotência, plausibilidade), `player_stats.orders_completed` e o recorde do Desafio separado por nº de jogadores; `board`/`origin` ficam com o React |
 | Estado do RNG (KD-11) | `rngState` dentro do `MatchState`; `createRng` expõe `getState()` | Estado 100% serializável, base para salvar/retomar e replay por seed |
 | Passo de tempo do core (KD-11) | Teto `MAX_DT_MS = 250` por `update` | Aba em segundo plano não encerra a partida de 3 min num único quadro |
-| `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
+| `match:ended` do core (KD-11) | Payload sem `matchId` (campos finais na linha da KD-15) | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
 | Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
 | `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
 | Panela no fogão (KD-12) | Panela fixa em cada fogão; o chef serve com prato vazio | Menos estados e ações no MVP; panela carregável fica para depois |
@@ -143,6 +144,20 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Entregas (KD-12) | O passe grava `state.deliveries` e emite `dish:served`; o KD-13 consome a lista | Sistemas só enxergam o estado, não os eventos de outros sistemas |
 | Movimento (KD-18) | Grade de tiles, 1 passo a cada `CHEF_STEP_MS = 150` ms, horizontal vence na diagonal; posições no `MatchState` | Determinístico e reproduzível por replay, sem física; colisão por tile |
 | Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
+| Fila de pedidos (KD-13) | Padrões do Clássico: 4 comandas, fila 20, chegada 13–17 s, paciência 60 s; a paciência só corre em comandas visíveis | O PRD só fixa os números do Livre; a KD-15 ajusta por modo. A fila é espera da cozinha, não do cliente |
+| Eventos de pedido (KD-13) | `order:delivered`/`order:expired` com `{ orderId, number, recipeId, points, patienceMs, remainingMs, elapsedMs }` e `order:wrong` `{ recipeId, elapsedMs }` | A pontuação (KD-14) calcula base, gorjeta, combo e penalidades só a partir dos eventos |
+| Combo e gorjeta (KD-14) | Combo de +10 fixo a partir da 2ª entrega seguida, zerado por prato errado ou cliente perdido; gorjeta `round(40 × restante/paciência)`, 0 sem paciência | Leitura literal do PRD; um bônus limitado deixa o teto de plausibilidade calculável |
+| Integração da pontuação (KD-14) | `withScoring(system)` envolve o sistema de pedidos; `applyScoreEvents` para os eventos de `deliverDish` | O contrato da KD-11 não repassa eventos entre sistemas; não muda `update` nem `orders` |
+| Teto de plausibilidade (KD-14) | `max_points_per_second = 15` mais folga de 180 pontos: `score ≤ 180 + ⌈duração_s⌉ × 15` | Entrega máxima de 180 (130 + 40 + 10) ÷ 13 s de chegada mínima ≈ 13,8/s; a folga cobre partidas curtas. Se a KD-15 encurtar o intervalo de chegada, o teto precisa ser recalculado |
+| Panela no fogão (KD-12) | Panela fixa em cada fogão; o chef serve com prato vazio | Menos estados e ações no MVP; panela carregável fica para depois |
+| Conteúdo no core (KD-12) | `createStationsSystem({ recipes, ingredients, stoveBurnAfterMs })` recebe o conteúdo | Core testável com dados fictícios e sem acoplar ao loader |
+| Entregas (KD-12) | O passe grava `state.deliveries` e emite `dish:served`; o KD-13 consome a lista | Sistemas só enxergam o estado, não os eventos de outros sistemas |
+| Modos (KD-15) | `createMatch(config)` monta estado e sistemas; Clássico 180 s/paciência 60 s/4 comandas, Livre e Desafio sem tempo e sem paciência (6 e 3 comandas); chegada 13–17 s em todos | Ponto único para a cena; o intervalo igual mantém o teto da KD-14 (180 + s×15). Desafio sem paciência porque um cliente perdido impediria completar a sequência |
+| Sequência do Desafio (KD-15) | 12 receitas sorteadas com `CHALLENGE_SEED` fixa sobre todas as receitas; a partida usa essa seed | Determinística sem mudar o JSON (CONTENT_VERSION); curadoria manual no conteúdo fica para decisão de produto. Seed fixa (20260115) confirmada para o MVP; seed semanal fica no ROADMAP |
+| `match:ended` final (KD-15) | `{ mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }` via `matchEndedPayload`; Livre encerra por `endMatch(state)` | Mesmo payload nos três jeitos de terminar (tempo, sequência, botão); `matchId` continua na cena |
+| `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
+| Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
+| `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
 
 ---
 
@@ -171,12 +186,23 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - **`public_profiles` com `security_invoker`:** uma view `security definer` é apontada como erro pelos advisors do Supabase. Em vez disso, `anon` recebe `select` só nas colunas `id`, `display_name` e `equipped` de `profiles` (grant por coluna) e a view herda essa permissão.
 - **`settings` em `user_settings`:** o ranking exige que autenticados leiam todos os profiles e o grant por coluna não distingue linhas. Para não expor preferências de outros jogadores, `settings` saiu de `profiles` para `user_settings` (PK `user_id`, RLS só da própria linha, criada pelo mesmo trigger). Diverge da §5 da SYSTEM_DESIGN, atualizada neste PR.
 - **`best_scores.match_id` sem FK:** `scores` expira em 90 dias e o recorde precisa sobreviver.
-- **`game_rules` com valores provisórios:** `max_points_per_second = 10` até a KD-14 fechar as regras; duração aceita de 170 s a 200 s (turno de 3 min).
+- **`game_rules` de plausibilidade:** duração aceita de 170 s a 200 s (turno de 3 min). A KD-31 aplica a regra fechada na KD-14: `max_points_per_second = 15` e folga fixa `score_allowance = 180`, com `score ≤ 180 + ceil(duration_s) × 15`.
 - **`display_name` padrão:** o trigger gera `player_<12 hex do id>`; a regra é `^[A-Za-z0-9_]{3,20}$`.
 
 ---
 
-## 10. Referências
+## 10. RPC `submit_score` (KD-31)
+
+- **Assinatura validada contra `match:ended`:** entram `matchId`, `score`, `durationMs`, `seed`, `contentVersion` e `ordersCompleted` (este último porque `player_stats.orders_completed` precisa dele); `board` e `origin` vêm do React. `mode`, `players` e `ordersFailed` não vão ao banco: o `board` já os codifica e o schema não os guarda.
+- **Erros por exceção com SQLSTATE estável** (`28000`, `22023`, `23505`, `54000`) e mensagem fixa: a outbox (KD-35) só reenvia em `54000` e descarta o resto.
+- **Idempotência antes do rate limit:** o reenvio de uma partida já aceita nunca é barrado e devolve o estado atual sem novos desbloqueios. `match_id` de outro usuário dá `match_conflict`, sem revelar o resultado.
+- **Rate limit contando `scores` dos últimos 60 s**, com `pg_advisory_xact_lock` por usuário para serializar envios concorrentes. Sem tabela extra.
+- **Desbloqueio pelo maior recorde pessoal** (qualquer placar): `game_rules.cosmetic_unlocks` repete os ids e `unlockScore` de `src/content/cosmetics.json` (KD-10), sem os itens grátis.
+- **`content_version` só por pertinência** à lista aceita, que começa com o `CONTENT_VERSION` da KD-10 (`7691008a`). Toda mudança em `src/content/*.json` exige uma migration atualizando a lista (automação em issue `débito`).
+
+---
+
+## 11. Referências
 
 **Documentação oficial**
 - Supabase: [Pricing](https://supabase.com/pricing) · [Billing](https://supabase.com/docs/guides/platform/billing-on-supabase) · [Database size](https://supabase.com/docs/guides/platform/database-size) · [Disk size](https://supabase.com/docs/guides/platform/manage-your-usage/disk-size) · [MAU](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users) · [Egress](https://supabase.com/docs/guides/platform/manage-your-usage/egress.md) · [Passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless) · [Auth CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha) · [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security) · [API quickstart (leaderboard)](https://supabase.com/docs/guides/api/quickstart)

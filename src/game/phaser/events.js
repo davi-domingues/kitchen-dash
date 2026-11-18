@@ -2,9 +2,10 @@
 export const GAME_EVENTS = Object.freeze({
   // Payload: a cena ativa. Emitido quando a cena terminou o `create`.
   SCENE_READY: 'scene:ready',
-  // Payload: `{ matchId, mode, seed, contentVersion, score, durationMs }`. O React mostra o
-  // resultado e envia ao backend; `board` e `origin` do submit_score são decididos pelo React.
-  // Proposta: revisar e validar na KD-21 (#20) e na KD-31 (#25) antes de emitir.
+  // Payload (contrato fechado na KD-21, ESTUDOS_E_DECISOES §7): `{ matchId, mode, players, seed,
+  // contentVersion, score, ordersCompleted, ordersFailed, durationMs }`. `matchId` é UUID gerado pela
+  // cena no início da partida (idempotência do submit_score); `board` e `origin` são do React.
+  // Validado por features/match/matchEnded.js.
   MATCH_ENDED: 'match:ended',
   // Sem payload. O React abre o menu de pausa.
   MATCH_PAUSED: 'match:paused',

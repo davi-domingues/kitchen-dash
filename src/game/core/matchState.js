@@ -10,6 +10,7 @@ export function createMatchState({
   mode,
   contentVersion,
   durationMs = null,
+  players = 1,
   chefs = [],
   stations = [],
 }) {
@@ -28,13 +29,30 @@ export function createMatchState({
     tick: 0,
     elapsedMs: 0,
     durationMs,
+    players,
     score: 0,
+    // Contadores do resumo final (KD-15), alimentados pelos eventos de pedido
+    stats: { ordersCompleted: 0, ordersFailed: 0 },
     chefs,
     stations,
     items: [],
     orders: [],
     // Entregas no passe ainda não consumidas pelo sistema de pedidos (KD-13)
     deliveries: [],
+  }
+}
+
+// Campos de `match:ended` que o core conhece; o `matchId` é atribuído pela cena.
+export function matchEndedPayload(state) {
+  return {
+    mode: state.mode,
+    players: state.players,
+    seed: state.seed,
+    contentVersion: state.contentVersion,
+    score: state.score,
+    ordersCompleted: state.stats.ordersCompleted,
+    ordersFailed: state.stats.ordersFailed,
+    durationMs: state.elapsedMs,
   }
 }
 
