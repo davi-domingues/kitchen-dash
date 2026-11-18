@@ -23,6 +23,7 @@
     "db:status": "supabase status"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "1.6.3",
     "@supabase/supabase-js": "2.119.0",
     "i18next": "27.1.1",
     "lucide-react": "1.72.0",
