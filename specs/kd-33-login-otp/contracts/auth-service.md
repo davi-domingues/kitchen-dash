@@ -1,7 +1,7 @@
 # Contrato: services/auth.js e useAuth
 
 - `createAuthService(client)` → serviço abaixo (cliente injetável para testes)
-- `requestOtp(email, captchaToken)` → `Promise<void>`; lança `AuthFailure` com `.key` (chave i18n)
+- `requestOtp(email, captchaToken)` → `Promise<void>`; lança `AuthFailure` com `.reason` (`invalidCode`, `rateLimit`, `captcha`, `invalidEmail`, `network`, `generic`)
 - `verifyOtp(email, code)` → `Promise<{ id, email }>`; lança `AuthFailure`
 - `signOut()` → `Promise<void>`
 - `getUser()` → `Promise<{ id, email } | null>`
