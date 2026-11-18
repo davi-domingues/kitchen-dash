@@ -153,6 +153,9 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Fonte única de modos (KD-22) | `MATCH_MODES`, `PLAYER_COUNTS` e `CHALLENGE_LENGTH` em `core/matchModes.js`; `match.js` importa | O React lê os modos sem puxar o core e o conteúdo para o bundle inicial |
 | Configurações locais (KD-22) | Só "apagar progresso"; `settings.keyBindings` continua com a KD-17 | Evita criar `services/settings.js` em paralelo à KD-17 (conflito e duplicação) |
 | Login OTP (KD-33) | Template próprio (`supabase/templates/otp_code.html`) com `{{ .Token }}` em _magic link_ e _confirmation_; `[auth.captcha]` Turnstile desligado no local por padrão, secret via `env()`; sessão em Context (`useAuth`), sem TanStack Query | Conta nova recebe o template de confirmação; `supabase start` funciona sem a secret; a sessão não é dado remoto em cache |
+| Outbox de pontuação (KD-35) | `kd:v1:outbox` guarda só `{ matchId, userId, attempts, nextAt }`; o payload vem de `progress.pending`. Backoff 2 s × 2ⁿ⁻¹ (teto 5 min) com _equal jitter_, 8 tentativas e descarte; 22023/23505 descartam, 28000/42501 param sem descartar | Sem payload duplicado; partida de uma conta nunca vai pela sessão de outra; reenvio no login, na abertura e no evento `online` |
+| Board e origem (KD-35) | `p_board = <mode>_<players>p` (ex.: `classic_1p`); `origin = 'online'` só para partidas terminadas com sessão. Partidas de visitante ficam para a KD-37 (`local`) | Um placar por modo e nº de jogadores, como o recorde local da KD-22 |
+| TanStack Query na KD-35 | Não usado | O retry precisa sobreviver ao fechamento da aba; `useMutation` retentaria só em memória e duplicaria a fila |
 
 ---
 
