@@ -150,8 +150,12 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Sequência do Desafio (KD-15) | 12 receitas sorteadas com `CHALLENGE_SEED` fixa sobre todas as receitas; a partida usa essa seed | Determinística sem mudar o JSON (CONTENT_VERSION); curadoria manual no conteúdo fica para decisão de produto |
 | `match:ended` final (KD-15) | `{ mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }` via `matchEndedPayload`; Livre encerra por `endMatch(state)` | Mesmo payload nos três jeitos de terminar (tempo, sequência, botão); `matchId` continua na cena |
 | Movimento (KD-18) | Grade de tiles, 1 passo a cada `CHEF_STEP_MS = 150` ms, horizontal vence na diagonal; posições no `MatchState` | Determinístico e reproduzível por replay, sem física; colisão por tile |
-| Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
+| Teclas na cena (KD-18) | A cena recebe as teclas do React, que lê `services/settings` (via registry desde a KD-20) | `game/phaser` não importa `services` (§4) |
 | Payload de `match:ended` (KD-21) | `{ matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`; `matchId` UUID gerado pela cena | Cobre o `submit_score` (idempotência, plausibilidade), `player_stats.orders_completed` e o recorde do Desafio separado por nº de jogadores; `board`/`origin` ficam com o React |
+| Teclas e config na cena (KD-20) | O React grava `matchConfig` e `keyBindings` (`loadKeyBindings()`) no registry antes do boot | Boot e Preload iniciam a cozinha por `scene.start` sem dados; substitui o `init` da KD-18 |
+| Composição da partida (KD-20) | `createMatch` monta `createKitchenMatch` + `createKitchenUpdate({ extraSystems })`, com os sistemas do modo depois das estações | Um ponto só para a cena; remove a duplicação entre `match.js` e `kitchenUpdate.js` |
+| HUD (KD-20) | Faixa superior no Phaser a partir de `buildHudModel(state)`; paciência verde > 50%, amarela > 25%, vermelha ≤ 25%; relógio regressivo só com duração | Sem re-render do React por frame; o PRD só define as três cores |
+| Encerrar do Livre (KD-20) | Botão no HUD e no menu de pausa; o React emite `match:endRequested` e a cena chama `endMatch` | Acessível por teclado no `<dialog>`, visível como o PRD pede |
 
 ---
 
