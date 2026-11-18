@@ -16,7 +16,7 @@ function memoryBackend() {
   }
 }
 
-function setup({ submit = vi.fn().mockResolvedValue({}), pending = [entry()], service } = {}) {
+function setup({ submit = vi.fn().mockResolvedValue({}), pending = [entry()], service, onSubmitted } = {}) {
   let clock = 1000
   const timers = []
   let list = [...pending]
@@ -28,6 +28,7 @@ function setup({ submit = vi.fn().mockResolvedValue({}), pending = [entry()], se
     loadService: async () => (service === undefined ? { submitScore: submit } : service),
     listPending: () => list,
     removePending,
+    onSubmitted,
     now: () => clock,
     rng: () => 0.5,
     setTimer: (fn, ms) => timers.push({ fn, ms }) - 1,
@@ -67,6 +68,17 @@ describe('createScoreOutbox', () => {
     expect(removePending).toHaveBeenCalledWith([MATCH])
     expect(summary).toEqual({ sent: 1, discarded: 0, retrying: 0 })
     expect(outbox.items()).toEqual([])
+  })
+
+  it('repassa o retorno do envio aceito para onSubmitted', async () => {
+    const result = { unlockedCosmetics: ['hat_navy'] }
+    const onSubmitted = vi.fn()
+    const { outbox } = setup({ submit: vi.fn().mockResolvedValue(result), onSubmitted })
+    outbox.enqueue(MATCH, USER)
+
+    await outbox.flush(USER)
+
+    expect(onSubmitted).toHaveBeenCalledWith(entry(), result)
   })
 
   it('não duplica a mesma partida na fila', () => {

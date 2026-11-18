@@ -2,6 +2,7 @@
 import { loadScoreService } from '../../services/scoreLoader.js'
 import { createScoreOutbox } from '../../services/scoreOutbox.js'
 import { storage } from '../../services/storage.js'
+import { mergeUnlockedCosmetics } from '../cosmetics/cosmeticsStore.js'
 import { loadProgress, removePending } from './progressStore.js'
 
 export function createAppOutbox({ store = storage, loadService = loadScoreService, ...rest } = {}) {
@@ -10,6 +11,8 @@ export function createAppOutbox({ store = storage, loadService = loadScoreServic
     loadService,
     listPending: () => loadProgress(store).pending,
     removePending: (ids) => removePending(ids, store),
+    // KD-38: o que o servidor liberou entra nos cosméticos locais
+    onSubmitted: (_entry, result) => mergeUnlockedCosmetics(result?.unlockedCosmetics, store),
     ...rest,
   })
 }
