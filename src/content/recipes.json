@@ -1,0 +1,48 @@
+{
+  "ingredients": [
+    { "id": "tomato", "emoji": "🍅", "chopMs": 1500 },
+    { "id": "lettuce", "emoji": "🥬", "chopMs": 1500 },
+    { "id": "eggplant", "emoji": "🍆", "chopMs": 2000 },
+    { "id": "zucchini", "emoji": "🥒", "chopMs": 2000 },
+    { "id": "bread", "emoji": "🥖", "chopMs": 1200 },
+    { "id": "cheese", "emoji": "🧀", "chopMs": 1200 }
+  ],
+  "recipes": [
+    {
+      "id": "salad",
+      "emoji": "🥗",
+      "points": 60,
+      "unlockAtMs": 0,
+      "container": "plate",
+      "ingredients": ["lettuce", "tomato"],
+      "cookMs": 0
+    },
+    {
+      "id": "tartine",
+      "emoji": "🥖",
+      "points": 60,
+      "unlockAtMs": 20000,
+      "container": "plate",
+      "ingredients": ["bread", "cheese"],
+      "cookMs": 0
+    },
+    {
+      "id": "tomato_soup",
+      "emoji": "🍲",
+      "points": 90,
+      "unlockAtMs": 45000,
+      "container": "pot",
+      "ingredients": ["tomato", "tomato", "tomato"],
+      "cookMs": 6000
+    },
+    {
+      "id": "ratatouille",
+      "emoji": "🫕",
+      "points": 130,
+      "unlockAtMs": 70000,
+      "container": "pot",
+      "ingredients": ["tomato", "eggplant", "zucchini"],
+      "cookMs": 8000
+    }
+  ]
+}

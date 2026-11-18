@@ -1,0 +1,15 @@
+{
+  "cosmetics": [
+    { "id": "hat_classic", "slot": "hat", "unlockScore": 0, "color": "#f5ead6" },
+    { "id": "hat_bordeaux", "slot": "hat", "unlockScore": 300, "color": "#7b1e3a" },
+    { "id": "hat_navy", "slot": "hat", "unlockScore": 600, "color": "#1f2f5c" },
+    { "id": "hat_gold", "slot": "hat", "unlockScore": 1000, "color": "#c9a227" },
+    { "id": "apron_cream", "slot": "apron", "unlockScore": 0, "color": "#f5ead6" },
+    { "id": "apron_herbs", "slot": "apron", "unlockScore": 200, "color": "#5b7f3a" },
+    { "id": "apron_bistro", "slot": "apron", "unlockScore": 500, "color": "#7b1e3a" },
+    { "id": "apron_macaron", "slot": "apron", "unlockScore": 800, "color": "#e8a0bf" },
+    { "id": "theme_bistro", "slot": "theme", "unlockScore": 0, "color": "#7b1e3a" },
+    { "id": "theme_marble", "slot": "theme", "unlockScore": 400, "color": "#d9d6d0" },
+    { "id": "theme_provence", "slot": "theme", "unlockScore": 700, "color": "#8a7fc0" }
+  ]
+}
