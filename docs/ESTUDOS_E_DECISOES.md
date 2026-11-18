@@ -139,6 +139,9 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
 | Fila de pedidos (KD-13) | Padrões do Clássico: 4 comandas, fila 20, chegada 13–17 s, paciência 60 s; a paciência só corre em comandas visíveis | O PRD só fixa os números do Livre; a KD-15 ajusta por modo. A fila é espera da cozinha, não do cliente |
 | Eventos de pedido (KD-13) | `order:delivered`/`order:expired` com `{ orderId, number, recipeId, points, patienceMs, remainingMs, elapsedMs }` e `order:wrong` `{ recipeId, elapsedMs }` | A pontuação (KD-14) calcula base, gorjeta, combo e penalidades só a partir dos eventos |
+| Combo e gorjeta (KD-14) | Combo de +10 fixo a partir da 2ª entrega seguida, zerado por prato errado ou cliente perdido; gorjeta `round(40 × restante/paciência)`, 0 sem paciência | Leitura literal do PRD; um bônus limitado deixa o teto de plausibilidade calculável |
+| Integração da pontuação (KD-14) | `withScoring(system)` envolve o sistema de pedidos; `applyScoreEvents` para os eventos de `deliverDish` | O contrato da KD-11 não repassa eventos entre sistemas; não muda `update` nem `orders` |
+| Teto de plausibilidade (KD-14) | `max_points_per_second = 15` mais folga de 180 pontos: `score ≤ 180 + ⌈duração_s⌉ × 15` | Entrega máxima de 180 (130 + 40 + 10) ÷ 13 s de chegada mínima ≈ 13,8/s; a folga cobre partidas curtas. Se a KD-15 encurtar o intervalo de chegada, o teto precisa ser recalculado |
 
 ---
 
