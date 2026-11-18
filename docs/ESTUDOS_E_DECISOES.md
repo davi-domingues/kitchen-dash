@@ -130,6 +130,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Estado React | TanStack Query + Context | Cache, retry e loading prontos |
 | Testes | Vitest no core + lint no CI | Cobre as regras e a migração com custo baixo; E2E depois |
 | Plataforma | Só desktop; joystick com prioridade baixíssima | Foco do MVP; o `InputMap` abstrai o input |
+| Controles (KD-17) | Botão único de ação contextual (toque < 220 ms × segurar); P1 setas + Enter, P2 WASD + Espaço, P pausa | Segue o PRD; SYSTEM_DESIGN citava `drop` e `E`/`Esc`, o que daria dois botões e conflitaria com P2 |
 | RNFs do MVP | i18n (pt-BR), acessibilidade básica, PWA, orçamento de tamanho | Performance de runtime vai para o ROADMAP |
 | E-mail OTP | SMTP padrão agora, Resend antes do lançamento | O SMTP padrão tem limite baixo de envios por hora |
 | Payload de `match:ended` (KD-21) | `{ matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`; `matchId` UUID gerado pela cena | Cobre o `submit_score` (idempotência, plausibilidade), `player_stats.orders_completed` e o recorde do Desafio separado por nº de jogadores; `board`/`origin` ficam com o React |
