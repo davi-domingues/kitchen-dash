@@ -1,8 +1,12 @@
 -- KD-31 (#25): RPC submit_score (SYSTEM_DESIGN §6.2). Contrato em
 -- specs/001-rpc-submit-score/contracts/submit_score.md.
 
--- Limiares de recorde pessoal do PRD (Personalização). Itens grátis não entram:
--- ninguém precisa desbloqueá-los. Ids provisórios até o catálogo da KD-23.
+-- CONTENT_VERSION de src/content (KD-10). Toda mudança de conteúdo exige uma
+-- migration atualizando esta lista, senão os envios saem como unknown_content_version.
+update public.game_rules set value = '["7691008a"]' where key = 'accepted_content_versions';
+
+-- Mesmos ids e unlockScore de src/content/cosmetics.json (KD-10). Itens com
+-- unlockScore 0 não entram: ninguém precisa desbloqueá-los.
 insert into public.game_rules (key, value, description) values
   ('cosmetic_unlocks',
    '{"hat_bordeaux": 300, "hat_navy": 600, "hat_gold": 1000, "apron_herbs": 200, "apron_bistro": 500, "apron_macaron": 800, "theme_marble": 400, "theme_provence": 700}',

@@ -1,6 +1,6 @@
 -- KD-31 (#25): submit_score (SYSTEM_DESIGN §6.2). Rode com `npm run db:test`.
 -- Dados fictícios (@example.com). Regras de game_rules da migration:
--- duração 170000..200000 ms, 10 pontos/s, versão "1", 10 envios/min.
+-- duração 170000..200000 ms, 10 pontos/s, versão "7691008a", 10 envios/min.
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(31);
@@ -12,7 +12,7 @@ insert into auth.users (id, email) values
 
 -- Bia já fez 10 envios no último minuto (inseridos como postgres).
 insert into public.scores (match_id, user_id, score, duration_ms, seed, content_version, origin)
-select gen_random_uuid(), '22222222-2222-2222-2222-222222222222', 10, 180000, 1, '1', 'online'
+select gen_random_uuid(), '22222222-2222-2222-2222-222222222222', 10, 180000, 1, '7691008a', 'online'
 from generate_series(1, 10);
 
 -- ---------------------------------------------------------------- permissões
@@ -33,14 +33,14 @@ select ok(
 -- ---------------------------------------------------------------- sem auth
 set local role authenticated;
 select throws_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000001', 'global', 100, 180000, 42, '1', 'online', 2)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000001', 'global', 100, 180000, 42, '7691008a', 'online', 2)$$,
   '28000', 'not_authenticated', 'sem auth.uid() é recusado');
 
 -- ---------------------------------------------------------------- Ana: envio válido
 set local request.jwt.claims = '{"sub": "11111111-1111-1111-1111-111111111111", "role": "authenticated"}';
 
 select is(
-  public.submit_score('aaaaaaaa-0000-0000-0000-000000000001', 'global', 320, 180000, 42, '1', 'online', 5),
+  public.submit_score('aaaaaaaa-0000-0000-0000-000000000001', 'global', 320, 180000, 42, '7691008a', 'online', 5),
   '{"match_id": "aaaaaaaa-0000-0000-0000-000000000001", "is_new_best": true, "best_score": 320, "unlocked_cosmetics": ["apron_herbs", "hat_bordeaux"]}'::jsonb,
   'primeira partida vira recorde e desbloqueia cosméticos até 320');
 
@@ -54,7 +54,7 @@ select is(
 
 -- ---------------------------------------------------------------- idempotência
 select is(
-  public.submit_score('aaaaaaaa-0000-0000-0000-000000000001', 'global', 320, 180000, 42, '1', 'online', 5),
+  public.submit_score('aaaaaaaa-0000-0000-0000-000000000001', 'global', 320, 180000, 42, '7691008a', 'online', 5),
   '{"match_id": "aaaaaaaa-0000-0000-0000-000000000001", "is_new_best": true, "best_score": 320, "unlocked_cosmetics": []}'::jsonb,
   'reenvio devolve o resultado sem novos desbloqueios');
 select is(
@@ -66,7 +66,7 @@ select is(
 
 -- ---------------------------------------------------------------- recorde menor
 select is(
-  public.submit_score('aaaaaaaa-0000-0000-0000-000000000002', 'global', 100, 175000, 7, '1', 'local', 1),
+  public.submit_score('aaaaaaaa-0000-0000-0000-000000000002', 'global', 100, 175000, 7, '7691008a', 'local', 1),
   '{"match_id": "aaaaaaaa-0000-0000-0000-000000000002", "is_new_best": false, "best_score": 320, "unlocked_cosmetics": []}'::jsonb,
   'partida menor não troca o recorde');
 select is(
@@ -80,7 +80,7 @@ select is(
 
 -- ---------------------------------------------------------------- recorde maior em outro placar
 select is(
-  public.submit_score('aaaaaaaa-0000-0000-0000-000000000003', 'classic_2p', 650, 180000, 9, '1', 'online', 8)
+  public.submit_score('aaaaaaaa-0000-0000-0000-000000000003', 'classic_2p', 650, 180000, 9, '7691008a', 'online', 8)
     -> 'unlocked_cosmetics',
   '["apron_bistro", "hat_navy", "theme_marble"]'::jsonb,
   'novo recorde pessoal desbloqueia só os itens ainda não liberados');
@@ -90,31 +90,31 @@ select is(
 
 -- ---------------------------------------------------------------- plausibilidade e entrada
 select throws_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000010', 'global', 100, 169999, 1, '1', 'online', 1)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000010', 'global', 100, 169999, 1, '7691008a', 'online', 1)$$,
   '22023', 'implausible_duration', 'duração abaixo do mínimo é recusada');
 select throws_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000011', 'global', 100, 200001, 1, '1', 'online', 1)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000011', 'global', 100, 200001, 1, '7691008a', 'online', 1)$$,
   '22023', 'implausible_duration', 'duração acima do máximo é recusada');
 select throws_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000012', 'global', 1801, 180000, 1, '1', 'online', 1)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000012', 'global', 1801, 180000, 1, '7691008a', 'online', 1)$$,
   '22023', 'implausible_score', 'pontuação acima do teto por segundo é recusada');
 select lives_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000013', 'global', 1800, 180000, 1, '1', 'online', 1)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000013', 'global', 1800, 180000, 1, '7691008a', 'online', 1)$$,
   'pontuação exatamente no teto é aceita');
 select throws_ok(
   $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000014', 'global', 100, 180000, 1, 'deadbeef', 'online', 1)$$,
   '22023', 'unknown_content_version', 'versão de conteúdo fora da lista é recusada');
 select throws_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000015', 'global', 100, 180000, 4294967296, '1', 'online', 1)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000015', 'global', 100, 180000, 4294967296, '7691008a', 'online', 1)$$,
   '22023', 'invalid_input', 'seed fora de uint32 é recusada');
 select throws_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000016', 'Global!', 100, 180000, 1, '1', 'online', 1)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000016', 'Global!', 100, 180000, 1, '7691008a', 'online', 1)$$,
   '22023', 'invalid_input', 'board fora do formato é recusado');
 select throws_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000017', 'global', 100, 180000, 1, '1', 'cloud', 1)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000017', 'global', 100, 180000, 1, '7691008a', 'cloud', 1)$$,
   '22023', 'invalid_input', 'origin desconhecida é recusada');
 select lives_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000018', 'global', 0, 180000, 0, '1', 'online', 0)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000018', 'global', 0, 180000, 0, '7691008a', 'online', 0)$$,
   'pontuação zero é aceita');
 select is(
   (select count(*)::int from public.scores where user_id = '11111111-1111-1111-1111-111111111111'),
@@ -123,16 +123,16 @@ select is(
 -- ---------------------------------------------------------------- outro dono e rate limit
 set local request.jwt.claims = '{"sub": "33333333-3333-3333-3333-333333333333", "role": "authenticated"}';
 select throws_ok(
-  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000001', 'global', 320, 180000, 42, '1', 'online', 5)$$,
+  $$select public.submit_score('aaaaaaaa-0000-0000-0000-000000000001', 'global', 320, 180000, 42, '7691008a', 'online', 5)$$,
   '23505', 'match_conflict', 'match_id de outro usuário é recusado sem revelar o resultado');
 
 set local request.jwt.claims = '{"sub": "22222222-2222-2222-2222-222222222222", "role": "authenticated"}';
 select throws_ok(
-  $$select public.submit_score('bbbbbbbb-0000-0000-0000-000000000001', 'global', 100, 180000, 1, '1', 'online', 1)$$,
+  $$select public.submit_score('bbbbbbbb-0000-0000-0000-000000000001', 'global', 100, 180000, 1, '7691008a', 'online', 1)$$,
   '54000', 'rate_limited', 'frequência acima do limite por minuto é recusada');
 select lives_ok(
   $$select public.submit_score((select match_id from public.scores
-     where user_id = '22222222-2222-2222-2222-222222222222' limit 1), 'global', 10, 180000, 1, '1', 'online', 0)$$,
+     where user_id = '22222222-2222-2222-2222-222222222222' limit 1), 'global', 10, 180000, 1, '7691008a', 'online', 0)$$,
   'reenvio idempotente passa mesmo com o limite atingido');
 
 -- ---------------------------------------------------------------- escrita direta continua bloqueada
@@ -144,7 +144,7 @@ select throws_ok(
 reset role;
 set local role anon;
 select throws_ok(
-  $$select public.submit_score('cccccccc-0000-0000-0000-000000000001', 'global', 100, 180000, 1, '1', 'online', 1)$$,
+  $$select public.submit_score('cccccccc-0000-0000-0000-000000000001', 'global', 100, 180000, 1, '7691008a', 'online', 1)$$,
   '42501', null, 'anon não chama submit_score');
 
 select * from finish();
