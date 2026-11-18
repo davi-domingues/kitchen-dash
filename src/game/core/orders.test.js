@@ -219,6 +219,17 @@ describe('deliverDish', () => {
     ])
   })
 
+  it('receita desconhecida conta como prato errado', () => {
+    const state = ready()
+    const result = deliverDish(state, 'unknown_dish')
+
+    expect(result.delivered).toBe(false)
+    expect(result.state).toBe(state)
+    expect(result.events).toEqual([
+      { type: CORE_EVENTS.ORDER_WRONG, payload: { recipeId: 'unknown_dish', elapsedMs: 250 } },
+    ])
+  })
+
   it('não muta o estado recebido', () => {
     const state = ready()
     const snapshot = structuredClone(state)

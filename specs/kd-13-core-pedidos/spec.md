@@ -15,6 +15,8 @@ Resolvidas pelos docs, sem perguntar à pessoa (instrução do coordenador):
 - Q: Qual comanda um prato atende quando há duas da mesma receita? → A: A visível mais antiga (menor número).
 - Q: O que acontece quando a fila está cheia? → A: O pedido novo não é criado (sem evento); a chegada seguinte é reagendada normalmente.
 - Q: Valores do Clássico (comandas visíveis, intervalo, paciência)? → A: O PRD só fixa os do Livre (13–17 s, 6 visíveis, fila 20). Padrões assumidos: 4 visíveis, fila 20, chegada a cada 13–17 s, paciência de 60 s. A KD-15 ajusta por modo.
+- Q: A "pressão crescente" do Clássico encurta o intervalo de chegada nesta task? → A: Não. Aqui a pressão vem do desbloqueio de receitas mais longas (PRD §Receitas); o intervalo fica fixo na faixa configurada e a KD-15 pode variá-lo por modo.
+- Q: Pedido sem paciência (Livre) ainda conta tempo para gorjeta? → A: Não; `patienceMs` e `remainingMs` vão `null` nos eventos e a KD-14 decide a gorjeta nesse caso (PRD §Livre: "sem perda de paciência").
 
 ## User Scenarios & Testing _(mandatory)_
 
