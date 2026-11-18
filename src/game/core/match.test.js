@@ -10,6 +10,7 @@ import {
   createModeSystems,
   endMatch,
 } from './match.js'
+import { MATCH_MODES } from './matchModes.js'
 import { MATCH_STATUS } from './matchState.js'
 
 const config = (mode, extra = {}) => ({ mode, players: 1, seed: 7, contentVersion: 'v-test', ...extra })
@@ -161,6 +162,10 @@ describe('createModeSystems', () => {
 })
 
 describe('createMatch: validação', () => {
+  it('tem regras para exatamente os modos de MATCH_MODES', () => {
+    expect(Object.keys(MODE_RULES).sort()).toEqual(Object.values(MATCH_MODES).sort())
+  })
+
   it('rejeita modo desconhecido', () => {
     expect(() => createMatch(config('turbo'))).toThrow(RangeError)
   })
