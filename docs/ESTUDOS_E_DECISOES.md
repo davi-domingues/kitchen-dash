@@ -130,6 +130,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Estado React | TanStack Query + Context | Cache, retry e loading prontos |
 | Testes | Vitest no core + lint no CI | Cobre as regras e a migração com custo baixo; E2E depois |
 | Plataforma | Só desktop; joystick com prioridade baixíssima | Foco do MVP; o `InputMap` abstrai o input |
+| Controles (KD-17) | Botão único de ação contextual (toque < 220 ms × segurar); P1 setas + Enter, P2 WASD + Espaço, P pausa | Segue o PRD; SYSTEM_DESIGN citava `drop` e `E`/`Esc`, o que daria dois botões e conflitaria com P2 |
 | RNFs do MVP | i18n (pt-BR), acessibilidade básica, PWA, orçamento de tamanho | Performance de runtime vai para o ROADMAP |
 | E-mail OTP | SMTP padrão agora, Resend antes do lançamento | O SMTP padrão tem limite baixo de envios por hora |
 | Estado do RNG (KD-11) | `rngState` dentro do `MatchState`; `createRng` expõe `getState()` | Estado 100% serializável, base para salvar/retomar e replay por seed |
@@ -148,6 +149,8 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Modos (KD-15) | `createMatch(config)` monta estado e sistemas; Clássico 180 s/paciência 60 s/4 comandas, Livre e Desafio sem tempo e sem paciência (6 e 3 comandas); chegada 13–17 s em todos | Ponto único para a cena; o intervalo igual mantém o teto da KD-14 (180 + s×15). Desafio sem paciência porque um cliente perdido impediria completar a sequência |
 | Sequência do Desafio (KD-15) | 12 receitas sorteadas com `CHALLENGE_SEED` fixa sobre todas as receitas; a partida usa essa seed | Determinística sem mudar o JSON (CONTENT_VERSION); curadoria manual no conteúdo fica para decisão de produto |
 | `match:ended` final (KD-15) | `{ mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }` via `matchEndedPayload`; Livre encerra por `endMatch(state)` | Mesmo payload nos três jeitos de terminar (tempo, sequência, botão); `matchId` continua na cena |
+| Movimento (KD-18) | Grade de tiles, 1 passo a cada `CHEF_STEP_MS = 150` ms, horizontal vence na diagonal; posições no `MatchState` | Determinístico e reproduzível por replay, sem física; colisão por tile |
+| Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
 
 ---
 
