@@ -139,6 +139,11 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | `match:ended` do core (KD-11) | Payload sem `matchId` (campos finais na linha da KD-15) | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
 | Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
 | `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
+| Panela no fogão (KD-12) | Panela fixa em cada fogão; o chef serve com prato vazio | Menos estados e ações no MVP; panela carregável fica para depois |
+| Conteúdo no core (KD-12) | `createStationsSystem({ recipes, ingredients, stoveBurnAfterMs })` recebe o conteúdo | Core testável com dados fictícios e sem acoplar ao loader |
+| Entregas (KD-12) | O passe grava `state.deliveries` e emite `dish:served`; o KD-13 consome a lista | Sistemas só enxergam o estado, não os eventos de outros sistemas |
+| Movimento (KD-18) | Grade de tiles, 1 passo a cada `CHEF_STEP_MS = 150` ms, horizontal vence na diagonal; posições no `MatchState` | Determinístico e reproduzível por replay, sem física; colisão por tile |
+| Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
 | Fila de pedidos (KD-13) | Padrões do Clássico: 4 comandas, fila 20, chegada 13–17 s, paciência 60 s; a paciência só corre em comandas visíveis | O PRD só fixa os números do Livre; a KD-15 ajusta por modo. A fila é espera da cozinha, não do cliente |
 | Eventos de pedido (KD-13) | `order:delivered`/`order:expired` com `{ orderId, number, recipeId, points, patienceMs, remainingMs, elapsedMs }` e `order:wrong` `{ recipeId, elapsedMs }` | A pontuação (KD-14) calcula base, gorjeta, combo e penalidades só a partir dos eventos |
 | Combo e gorjeta (KD-14) | Combo de +10 fixo a partir da 2ª entrega seguida, zerado por prato errado ou cliente perdido; gorjeta `round(40 × restante/paciência)`, 0 sem paciência | Leitura literal do PRD; um bônus limitado deixa o teto de plausibilidade calculável |
@@ -150,13 +155,19 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Modos (KD-15) | `createMatch(config)` monta estado e sistemas; Clássico 180 s/paciência 60 s/4 comandas, Livre e Desafio sem tempo e sem paciência (6 e 3 comandas); chegada 13–17 s em todos | Ponto único para a cena; o intervalo igual mantém o teto da KD-14 (180 + s×15). Desafio sem paciência porque um cliente perdido impediria completar a sequência |
 | Sequência do Desafio (KD-15) | 12 receitas sorteadas com `CHALLENGE_SEED` fixa sobre todas as receitas; a partida usa essa seed | Determinística sem mudar o JSON (CONTENT_VERSION); curadoria manual no conteúdo fica para decisão de produto. Seed fixa (20260115) confirmada para o MVP; seed semanal fica no ROADMAP |
 | `match:ended` final (KD-15) | `{ mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }` via `matchEndedPayload`; Livre encerra por `endMatch(state)` | Mesmo payload nos três jeitos de terminar (tempo, sequência, botão); `matchId` continua na cena |
-| Payload de `match:ended` (KD-21) | `{ matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs }`; `matchId` UUID gerado pela cena | Cobre o `submit_score` (idempotência, plausibilidade), `player_stats.orders_completed` e o recorde do Desafio separado por nº de jogadores; `board`/`origin` ficam com o React |
 | Progresso local (KD-22) | `kd:v1:progress` = `{ board, stats, pending }`; recorde = 1º do placar por modo e nº de jogadores (10 por grupo); Desafio por menor tempo e só com os 12 pedidos; `pending` (≤ 50) guarda o payload com `matchId`/`seed`/`contentVersion`/`endedAt` | Sem dado duplicado; a KD-35 envia e remove por `removePending`, a KD-37 revalida pelo mesmo payload. Idempotente por `matchId` |
 | Fonte única de modos (KD-22) | `MATCH_MODES`, `PLAYER_COUNTS` e `CHALLENGE_LENGTH` em `core/matchModes.js`; `match.js` importa | O React lê os modos sem puxar o core e o conteúdo para o bundle inicial |
 | Configurações locais (KD-22) | Só "apagar progresso"; `settings.keyBindings` continua com a KD-17 | Evita criar `services/settings.js` em paralelo à KD-17 (conflito e duplicação) |
+| Movimento (KD-18) | Grade de tiles, 1 passo a cada `CHEF_STEP_MS = 150` ms, horizontal vence na diagonal; posições no `MatchState` | Determinístico e reproduzível por replay, sem física; colisão por tile |
+| Teclas na cena (KD-18) | A cena recebe as teclas do React, que lê `services/settings` (via registry desde a KD-20) | `game/phaser` não importa `services` (§4) |
+| Teclas e config na cena (KD-20) | O React grava `matchConfig` e `keyBindings` (`loadKeyBindings()`) no registry antes do boot | Boot e Preload iniciam a cozinha por `scene.start` sem dados; substitui o `init` da KD-18 |
+| Composição da partida (KD-20) | `createMatch` monta `createKitchenMatch` + `createKitchenUpdate({ extraSystems })`, com os sistemas do modo depois das estações | Um ponto só para a cena; remove a duplicação entre `match.js` e `kitchenUpdate.js` |
+| HUD (KD-20) | Faixa superior no Phaser a partir de `buildHudModel(state)`; paciência verde > 50%, amarela > 25%, vermelha ≤ 25%; relógio regressivo só com duração | Sem re-render do React por frame; o PRD só define as três cores |
+| Encerrar do Livre (KD-20) | Botão no HUD e no menu de pausa; o React emite `match:endRequested` e a cena chama `endMatch` | Acessível por teclado no `<dialog>`, visível como o PRD pede |
 | `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
 | Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
 | `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
+| Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
 
 ---
 
