@@ -123,7 +123,7 @@ A estrutura completa está em SYSTEM_DESIGN §3. As fronteiras abaixo são impos
 - **`game/phaser`** renderiza e captura input.
   - Lê o core e emite eventos pelo `EventBus` (`match:ended`, `match:paused`...). Nunca chama o Supabase.
   - Remove listeners, timers e tweens no `shutdown` da cena.
-- **`game/input`** traduz o teclado em ações abstratas (`move`, `interact`, `drop`). As cenas não leem teclas cruas.
+- **`game/input`** traduz o teclado em ações abstratas (`move`, `interact`, `pause`). As cenas não leem teclas cruas.
 - **`features/*`** reagem ao `EventBus` e falam com o backend só por `services/`. O React não re-renderiza a cada frame do jogo.
 - **`services/`** isola os fornecedores (Supabase, Sentry, storage, outbox). Trocar de fornecedor não deve mexer em `features/`.
 - **Conteúdo é dado:** receitas, cozinhas e cosméticos ficam em `content/*.json`, validados por schema e nunca hardcoded.
