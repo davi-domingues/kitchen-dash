@@ -1,39 +1,48 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { authService } from '../../services/auth.js'
+import { isBackendConfigured } from '../../services/supabaseConfig.js'
+import { loadAuthService } from '../../services/authLoader.js'
 import { AuthContext } from './AuthContext.js'
 
-export default function AuthProvider({ children, service = authService }) {
+// O serviço (e o supabase-js) chega por import() dinâmico, fora do JS inicial (SYSTEM_DESIGN §8.5)
+export default function AuthProvider({
+  children,
+  enabled = isBackendConfigured,
+  loadService = loadAuthService,
+}) {
+  const [service, setService] = useState(null)
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(Boolean(service))
+  const [loading, setLoading] = useState(enabled)
 
   useEffect(() => {
-    if (!service) return undefined
+    if (!enabled) return undefined
     let active = true
-    service
-      .getUser()
-      .then((current) => active && setUser(current))
-      // Sessão salva ilegível = visitante; o jogo segue offline (princípio I)
+    let stop = () => {}
+    loadService()
+      .then(async (loaded) => {
+        if (!active || !loaded) return
+        setService(loaded)
+        stop = loaded.onUserChange((next) => active && setUser(next))
+        const current = await loaded.getUser()
+        if (active) setUser(current)
+      })
+      // Sem rede ou sessão ilegível = visitante; o jogo segue offline (princípio I)
       .catch(() => active && setUser(null))
       .finally(() => active && setLoading(false))
-    const stop = service.onUserChange((next) => {
-      setUser(next)
-      setLoading(false)
-    })
     return () => {
       active = false
       stop()
     }
-  }, [service])
+  }, [enabled, loadService])
 
   const signOut = useCallback(() => service?.signOut() ?? Promise.resolve(), [service])
 
   const value = useMemo(() => {
     let status = 'guest'
-    if (!service) status = 'disabled'
+    if (!enabled) status = 'disabled'
     else if (loading) status = 'loading'
     else if (user) status = 'authenticated'
     return { status, user, signOut }
-  }, [service, loading, user, signOut])
+  }, [enabled, loading, user, signOut])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
