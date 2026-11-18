@@ -69,6 +69,15 @@ export function equip(state, id) {
   return { ...state, equipped: { ...state.equipped, [item.slot]: id } }
 }
 
+/** KD-38: o equipado da conta vence, slot a slot, quando o item está liberado e no slot certo. */
+export function applyAccountEquipped(state, equipped) {
+  if (!equipped || typeof equipped !== 'object') return state
+  return COSMETIC_SLOTS.reduce((current, slot) => {
+    const id = equipped[slot]
+    return isEquippable(current, id, slot) ? equip(current, id) : current
+  }, state)
+}
+
 export const isUnlocked = (state, id) => state.unlocked.includes(id)
 
 /** Cores dos itens equipados, no formato que a cena recebe pelo registry. */

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createStorage } from '../../services/storage.js'
 import {
   COSMETICS_KEY,
+  applyAccountCosmetics,
   clearCosmetics,
   equipCosmetic,
   loadCosmeticLook,
@@ -54,5 +55,21 @@ describe('cosmeticsStore', () => {
     expect(loadCosmetics(store).equipped.hat).toBe('hat_classic')
     clearCosmetics(store)
     expect(map.has('kd:v1:cosmetics')).toBe(false)
+  })
+})
+
+describe('applyAccountCosmetics', () => {
+  it('une os itens da conta, aplica o equipado e grava', () => {
+    const { store } = memoryStore()
+    recordScore(250, store)
+
+    const { state, newlyUnlocked } = applyAccountCosmetics(
+      { unlocked: ['hat_navy'], equipped: { hat: 'hat_navy' } },
+      store,
+    )
+
+    expect(newlyUnlocked).toEqual(['hat_navy'])
+    expect(state.unlocked).toContain('apron_herbs')
+    expect(loadCosmetics(store).equipped.hat).toBe('hat_navy')
   })
 })
