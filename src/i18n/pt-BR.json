@@ -47,7 +47,8 @@
       "title": "Pausado",
       "hint": "Esc também volta para a partida.",
       "resume": "Continuar",
-      "quit": "Sair da partida"
+      "quit": "Sair da partida",
+      "end": "Encerrar turno"
     },
     "result": {
       "title": "Fim de turno",
@@ -68,6 +69,12 @@
         "p1": "P1",
         "p2": "P2"
       }
+    },
+    "hud": {
+      "score": "Pontos: {{score}}",
+      "order": "#{{number}}",
+      "queued": "+{{count}} na fila",
+      "end": "⏹ Encerrar"
     }
   },
   "ingredient": {

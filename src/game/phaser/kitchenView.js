@@ -56,12 +56,14 @@ const textStyle = (size) => ({
  * @param {Phaser.Scene} scene
  * @param {object} kitchen conteúdo da cozinha (KD-10)
  * @param {object} state MatchState inicial
+ * @param {{x: number, y: number, width: number, height: number}} [area] região livre (abaixo do HUD)
  */
-export function createKitchenView(scene, kitchen, state) {
+export function createKitchenView(scene, kitchen, state, area) {
+  const box = area ?? { x: 0, y: 0, width: scene.scale.width, height: scene.scale.height }
   const rows = kitchen.tiles.length
   const cols = kitchen.tiles[0].length
-  const tile = Math.floor(Math.min(scene.scale.width / cols, scene.scale.height / rows))
-  const origin = { x: (scene.scale.width - tile * cols) / 2, y: (scene.scale.height - tile * rows) / 2 }
+  const tile = Math.floor(Math.min(box.width / cols, box.height / rows))
+  const origin = { x: box.x + (box.width - tile * cols) / 2, y: box.y + (box.height - tile * rows) / 2 }
   const at = (x, y) => ({ x: origin.x + x * tile, y: origin.y + y * tile })
   const center = (x, y) => ({ x: at(x, y).x + tile / 2, y: at(x, y).y + tile / 2 })
 

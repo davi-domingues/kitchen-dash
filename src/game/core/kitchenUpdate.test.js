@@ -27,6 +27,7 @@ describe('createKitchenMatch', () => {
     expect(state.chefs.map((c) => c.id)).toEqual(['p1', 'p2'])
     expect(state.stations.length).toBeGreaterThan(0)
     expect(state.durationMs).toBeNull()
+    expect(state.players).toBe(2)
   })
 })
 
@@ -69,5 +70,38 @@ describe('createKitchenUpdate', () => {
   it('repassa os eventos do sistema de estações', () => {
     const { events } = update(start(), [{ chefId: 'p1', action: 'tap', stationId: 'pass-5-7' }], 16)
     expect(events.map((e) => e.type)).toEqual([CORE_EVENTS.ACTION_REJECTED])
+  })
+})
+
+describe('createKitchenUpdate: extraSystems', () => {
+  it('roda os sistemas extras depois das estações, na ordem dada', () => {
+    const calls = []
+    const spy = (name) => (state) => {
+      calls.push(name)
+      return { state, events: [] }
+    }
+    const step = createKitchenUpdate({
+      kitchen: KITCHEN,
+      content: CONTENT,
+      extraSystems: [spy('a'), spy('b')],
+    })
+
+    step(start(), [], 100)
+
+    expect(calls).toEqual(['a', 'b'])
+  })
+
+  it('o sistema extra enxerga as entregas que as estações gravaram no mesmo passo', () => {
+    let seen = null
+    const probe = (state) => {
+      seen = state.deliveries
+      return { state, events: [] }
+    }
+    const step = createKitchenUpdate({ kitchen: KITCHEN, content: CONTENT, extraSystems: [probe] })
+    const state = { ...start(), deliveries: [{ chefId: 'p1', recipeId: 'salad' }] }
+
+    step(state, [], 100)
+
+    expect(seen).toEqual([{ chefId: 'p1', recipeId: 'salad' }])
   })
 })
