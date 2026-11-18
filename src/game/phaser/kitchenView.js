@@ -58,7 +58,7 @@ const textStyle = (size) => ({
  * @param {object} kitchen conteúdo da cozinha (KD-10)
  * @param {object} state MatchState inicial
  * @param {{x: number, y: number, width: number, height: number}} [area] região livre (abaixo do HUD)
- * @param {{hat: number, apron: number, theme: number}} [look] cores equipadas (KD-23); tema pinta as paredes
+ * @param {ReturnType<typeof resolveLook>} [look] cores equipadas (KD-23): tema pinta as paredes, chapéu e avental por chef
  */
 export function createKitchenView(scene, kitchen, state, area, look = resolveLook()) {
   const box = area ?? { x: 0, y: 0, width: scene.scale.width, height: scene.scale.height }
@@ -88,9 +88,12 @@ export function createKitchenView(scene, kitchen, state, area, look = resolveLoo
   const chefs = new Map(
     state.chefs.map((c) => {
       const body = scene.add.rectangle(0, 0, tile * 0.8, tile * 0.8, COLORS[c.id])
+      const outfit = look.chefs[c.id] ?? look.chefs.p1
       // Placeholder até a KD-19: faixa do chapéu em cima e avental na metade de baixo
-      const hat = scene.add.rectangle(0, 0, tile * 0.6, tile * 0.18, look.hat).setStrokeStyle(1, 0x1b1b1b)
-      const apron = scene.add.rectangle(0, 0, tile * 0.5, tile * 0.32, look.apron).setStrokeStyle(1, 0x1b1b1b)
+      const hat = scene.add.rectangle(0, 0, tile * 0.6, tile * 0.18, outfit.hat).setStrokeStyle(1, 0x1b1b1b)
+      const apron = scene.add
+        .rectangle(0, 0, tile * 0.5, tile * 0.32, outfit.apron)
+        .setStrokeStyle(1, 0x1b1b1b)
       const label = scene.add.text(0, 0, chefLabel(c.id), textStyle(tile * 0.25)).setOrigin(0.5)
       const holding = scene.add.text(0, 0, '', textStyle(tile * 0.35)).setOrigin(0.5, 1)
       return [c.id, { body, hat, apron, label, holding }]

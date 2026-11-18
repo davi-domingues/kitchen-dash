@@ -15,6 +15,7 @@ Resolvidas pelos docs (o agente não pergunta à pessoa nesta rodada):
 - Q: A validação de posse do equipado (pendente na KD-34) entra aqui? → A: Sim; a escrita passa a ser só por RPC que valida posse (AGENTS §6: escrita sensível de cosméticos só por RPC).
 - Q: Itens gratuitos precisam constar na conta para serem equipados? → A: Não; o servidor aceita item sem custo (fora de `cosmetic_unlocks`).
 - Q: Os itens locais são enviados para a conta? → A: Não nesta task; é a KD-37.
+- Q: E o cosmético do P2 (KD-23, escolha por jogador)? → A: Fica só no navegador. A conta guarda e restaura só o equipado do P1 via `set_equipped`; o pull da conta não mexe em `equippedP2`. Sem migration nova.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -62,6 +63,7 @@ O jogador logado equipa um item; em outro dispositivo, após logar, o mesmo visu
 - **FR-004**: Com sessão, equipar um item também o grava na conta; falha de rede não desfaz a escolha local.
 - **FR-005**: A gravação do equipado na conta só aceita itens que a conta possui ou gratuitos; a escrita direta no campo fica bloqueada.
 - **FR-006**: Visitante não faz nenhuma chamada ao servidor.
+- **FR-007**: A sincronização com a conta MUST tratar só o equipado do P1; o equipado do P2 nunca é enviado nem sobrescrito pela conta.
 
 ### Key Entities
 

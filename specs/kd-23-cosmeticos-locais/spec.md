@@ -11,7 +11,7 @@
 
 - Q: Qual "recorde" desbloqueia? → A: A maior pontuação já feita pelo jogador em qualquer modo e nº de jogadores, a mesma regra do `submit_score` (KD-31: `max(best_scores.score)` ≥ `unlockScore`). Resolvido pelos docs.
 - Q: Apagar progresso apaga os cosméticos? → A: Sim. "Apagar progresso local" volta ao estado inicial (só os itens de custo 0). Suposição: o jogador espera um recomeço completo.
-- Q: Em 2 jogadores, cada chefe tem sua escolha? → A: Não. Há um perfil por navegador, então os dois chefes usam o mesmo chapéu e avental. A cor do corpo continua diferenciando P1 e P2. Suposição registrada.
+- Q: Em 2 jogadores, cada chefe tem sua escolha? → A: Sim (decisão da pessoa, revisando a suposição anterior de escolha única). O P1 equipa como antes (local; na KD-38, conta). O P2 escolhe chapéu e avental entre os mesmos itens desbloqueados, e essa escolha fica só no navegador (`equippedP2` em `kd:v1:cosmetics`). O tema é único da cozinha e vem do P1. Registro antigo sem `equippedP2` é migrado na leitura: o P2 herda o chapéu e o avental do P1, o visual que já usava.
 - Q: O que o tema muda? → A: A cor das paredes da cozinha (placeholder até a arte da KD-19).
 
 ## User Scenarios & Testing
@@ -60,6 +60,8 @@ Na partida, os chefes aparecem com o chapéu e o avental equipados, e a cozinha 
 - **FR-006**: A cozinha MUST desenhar chapéu, avental e tema equipados.
 - **FR-007**: MUST existir uma forma de unir à lista local os itens ganhos na conta (KD-38).
 - **FR-008**: Todo texto visível MUST vir do i18n.
+- **FR-009**: O /perfil MUST permitir equipar chapéu e avental do P2 entre os itens desbloqueados, pelo teclado; a escolha do P2 MUST ficar só no navegador, sem mudar o P1 nem o tema.
+- **FR-010**: Dados gravados no formato antigo (sem P2) MUST ser lidos sem perder recorde, itens nem equipado do P1.
 
 ### Key Entities
 

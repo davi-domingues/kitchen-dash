@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COSMETIC_SLOTS, COSMETICS, contentKey } from '../../content/index.js'
 import { storage } from '../../services/storage.js'
-import { isUnlocked } from './cosmetics.js'
+import { CHEF_SLOTS, isUnlocked } from './cosmetics.js'
 import { useAuth } from '../auth/AuthContext.js'
-import { loadCosmetics, subscribeCosmetics } from './cosmeticsStore.js'
+import { equipCosmeticP2, loadCosmetics, subscribeCosmetics } from './cosmeticsStore.js'
 import { equipAndSync } from './cosmeticsSync.js'
 
 // O localStorage é síncrono, então não há estado de carregamento; erro de leitura vira aviso
@@ -18,7 +18,7 @@ function readCosmetics() {
   }
 }
 
-function SlotGroup({ slot, state, onEquip }) {
+function SlotGroup({ slot, state, equippedId, group, onEquip }) {
   const { t } = useTranslation()
   const legend = {
     hat: t('profile.cosmetics.slotHat'),
@@ -40,10 +40,10 @@ function SlotGroup({ slot, state, onEquip }) {
             >
               <input
                 type="radio"
-                name={`cosmetic-${slot}`}
+                name={`cosmetic-${group}-${slot}`}
                 className="sr-only"
                 value={item.id}
-                checked={state.equipped[slot] === item.id}
+                checked={equippedId === item.id}
                 disabled={!unlocked}
                 onChange={() => onEquip(item.id)}
               />
@@ -75,6 +75,8 @@ export default function CosmeticsPicker() {
   useEffect(() => subscribeCosmetics((next) => setData({ state: next, failed: false })), [])
 
   const onEquip = (id) => setData({ state: equipAndSync(id, user), failed: false })
+  // P2 só local: a conta guarda o equipado do P1 (set_equipped)
+  const onEquipP2 = (id) => setData({ state: equipCosmeticP2(id), failed: false })
 
   return (
     <section aria-labelledby="cosmetics-title" className="card w-full max-w-2xl bg-base-100 shadow">
@@ -94,8 +96,28 @@ export default function CosmeticsPicker() {
                 {t('profile.local.notPersistent')}
               </p>
             )}
+            <h3 className="font-semibold">{t('profile.cosmetics.p1Title')}</h3>
             {COSMETIC_SLOTS.map((slot) => (
-              <SlotGroup key={slot} slot={slot} state={state} onEquip={onEquip} />
+              <SlotGroup
+                key={slot}
+                slot={slot}
+                state={state}
+                equippedId={state.equipped[slot]}
+                group="p1"
+                onEquip={onEquip}
+              />
+            ))}
+            <h3 className="font-semibold">{t('profile.cosmetics.p2Title')}</h3>
+            <p className="text-sm opacity-80">{t('profile.cosmetics.p2Hint')}</p>
+            {CHEF_SLOTS.map((slot) => (
+              <SlotGroup
+                key={slot}
+                slot={slot}
+                state={state}
+                equippedId={state.equippedP2[slot]}
+                group="p2"
+                onEquip={onEquipP2}
+              />
             ))}
           </>
         )}
