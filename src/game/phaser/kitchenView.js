@@ -1,0 +1,113 @@
+// Desenho placeholder da cozinha (retângulos e emojis) até a arte do KD-19. Só lê o estado.
+import { getIngredient, getRecipe } from '../../content/index.js'
+import { t } from '../../i18n/index.js'
+import { POT_STATUS, STATION_KINDS } from '../core/stations.js'
+
+const COLORS = Object.freeze({
+  wall: 0x3b2f2f,
+  floor: 0xe9dcc3,
+  station: 0x8a6d4b,
+  p1: 0x2f6fd6,
+  p2: 0xd64f2f,
+  targetReady: 0x3ad65a,
+  targetIdle: 0xf5ead6,
+})
+
+const STATION_ICONS = Object.freeze({
+  [STATION_KINDS.CUTTING]: '🔪',
+  [STATION_KINDS.STOVE]: '🍲',
+  [STATION_KINDS.PLATES]: '🍽️',
+  [STATION_KINDS.TRASH]: '🗑️',
+  [STATION_KINDS.PASS]: '🛎️',
+})
+
+const POT_ICONS = Object.freeze({
+  [POT_STATUS.COOKING]: '♨️',
+  [POT_STATUS.DONE]: '✅',
+  [POT_STATUS.BURNT]: '🔥',
+})
+
+function itemIcon(item) {
+  if (!item) return ''
+  if (item.type === 'ingredient') return getIngredient(item.ingredientId).emoji + (item.chopped ? '✂' : '')
+  if (item.recipeId) return getRecipe(item.recipeId).emoji
+  return '🍽️' + item.ingredients.map((id) => getIngredient(id).emoji).join('')
+}
+
+function stationIcon(station) {
+  if (station.kind === STATION_KINDS.CRATE) return getIngredient(station.ingredientId).emoji
+  if (station.kind === STATION_KINDS.STOVE) {
+    const pot = station.pot.ingredients.map((id) => getIngredient(id).emoji).join('')
+    return `${STATION_ICONS.stove}${POT_ICONS[station.pot.status] ?? ''}${pot}`
+  }
+  return `${STATION_ICONS[station.kind]}${itemIcon(station.item)}`
+}
+
+// Literais para o i18n.test.js enxergar as chaves usadas
+const chefLabel = (chefId) => (chefId === 'p1' ? t('game.kitchen.chef.p1') : t('game.kitchen.chef.p2'))
+
+const textStyle = (size) => ({
+  fontFamily: 'sans-serif',
+  fontSize: `${Math.round(size)}px`,
+  color: '#1b1b1b',
+})
+
+/**
+ * @param {Phaser.Scene} scene
+ * @param {object} kitchen conteúdo da cozinha (KD-10)
+ * @param {object} state MatchState inicial
+ */
+export function createKitchenView(scene, kitchen, state) {
+  const rows = kitchen.tiles.length
+  const cols = kitchen.tiles[0].length
+  const tile = Math.floor(Math.min(scene.scale.width / cols, scene.scale.height / rows))
+  const origin = { x: (scene.scale.width - tile * cols) / 2, y: (scene.scale.height - tile * rows) / 2 }
+  const at = (x, y) => ({ x: origin.x + x * tile, y: origin.y + y * tile })
+  const center = (x, y) => ({ x: at(x, y).x + tile / 2, y: at(x, y).y + tile / 2 })
+
+  const floor = scene.add.graphics()
+  kitchen.tiles.forEach((row, y) =>
+    [...row].forEach((symbol, x) => {
+      const kind = kitchen.legend[symbol].kind
+      const color = COLORS[kind] ?? COLORS.station
+      floor.fillStyle(color).fillRect(at(x, y).x, at(x, y).y, tile, tile)
+    }),
+  )
+
+  const stationTexts = new Map(
+    state.stations.map((s) => {
+      const { x, y } = center(s.x, s.y)
+      return [s.id, scene.add.text(x, y, '', textStyle(tile * 0.4)).setOrigin(0.5)]
+    }),
+  )
+  const highlight = scene.add.graphics()
+  const chefs = new Map(
+    state.chefs.map((c) => {
+      const body = scene.add.rectangle(0, 0, tile * 0.8, tile * 0.8, COLORS[c.id])
+      const label = scene.add.text(0, 0, chefLabel(c.id), textStyle(tile * 0.25)).setOrigin(0.5)
+      const holding = scene.add.text(0, 0, '', textStyle(tile * 0.35)).setOrigin(0.5, 1)
+      return [c.id, { body, label, holding }]
+    }),
+  )
+
+  /** @param {{chefId: string, station: object, ready: boolean}[]} targets */
+  function render(current, targets) {
+    current.stations.forEach((s) => stationTexts.get(s.id).setText(stationIcon(s)))
+    highlight.clear()
+    for (const { station, ready } of targets) {
+      const { x, y } = at(station.x, station.y)
+      highlight
+        .lineStyle(ready ? 4 : 2, ready ? COLORS.targetReady : COLORS.targetIdle)
+        .strokeRect(x + 2, y + 2, tile - 4, tile - 4)
+    }
+    current.chefs.forEach((c) => {
+      const view = chefs.get(c.id)
+      const { x, y } = center(c.x, c.y)
+      view.body.setPosition(x, y)
+      view.label.setPosition(x, y)
+      view.holding.setPosition(x, y - tile * 0.3).setText(itemIcon(c.holding))
+    })
+  }
+
+  return { render }
+}
