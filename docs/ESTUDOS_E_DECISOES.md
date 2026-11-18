@@ -159,6 +159,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | `match:ended` do core (KD-11) | Payload `{ seed, contentVersion, mode, score, durationMs }`, sem `matchId` | O id da partida não é regra de jogo e exigiria aleatoriedade não semeada; a cena/React o atribui |
 | Validação de conteúdo (KD-10) | JSON Schema + ajv (dev) num plugin do Vite, mais checagens de referência e de mapa | O build falha com conteúdo inválido e o ajv não entra no bundle |
 | `content_version` (KD-10) | FNV-1a 32 bits (8 hex) dos 3 JSON, calculado no loader | Determinístico e sem dependência; distingue versões, não é proteção criptográfica |
+| Teclas na cena (KD-18) | A cena recebe `bindings` por `init`; o React lê `services/settings` | `game/phaser` não importa `services` (§4) |
 
 ---
 
