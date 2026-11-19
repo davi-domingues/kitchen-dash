@@ -143,6 +143,15 @@ A motivação para continuar jogando vem de:
 O progresso é salvo no próprio navegador (sem servidor). O protótipo não tem
 contas nem sincronização entre dispositivos.
 
+### Ranking global (MVP)
+
+A leitura do ranking é pública e não exige login. Há quadros independentes para
+Clássico, Livre e Desafio, com partidas de 1 ou 2 jogadores. Cada quadro mostra
+os melhores recordes por pontuação, em páginas de até 20 posições; empates são
+ordenados pelo momento do recorde e por um identificador estável. São exibidos
+somente posição, nome público e pontuação. Quando a pessoa está autenticada e
+seu recorde aparece na página atual, sua linha é identificada.
+
 ## Personalização e monetização
 
 ### Personalização (protótipo)
