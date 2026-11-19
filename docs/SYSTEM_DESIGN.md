@@ -130,6 +130,8 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 
 **Nenhuma** policy de `insert`/`update`/`delete` direto em `scores`, `best_scores`, `player_stats` e `user_cosmetics`. Toda escrita passa por RPC.
 
+O ranking global (KD-36) consulta `best_scores` e `public_profiles` para `anon` e `authenticated`, selecionando somente quadro, usuário, pontuação, data do recorde e nome público. A consulta é ordenada por `score DESC`, `achieved_at ASC` e `user_id ASC`, com páginas de até 20 posições. A sessão, quando disponível, é usada apenas para realçar a própria linha visível; não condiciona a leitura.
+
 ### 6.2 RPCs (`security definer`, `set search_path = ''`, `execute` revogado de `anon`)
 
 **`submit_score(p_match_id, p_board, p_score, p_duration_ms, p_seed, p_content_version, p_origin, p_orders_completed)`** → `{ match_id, is_new_best, best_score, unlocked_cosmetics }`. Contrato completo (tipos, erros e ação do cliente) em `specs/001-rpc-submit-score/contracts/submit_score.md`.
