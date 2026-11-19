@@ -111,7 +111,6 @@
       "pass": "PASSE"
     },
     "hud": {
-      "score": "Pontos: {{score}}",
       "order": "#{{number}}",
       "queued": "+{{count}} na fila",
       "end": "⏹ Encerrar",
