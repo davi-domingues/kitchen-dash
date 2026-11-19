@@ -61,8 +61,8 @@ export default function MatchSetup({ initialConfig, onStart, reduceEffects, onRe
           ))}
         </fieldset>
 
-        <Link to="/controles" className="btn btn-outline">
-          {t('controls.title')}
+        <Link to="/configuracoes" className="btn btn-outline">
+          {t('settings.title')}
         </Link>
         <label className="label cursor-pointer gap-3 text-base-content">
           <input

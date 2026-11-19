@@ -6,11 +6,11 @@ import MigrationNotice from '../features/migration/MigrationNotice.jsx'
 import { useScoreSync } from '../features/progress/useScoreSync.js'
 import ErrorBoundary from '../ui/ErrorBoundary.jsx'
 import HomePage from './HomePage.jsx'
-import ControlsPage from '../features/controls/ControlsPage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 import PrivacyPage from './PrivacyPage.jsx'
 import ProfilePage from './ProfilePage.jsx'
 import RankingPage from './RankingPage.jsx'
+import SettingsPage from './SettingsPage.jsx'
 import { loadReduceEffects, saveReduceEffects } from '../services/settings.js'
 
 // Phaser só é baixado na rota do jogo (orçamento de JS inicial, SYSTEM_DESIGN §8.5)
@@ -28,18 +28,6 @@ function Lazy({ page: Page, ...props }) {
     </Suspense>
   )
 }
-
-// Um boundary por rota: o erro de uma tela não derruba as outras (KD-40)
-const ROUTES = [
-  ['/', <HomePage key="home" />],
-  ['/controles', <ControlsPage key="controls" />],
-  ['/jogar', <Lazy key="play" page={PlayPage} />],
-  ['/entrar', <Lazy key="login" page={LoginPage} />],
-  ['/ranking', <RankingPage key="ranking" />],
-  ['/perfil', <ProfilePage key="profile" />],
-  ['/privacidade', <PrivacyPage key="privacy" />],
-  ['*', <NotFoundPage key="404" />],
-]
 
 export default function App() {
   const [preference, setPreference] = useState(loadReduceEffects)
@@ -120,6 +108,14 @@ export default function App() {
           element={
             <ErrorBoundary>
               <PrivacyPage />
+            </ErrorBoundary>
+          }
+        />
+        <Route
+          path="/configuracoes"
+          element={
+            <ErrorBoundary>
+              <SettingsPage />
             </ErrorBoundary>
           }
         />

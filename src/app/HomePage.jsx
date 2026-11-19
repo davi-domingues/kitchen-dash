@@ -24,12 +24,12 @@ export default function HomePage() {
           <div className="mt-6">
             <AccountStatus />
           </div>
-          <nav aria-label={t('nav.label')} className="mt-6 flex flex-wrap justify-center gap-2">
-            <Link to="/controles" className="btn btn-ghost btn-sm">
-              {t('controls.title')}
-            </Link>
+          <nav aria-label={t('nav.label')} className="mt-6 flex justify-center gap-2">
             <Link to="/ranking" className="btn btn-ghost btn-sm">
               {t('nav.ranking')}
+            </Link>
+            <Link to="/configuracoes" className="btn btn-ghost btn-sm">
+              {t('nav.settings')}
             </Link>
             <Link to="/perfil" className="btn btn-ghost btn-sm">
               {t('nav.profile')}
