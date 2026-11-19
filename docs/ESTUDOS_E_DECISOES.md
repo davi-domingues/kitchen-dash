@@ -210,7 +210,14 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
-## 11. Ranking global público (KD-36)
+## 11. Versão de conteúdo no CI (#56)
+
+- **Check, não geração:** o CI recalcula `CONTENT_VERSION` e falha quando ela não aparece na última migration que atualiza `accepted_content_versions`. A migration continua explícita, revisável e criada pela pessoa que muda o conteúdo.
+- **Busca da migration relevante:** migrations posteriores que não alteram a lista não a substituem; o check percorre os arquivos em ordem inversa até encontrar a atualização da chave.
+
+---
+
+## 12. Ranking global público (KD-36)
 
 - A leitura dos seis quadros (Clássico, Livre e Desafio para 1 ou 2 jogadores) não exige autenticação; isso permite comparar recordes sem criar uma conta.
 - Cada quadro apresenta os melhores recordes ordenados por pontuação decrescente, com desempate por `achieved_at` crescente e `user_id` crescente. O Desafio também usa pontuação, conforme clarificação de produto.
