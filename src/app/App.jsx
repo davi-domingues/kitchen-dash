@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Route, Routes } from 'react-router'
+import { useScoreSync } from '../features/progress/useScoreSync.js'
 import HomePage from './HomePage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 import PrivacyPage from './PrivacyPage.jsx'
@@ -24,6 +25,7 @@ function Lazy({ page: Page }) {
 }
 
 export default function App() {
+  useScoreSync()
   return (
     <BrowserRouter>
       <Routes>
