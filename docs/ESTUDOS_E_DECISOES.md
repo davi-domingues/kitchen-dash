@@ -217,6 +217,10 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
+## 11. Exclusão de conta e retenção (KD-32)
+
+- **Exclusão integral:** a RPC apaga a identidade em `auth.users`; as relações existentes com `on delete cascade` removem perfil, preferências, pontuações, recordes, estatísticas e cosméticos na mesma transação.
+- **Retenção:** `scores` expira diariamente às **03:00 UTC** quando `created_at` tem mais de 90 dias. `best_scores` e `player_stats` não expiram enquanto a conta existir.
 ## 11. Versão de conteúdo no CI (#56)
 
 - **Check, não geração:** o CI recalcula `CONTENT_VERSION` e falha quando ela não aparece na última migration que atualiza `accepted_content_versions`. A migration continua explícita, revisável e criada pela pessoa que muda o conteúdo.
