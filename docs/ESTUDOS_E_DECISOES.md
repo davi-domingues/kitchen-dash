@@ -205,7 +205,17 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
-## 11. Referências
+## 11. Ranking global público (KD-36)
+
+- A leitura dos seis quadros (Clássico, Livre e Desafio para 1 ou 2 jogadores) não exige autenticação; isso permite comparar recordes sem criar uma conta.
+- Cada quadro apresenta os melhores recordes ordenados por pontuação decrescente, com desempate por `achieved_at` crescente e `user_id` crescente. O Desafio também usa pontuação, conforme clarificação de produto.
+- A consulta solicita apenas `board`, `user_id`, `score` e `achieved_at` em `best_scores`, e `id`/`display_name` em `public_profiles`. E-mail e configurações privadas nunca são consultados.
+- As páginas carregam até 20 posições e consultam uma linha adicional para identificar a existência da próxima página. O cache dura 60 segundos; a identidade da sessão é opcional e serve somente para realçar a própria linha visível.
+- Indisponibilidade, dados em cache possivelmente desatualizados e nova tentativa são estados explícitos; uma falha não é apresentada como quadro vazio.
+
+---
+
+## 12. Referências
 
 **Documentação oficial**
 - Supabase: [Pricing](https://supabase.com/pricing) · [Billing](https://supabase.com/docs/guides/platform/billing-on-supabase) · [Database size](https://supabase.com/docs/guides/platform/database-size) · [Disk size](https://supabase.com/docs/guides/platform/manage-your-usage/disk-size) · [MAU](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users) · [Egress](https://supabase.com/docs/guides/platform/manage-your-usage/egress.md) · [Passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless) · [Auth CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha) · [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security) · [API quickstart (leaderboard)](https://supabase.com/docs/guides/api/quickstart)
