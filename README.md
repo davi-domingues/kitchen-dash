@@ -8,11 +8,15 @@ Jogo arcade de culinária 2D em visão top-down, ambientado num bistrô parisien
 
 - **Tema:** jogo arcade de culinária para navegador, em partidas curtas, com ranking global e cosméticos.
 - **Problema que resolve:** jogos casuais de cozinha costumam exigir instalação, conta e loja. O Kitchen Dash roda direto no navegador e também offline (PWA), deixa jogar sem criar conta e só pede login (código por e-mail, sem senha) para quem quer ranking e progresso sincronizado. As pontuações são validadas no servidor para manter o ranking confiável.
-- **Integrantes:**
+- **Integrantes** (grupo da organização Doceterapia, todos colaboradores do repositório):
   - Davi Domingues ([@davi-domingues](https://github.com/davi-domingues))
   - Davi Caproni ([@davicaproni](https://github.com/davicaproni))
   - Felipe Lima ([@FelipeLima24](https://github.com/FelipeLima24))
-  - Pedro Sakaue ([@pedrosakaue](https://github.com/pedrosakaue))
+  - Gwen Raldes ([@gwenraldes](https://github.com/gwenraldes))
+  - Maria Luiza Costa Góes ([@MariaLuizaCostaGoes](https://github.com/MariaLuizaCostaGoes))
+  - Pedro Guimarães Sakaue ([@pedrosakaue](https://github.com/pedrosakaue))
+
+A proposta da atividade está em [`docs/ATIVIDADE_SDD.md`](docs/ATIVIDADE_SDD.md).
 
 ## Framework utilizado
 
@@ -20,7 +24,7 @@ O grupo usou o **[GitHub Spec Kit](https://github.com/github/spec-kit)**, um fra
 
 Por que o grupo o escolheu:
 
-- **Funciona com vários agentes.** O time usa Claude Code, OpenCode e Codex CLI, e o Spec Kit tem integração para os três. Os artefatos ficam em Markdown, então não dependem da ferramenta.
+- **Funciona com vários agentes.** O time usa Claude Code, OpenCode, Codex CLI e GitHub Copilot, e o Spec Kit tem integração com todos eles. Os artefatos ficam em Markdown, então não dependem da ferramenta.
 - **Spec antes do código.** Cada task KD-XX ganha spec, plano e tarefas antes da implementação. Isso reduz decisões tomadas sozinhas pelo agente (AGENTS.md, regra 1: "não assuma, pergunte").
 - **Constituição única.** Os princípios do projeto, como core determinístico, RLS e conteúdo como dado, ficam em [`.specify/memory/constitution.md`](.specify/memory/constitution.md), e todo plano é checado contra eles.
 - **Rastreabilidade.** Cada pasta em `specs/` tem o mesmo nome da issue e da branch, o que facilita a revisão do PR.
@@ -57,6 +61,7 @@ Por que o grupo o escolheu:
 | [Roadmap](docs/ROADMAP.md) | Itens fora do MVP, por prioridade |
 | [AGENTS.md](AGENTS.md) | Contrato de trabalho para pessoas e agentes de IA: workflow, padrões e gates |
 | [Deploy](docs/DEPLOY.md) | Cloudflare Pages: produção, previews por branch, variáveis e headers |
+| [Atividade SDD](docs/ATIVIDADE_SDD.md) | Proposta da atividade da disciplina que orienta a entrega |
 | [MCPs](docs/MCP.md) | Servidores MCP do time (Claude Code, OpenCode, Codex), desabilitados por padrão |
 
 ## Desenvolvimento orientado a especificação
@@ -77,9 +82,15 @@ Pré-requisitos para rodar o CLI: Python 3.11+, [uv](https://docs.astral.sh/uv/)
 
 ## Como rodar
 
-O projeto não tem uma API própria: o backend é o **Supabase** (Auth, Postgres, RLS e RPC). Para subir tudo localmente:
+### Opção recomendada: versão publicada
 
-1. Suba a "API" com `npm run db:start` e `npm run db:reset` (veja [Banco local](#banco-local-supabase)).
+O jogo já está publicado em **https://kitchen-dash-015.pages.dev**, com o front e a API (Supabase) de produção ligados. É o jeito mais simples de testar: basta abrir o link, sem instalar nada.
+
+### Opção alternativa: rodar localmente
+
+O projeto não tem uma API própria: o backend é o **Supabase** (Auth, Postgres, RLS e RPC). Para subir tudo na sua máquina:
+
+1. Suba a API com `npm run db:start` e `npm run db:reset` (veja [Banco local](#banco-local-supabase)).
 2. Suba o front com `npm run dev`.
 
 Sem o banco local o jogo também roda, mas só no modo visitante.
@@ -128,29 +139,18 @@ Quem fez cada tarefa aparece no responsável da issue, no board e no autor do PR
 ## Reflexão
 
 **Que decisão o agente teria tomado sozinho e a spec evitou?**
-As regras de pontuação. O PRD diz só "combo de +10" e "gorjeta por rapidez". Sem a etapa `/speckit-clarify`, o agente teria escolhido sozinho se o combo cresce a cada entrega e quanto vale a gorjeta no modo Livre, que não tem paciência. A spec da KD-14 fixou as três respostas: combo fixo de +10, gorjeta 0 no Livre e teto de 15 pontos/s mais folga. Esse teto virou a validação de plausibilidade da RPC `submit_score`. Se o agente tivesse escolhido um combo crescente, o servidor rejeitaria pontuações legítimas. Outros exemplos parecidos: a panela fixa no fogão (KD-12) e a paciência só para comandas visíveis (KD-13).
+A forma de contar os pontos. O documento do jogo dizia apenas que havia "bônus de combo" e "gorjeta por rapidez", sem detalhar. Se deixássemos o agente decidir, ele teria inventado as regras: se o combo aumenta a cada entrega, quanto vale a gorjeta num modo sem cronômetro, qual pontuação é alta demais para ser verdade. Na etapa de esclarecimento, o próprio framework fez essas perguntas e nós respondemos juntos. Isso importou porque o servidor usa essas mesmas regras para recusar pontuações falsas no ranking. Uma escolha errada do agente faria o jogo rejeitar partidas legítimas. O mesmo aconteceu em outras partes, como decidir se o chef carrega a panela ou se ela fica presa no fogão.
 
 **Que inconsistência a validação encontrou? Estava na spec ou no código?**
-Houve dos dois tipos:
-- **Na documentação/spec:** o plano da KD-13 tinha o limite de pedidos ativos errado (corrigido em `e21cd71`), e o SYSTEM_DESIGN descrevia controles diferentes dos do PRD (corrigido em `137ac1c`).
-- **No código:** a tabela `game_rules` do banco estava fora de sincronia com o conteúdo JSON e com a `CONTENT_VERSION` da KD-10 (corrigido em `747c284`).
-
-O ponto em comum é que a mesma regra estava escrita em dois lugares. A validação cruzada (`/speckit-analyze`, revisão de PR e os testes) foi o que expôs a divergência.
+Encontramos dos dois tipos. Na documentação, o plano de uma tarefa trazia um limite de pedidos diferente do que o jogo precisava, e um documento técnico descrevia os controles de um jeito diferente do documento do jogo. No código, as regras salvas no banco de dados não batiam com os arquivos de conteúdo do jogo. Nos três casos, a causa foi a mesma informação estar escrita em dois lugares, e um deles ficou desatualizado. A validação, junto com a revisão dos pull requests e os testes, revelou essas diferenças antes de chegarem ao jogador.
 
 **Como o framework ajudou (ou atrapalhou) a coordenação do grupo?**
-- **Ajudou:**
-  - Cada task virou uma pasta `specs/<task>` com contrato explícito (`contracts/`). Assim, quem pegava uma task dependente, como a cena Phaser (KD-18) consumindo o core (KD-11 a KD-15), sabia exatamente o que esperar sem reunião.
-  - O mesmo fluxo funcionou em Claude Code, OpenCode e Codex.
-- **Atrapalhou:**
-  - O custo inicial por task é alto: são cerca de 8 arquivos antes do primeiro código. Por isso a maior parte das specs ficou concentrada em quem mais dominava o fluxo.
-  - A numeração automática gerou nomes fora do padrão (`001-kd17-inputmap`, `001-rpc-submit-score`, `002-global-ranking`) até o grupo padronizar em `kd-XX-...`.
-  - Specs paralelas que mexiam no mesmo arquivo geraram merges da `main` com conflitos, por exemplo nas chaves de i18n (`9bcff67`).
+Ajudou porque cada tarefa ganhou sua própria pasta com o que precisa ser feito, o plano e a lista de passos. Quem pegava uma tarefa que dependia do trabalho de outra pessoa já sabia o que esperar, sem precisar marcar reunião. Também funcionou bem com as diferentes ferramentas de IA que cada um usa.
+
+Por outro lado, o processo é pesado no começo: cada tarefa gera vários arquivos antes da primeira linha de código. Por isso a escrita das specs acabou concentrada em quem já dominava o fluxo. No início, os nomes das pastas também ficaram sem padrão, e tarefas feitas ao mesmo tempo às vezes mexiam nos mesmos arquivos e geravam conflitos.
 
 **O que fariam diferente com outro framework?**
-- Com um framework mais leve, ou com o Spec Kit em modo reduzido, as tasks pequenas (HUD, ajustes visuais) usariam só spec e tarefas, e o fluxo completo ficaria reservado para core, banco e segurança.
-- O grupo também dividiria a escrita das specs desde o início, para que cada integrante dominasse o fluxo, e geraria parte da documentação a partir de uma fonte única (ex.: `game_rules` derivada do `content/*.json`). Assim a mesma regra não ficaria escrita em dois lugares.
-
-> Reflexão escrita a partir das evidências do repositório (clarificações nas specs e commits de correção). Ainda está pendente de revisão do grupo.
+Usaríamos o fluxo completo só onde ele faz diferença: regras do jogo, banco de dados e segurança. Para tarefas pequenas, como ajustes visuais, um framework mais leve como o OpenSpec seria suficiente. Também dividiríamos a escrita das specs entre todos desde o começo, para que ninguém ficasse sobrecarregado. Por fim, manteríamos cada regra em um único lugar, para não ter que corrigir a mesma coisa duas vezes.
 
 ## Deploy (Cloudflare Pages)
 
