@@ -2,30 +2,28 @@
 import { INGREDIENTS, KITCHENS, RECIPES } from '../../content/index.js'
 import { CORE_EVENTS, createEvent } from './coreEvents.js'
 import { createKitchenMatch, createKitchenUpdate } from './kitchenUpdate.js'
+import { CHALLENGE_LENGTH, MATCH_MODES, isPlayerCount } from './matchModes.js'
 import { MATCH_STATUS, matchEndedPayload } from './matchState.js'
 import { createOrdersSystem, deliverDish, isSequenceComplete, withOrderQueue } from './orders.js'
 import { createRng, pickInt } from './rng.js'
 import { withScoreTracking, withScoring } from './scoring.js'
 
-// Mesmos ids de MATCH_MODES/PLAYER_COUNTS da KD-21 (matchModes.js); a KD-22 unifica as constantes.
-const PLAYER_COUNTS = [1, 2]
-
-export const CHALLENGE_LENGTH = 12
+export { CHALLENGE_LENGTH }
 // Seed fixa: "Tentar de novo" repete a mesma sequência e os mesmos intervalos de chegada.
 export const CHALLENGE_SEED = 20260115
 
 // O intervalo de chegada (13–17 s) é o padrão da KD-13 nos três modos, então o teto da KD-14 vale.
 export const MODE_RULES = Object.freeze({
-  classic: Object.freeze({
+  [MATCH_MODES.CLASSIC]: Object.freeze({
     durationMs: 180000,
     orders: Object.freeze({ maxVisible: 4, maxQueued: 20, patienceMs: 60000 }),
   }),
-  free: Object.freeze({
+  [MATCH_MODES.FREE]: Object.freeze({
     durationMs: null,
     orders: Object.freeze({ maxVisible: 6, maxQueued: 20, patienceMs: null }),
   }),
   // Sem paciência: um cliente perdido tornaria a sequência impossível de completar.
-  challenge: Object.freeze({
+  [MATCH_MODES.CHALLENGE]: Object.freeze({
     durationMs: null,
     orders: Object.freeze({ maxVisible: 3, maxQueued: 20, patienceMs: null }),
   }),
@@ -80,8 +78,8 @@ function challengeEndSystem(state) {
 export function createModeSystems({ mode, players, seed, recipes = RECIPES }) {
   const rules = MODE_RULES[mode]
   if (!rules) throw new RangeError(`modo desconhecido: "${mode}"`)
-  if (!PLAYER_COUNTS.includes(players)) throw new RangeError('players deve ser 1 ou 2')
-  const isChallenge = mode === 'challenge'
+  if (!isPlayerCount(players)) throw new RangeError('players deve ser 1 ou 2')
+  const isChallenge = mode === MATCH_MODES.CHALLENGE
   const sequence = isChallenge ? challengeSequence(recipes) : null
   const systems = [createServiceSystem(recipes)]
   if (isChallenge) systems.push(challengeEndSystem)
