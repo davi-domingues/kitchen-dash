@@ -210,7 +210,14 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
-## 11. Ranking global público (KD-36)
+## 11. Exclusão de conta e retenção (KD-32)
+
+- **Exclusão integral:** a RPC apaga a identidade em `auth.users`; as relações existentes com `on delete cascade` removem perfil, preferências, pontuações, recordes, estatísticas e cosméticos na mesma transação.
+- **Retenção:** `scores` expira diariamente às **03:00 UTC** quando `created_at` tem mais de 90 dias. `best_scores` e `player_stats` não expiram enquanto a conta existir.
+
+---
+
+## 12. Ranking global público (KD-36)
 
 - A leitura dos seis quadros (Clássico, Livre e Desafio para 1 ou 2 jogadores) não exige autenticação; isso permite comparar recordes sem criar uma conta.
 - Cada quadro apresenta os melhores recordes ordenados por pontuação decrescente, com desempate por `achieved_at` crescente e `user_id` crescente. O Desafio também usa pontuação, conforme clarificação de produto.

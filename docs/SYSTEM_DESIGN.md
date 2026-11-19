@@ -27,7 +27,7 @@
 | D4 | Testes | Vitest no core e serviços + ESLint/Prettier no CI | Playwright E2E (pós-MVP) |
 | D5 | Falha de envio | Outbox local com retry e RPC idempotente por `match_id` | Erro manual; descarte |
 | D6 | Ranking | Histórico (`scores`) + melhor por jogador (`best_scores`) | Só histórico; só melhor |
-| D7 | Retenção | Histórico de 90 dias via `pg_cron`; recordes e estatísticas permanentes | Sem retenção; 30 dias |
+| D7 | Retenção | Histórico de 90 dias via `pg_cron`, diariamente às 03:00 UTC; recordes e estatísticas permanentes | Sem retenção; 30 dias |
 | D8 | Plataforma | Só desktop com teclado no MVP; input abstraído | Mobile/gamepad (ROADMAP) |
 | D9 | Anti-bot | Cloudflare Turnstile no login OTP | hCaptcha; só rate limit |
 | D10 | Ambientes | Supabase CLI local (Docker) + 1 projeto de produção; migrations no repo | 2 projetos na nuvem; edição pelo painel |
