@@ -159,6 +159,9 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 | Outbox de pontuação (KD-35) | `kd:v1:outbox` guarda só `{ matchId, userId, attempts, nextAt }`; o payload vem de `progress.pending`. Backoff 2 s × 2ⁿ⁻¹ (teto 5 min) com _equal jitter_, 8 tentativas e descarte; 22023/23505 descartam, 28000/42501 param sem descartar | Sem payload duplicado; partida de uma conta nunca vai pela sessão de outra; reenvio no login, na abertura e no evento `online` |
 | Board e origem (KD-35) | `p_board = <mode>_<players>p` (ex.: `classic_1p`); `origin = 'online'` só para partidas terminadas com sessão. Partidas de visitante ficam para a KD-37 (`local`) | Um placar por modo e nº de jogadores, como o recorde local da KD-22 |
 | TanStack Query na KD-35 | Não usado | O retry precisa sobreviver ao fechamento da aba; `useMutation` retentaria só em memória e duplicaria a fila |
+| Cosméticos locais (KD-23) | `kd:v1:cosmetics` = `{ bestScore, unlocked, equipped }`, separado de `progress`; desbloqueio por `getUnlockedCosmetics(bestScore)` com a maior pontuação de qualquer partida | Mesma regra do `submit_score` (KD-31), sem migrar o formato da KD-22; o placar do Desafio não guarda o máximo de pontos. `unlocked` só cresce, para a KD-38 unir a lista da conta por `mergeUnlockedCosmetics` |
+| Cosméticos na cena (KD-23) | O React lê `loadCosmeticLook()` e grava `{ hat, apron, theme }` (hex) em `registry` (`COSMETIC_LOOK_KEY`); o tema pinta as paredes | `game/phaser` não importa `services`; a cor do corpo ainda distingue P1/P2. Placeholder até a KD-19 |
+| Cosmético por jogador (KD-23) | Decisão da pessoa: cada chef tem chapéu e avental próprios. P1 = `equipped` (local; conta na KD-38). P2 = `equippedP2` em `kd:v1:cosmetics`, só no navegador, entre os itens desbloqueados do P1. Tema único, do P1. Look = `{ theme, chefs: { p1, p2 } }`. Registro sem `equippedP2` é migrado na leitura copiando chapéu e avental do P1 | A conta é de uma pessoa só; o P2 local não exige schema nem migration. Migrar copiando o P1 mantém o visual que o P2 já tinha, sem perder dados nem subir a `STORAGE_VERSION` de todas as chaves |
 | Teclas na cena (KD-18) | A cena recebe as teclas do React, que lê `services/settings` (via registry desde a KD-20) | `game/phaser` não importa `services` (§4) |
 | Teclas e config na cena (KD-20) | O React grava `matchConfig` e `keyBindings` (`loadKeyBindings()`) no registry antes do boot | Boot e Preload iniciam a cozinha por `scene.start` sem dados; substitui o `init` da KD-18 |
 | Composição da partida (KD-20) | `createMatch` monta `createKitchenMatch` + `createKitchenUpdate({ extraSystems })`, com os sistemas do modo depois das estações | Um ponto só para a cena; remove a duplicação entre `match.js` e `kitchenUpdate.js` |
@@ -209,7 +212,17 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
-## 11. Referências
+## 11. Ranking global público (KD-36)
+
+- A leitura dos seis quadros (Clássico, Livre e Desafio para 1 ou 2 jogadores) não exige autenticação; isso permite comparar recordes sem criar uma conta.
+- Cada quadro apresenta os melhores recordes ordenados por pontuação decrescente, com desempate por `achieved_at` crescente e `user_id` crescente. O Desafio também usa pontuação, conforme clarificação de produto.
+- A consulta solicita apenas `board`, `user_id`, `score` e `achieved_at` em `best_scores`, e `id`/`display_name` em `public_profiles`. E-mail e configurações privadas nunca são consultados.
+- As páginas carregam até 20 posições e consultam uma linha adicional para identificar a existência da próxima página. O cache dura 60 segundos; a identidade da sessão é opcional e serve somente para realçar a própria linha visível.
+- Indisponibilidade, dados em cache possivelmente desatualizados e nova tentativa são estados explícitos; uma falha não é apresentada como quadro vazio.
+
+---
+
+## 12. Referências
 
 **Documentação oficial**
 - Supabase: [Pricing](https://supabase.com/pricing) · [Billing](https://supabase.com/docs/guides/platform/billing-on-supabase) · [Database size](https://supabase.com/docs/guides/platform/database-size) · [Disk size](https://supabase.com/docs/guides/platform/manage-your-usage/disk-size) · [MAU](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users) · [Egress](https://supabase.com/docs/guides/platform/manage-your-usage/egress.md) · [Passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless) · [Auth CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha) · [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security) · [API quickstart (leaderboard)](https://supabase.com/docs/guides/api/quickstart)

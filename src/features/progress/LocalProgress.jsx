@@ -5,6 +5,7 @@ import { MATCH_MODES, PLAYER_COUNTS } from '../../game/core/matchModes.js'
 import { storage } from '../../services/storage.js'
 import { formatDuration } from '../match/matchEnded.js'
 import { getBoard } from './progress.js'
+import { clearCosmetics } from '../cosmetics/cosmeticsStore.js'
 import { clearProgress, loadProgress } from './progressStore.js'
 
 function useModeLabels() {
@@ -52,6 +53,7 @@ function ClearProgress({ onCleared }) {
   const dialogRef = useRef(null)
   function confirm() {
     clearProgress()
+    clearCosmetics()
     dialogRef.current?.close()
     onCleared()
   }
@@ -88,7 +90,7 @@ function ClearProgress({ onCleared }) {
 }
 
 // Leitura síncrona do localStorage: não há estado de carregamento, só vazio e aviso
-export default function LocalProgress() {
+export default function LocalProgress({ onCleared }) {
   const { t } = useTranslation()
   const [progress, setProgress] = useState(() => loadProgress())
   const { stats } = progress
@@ -149,7 +151,12 @@ export default function LocalProgress() {
         </>
       )}
 
-      <ClearProgress onCleared={() => setProgress(loadProgress())} />
+      <ClearProgress
+        onCleared={() => {
+          setProgress(loadProgress())
+          onCleared?.()
+        }}
+      />
     </div>
   )
 }

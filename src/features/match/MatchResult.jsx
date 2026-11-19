@@ -1,7 +1,8 @@
-import { Trophy } from 'lucide-react'
+import { Sparkles, Trophy } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import { contentKey } from '../../content/index.js'
 import { MATCH_MODES } from '../../game/core/matchModes.js'
 import { formatDuration } from './matchEnded.js'
 
@@ -46,6 +47,20 @@ export default function MatchResult({ result, recorded, onReplay, onChangeMode }
               ? t('play.result.recordTime', { time: formatDuration(recorded.record.durationMs) })
               : t('play.result.recordScore', { score: recorded.record.score })}
           </p>
+        )}
+
+        {recorded?.unlocked?.length > 0 && (
+          <div role="status" className="alert alert-success">
+            <Sparkles aria-hidden="true" className="size-5" />
+            <span>
+              {t('play.result.unlocked', {
+                items: recorded.unlocked.map((id) => t(contentKey('cosmetic', id))).join(', '),
+              })}{' '}
+              <Link to="/perfil" className="link">
+                {t('play.result.customize')}
+              </Link>
+            </span>
+          </div>
         )}
 
         {result.ordersCompleted === 0 && <p className="text-sm opacity-80">{t('play.result.empty')}</p>}
