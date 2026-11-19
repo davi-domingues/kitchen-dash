@@ -1,7 +1,5 @@
-import { useTranslation } from 'react-i18next'
-import PlaceholderPage from './PlaceholderPage.jsx'
+import RankingPageContent from '../features/ranking/RankingPageContent.jsx'
 
 export default function RankingPage() {
-  const { t } = useTranslation()
-  return <PlaceholderPage title={t('nav.ranking')} message={t('placeholder.comingSoon')} />
+  return <RankingPageContent />
 }

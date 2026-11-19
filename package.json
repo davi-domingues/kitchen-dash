@@ -24,7 +24,10 @@
     "db:test": "supabase test db"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "1.6.3",
+    "@sentry/react": "11.10.0",
     "@supabase/supabase-js": "2.119.0",
+    "@tanstack/react-query": "5.108.0",
     "i18next": "27.1.1",
     "lucide-react": "1.72.0",
     "phaser": "3.90.0",

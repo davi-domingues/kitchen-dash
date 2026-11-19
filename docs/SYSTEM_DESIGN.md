@@ -121,7 +121,7 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 
 | Tabela | `anon` | `authenticated` |
 |---|---|---|
-| `profiles` | `select` (só `id`, `display_name`, `equipped` via view `public_profiles`) | `select`/`update` da própria linha |
+| `profiles` | `select` (só `id`, `display_name`, `equipped` via view `public_profiles`) | `select` e `update` de `display_name` da própria linha; `equipped` só por `set_equipped` |
 | `scores` | — | `select` das próprias linhas |
 | `user_settings` | — | `select`/`update` da própria linha |
 | `best_scores` | `select` | `select` |
@@ -129,6 +129,8 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 | `user_cosmetics` | — | `select` das próprias linhas |
 
 **Nenhuma** policy de `insert`/`update`/`delete` direto em `scores`, `best_scores`, `player_stats` e `user_cosmetics`. Toda escrita passa por RPC.
+
+O ranking global (KD-36) consulta `best_scores` e `public_profiles` para `anon` e `authenticated`, selecionando somente quadro, usuário, pontuação, data do recorde e nome público. A consulta é ordenada por `score DESC`, `achieved_at ASC` e `user_id ASC`, com páginas de até 20 posições. A sessão, quando disponível, é usada apenas para realçar a própria linha visível; não condiciona a leitura.
 
 ### 6.2 RPCs (`security definer`, `set search_path = ''`, `execute` revogado de `anon`)
 
@@ -142,6 +144,8 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
    - `content_version` dentro de uma lista aceita.
 5. Insere em `scores`, faz upsert em `best_scores` se for maior e atualiza `player_stats`.
 6. Avalia desbloqueios de cosméticos a partir de `player_stats`.
+
+**`set_equipped(p_equipped jsonb)`** → equipado gravado (KD-38). Slots `hat`/`apron`/`theme`, ids `^[a-z0-9_]{1,40}$`; item com custo em `game_rules.cosmetic_unlocks` só se estiver em `user_cosmetics` do usuário (`42501 cosmetic_not_owned`); formato inválido `22023`. Contrato em `specs/kd-38-cosmeticos-conta/contracts/cosmetics-api.md`.
 
 **`delete_my_account()`** remove os dados do usuário (exigência da LGPD).
 

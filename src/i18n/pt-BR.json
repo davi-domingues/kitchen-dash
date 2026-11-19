@@ -13,6 +13,40 @@
   "placeholder": {
     "comingSoon": "Esta página chega em breve."
   },
+  "profile": {
+    "local": {
+      "visitorHint": "Seu progresso fica salvo neste navegador.",
+      "notPersistent": "O navegador bloqueou o armazenamento: o progresso some ao fechar a aba.",
+      "empty": "Você ainda não jogou nenhuma partida.",
+      "statsTitle": "Estatísticas",
+      "matches": "Partidas",
+      "playTime": "Tempo jogado",
+      "boardTitle": "Placar dos chefs",
+      "boardEmpty": "Nenhuma partida entrou no placar ainda.",
+      "boardCaption": "{{mode}} · {{players}}P",
+      "date": "Data"
+    },
+    "settings": {
+      "title": "Configurações",
+      "clear": "Apagar progresso local",
+      "clearConfirmTitle": "Apagar o progresso?",
+      "clearConfirmText": "Recordes, placar, estatísticas e cosméticos deste navegador serão apagados. Não dá para desfazer.",
+      "cancel": "Cancelar",
+      "confirm": "Apagar"
+    },
+    "cosmetics": {
+      "title": "Personalização",
+      "hint": "Sua maior pontuação: {{score}}. Faça mais pontos para desbloquear itens.",
+      "slotHat": "Chapéu",
+      "slotApron": "Avental",
+      "slotTheme": "Tema da cozinha",
+      "locked": "Faça {{score}} pontos",
+      "error": "Não foi possível carregar a personalização.",
+      "p1Title": "Jogador 1",
+      "p2Title": "Jogador 2",
+      "p2Hint": "Chapéu e avental do Jogador 2, entre os itens já desbloqueados. O tema da cozinha é o do Jogador 1. Esta escolha fica só neste navegador."
+    }
+  },
   "notFound": {
     "title": "Página não encontrada",
     "message": "O endereço não existe. Que tal voltar para a cozinha?"
@@ -62,7 +96,12 @@
       "replay": "Jogar de novo",
       "changeMode": "Trocar modo",
       "home": "Início",
-      "error": "Não foi possível ler o resultado da partida."
+      "error": "Não foi possível ler o resultado da partida.",
+      "newRecord": "Novo recorde!",
+      "recordScore": "Seu recorde: {{score}} pontos",
+      "recordTime": "Seu melhor tempo: {{time}}",
+      "unlocked": "Desbloqueado: {{items}}.",
+      "customize": "Personalizar no perfil"
     }
   },
   "game": {
@@ -70,13 +109,15 @@
       "chef": {
         "p1": "P1",
         "p2": "P2"
-      }
+      },
+      "pass": "PASSE"
     },
     "hud": {
-      "score": "Pontos: {{score}}",
       "order": "#{{number}}",
       "queued": "+{{count}} na fila",
-      "end": "⏹ Encerrar"
+      "end": "⏹ Encerrar",
+      "scoreLabel": "Pontos",
+      "timeLabel": "Tempo"
     }
   },
   "ingredient": {
@@ -151,6 +192,81 @@
     },
     "theme_provence": {
       "name": "Tema Provence"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "intro": "Receba um código de 6 dígitos no seu e-mail. Sem senha.",
+      "emailLabel": "E-mail",
+      "sendCode": "Enviar código",
+      "codeSent": "Enviamos um código para {{email}}. Ele vale por 10 minutos.",
+      "codeLabel": "Código",
+      "verify": "Entrar",
+      "resend": "Trocar e-mail ou pedir outro código",
+      "unavailable": "O login está indisponível agora. Você pode continuar jogando como visitante."
+    },
+    "account": {
+      "signIn": "Entrar para salvar no ranking",
+      "signedInAs": "Conectado como {{email}}",
+      "signOut": "Sair",
+      "signOutError": "Não foi possível sair. Tente de novo."
+    },
+    "error": {
+      "invalidEmail": "Digite um e-mail válido.",
+      "captchaPending": "Conclua a verificação anti-robô.",
+      "codeFormat": "O código tem 6 dígitos.",
+      "invalidCode": "Código inválido ou expirado. Confira ou peça outro.",
+      "rateLimit": "Muitas tentativas. Aguarde alguns minutos.",
+      "captcha": "A verificação anti-robô falhou. Tente de novo.",
+      "network": "Sem conexão com o servidor. Verifique a internet.",
+      "generic": "Algo deu errado. Tente de novo."
+    }
+  },
+  "ranking": {
+    "title": "Ranking global",
+    "description": "Compare as melhores pontuações. A consulta é pública e não exige login.",
+    "back": "Voltar ao início",
+    "board": {
+      "label": "Modo e jogadores",
+      "classic_1p": "Clássico — 1 jogador",
+      "classic_2p": "Clássico — 2 jogadores",
+      "free_1p": "Livre — 1 jogador",
+      "free_2p": "Livre — 2 jogadores",
+      "challenge_1p": "Desafio — 1 jogador",
+      "challenge_2p": "Desafio — 2 jogadores"
+    },
+    "loading": "Carregando o ranking…",
+    "offline": "O ranking está indisponível sem conexão. Tente novamente quando a rede voltar.",
+    "error": "Não foi possível carregar o ranking.",
+    "retry": "Tentar novamente",
+    "stale": "Exibindo dados em cache; eles podem estar desatualizados.",
+    "updating": "Atualizando o ranking…",
+    "sessionError": "Não foi possível verificar sua sessão; o ranking continua público, mas sua linha não será destacada.",
+    "empty": "Ainda não há pontuações neste quadro.",
+    "tableCaption": "Pontuações do quadro selecionado",
+    "position": "Posição",
+    "player": "Jogador",
+    "score": "Pontos",
+    "you": "Você",
+    "pagination": "Paginação do ranking",
+    "page": "Página {{page}}",
+    "previous": "Anterior",
+    "next": "Próxima"
+  },
+  "migration": {
+    "notice": {
+      "progress": "Salvando seus dados na conta: {{done}} de {{total}} partidas…",
+      "done": "Dados deste navegador salvos na conta ({{count}} partidas enviadas).",
+      "discarded": "{{count}} partidas antigas não puderam ser validadas e ficaram de fora.",
+      "dismiss": "Fechar aviso"
+    }
+  },
+  "ui": {
+    "error": {
+      "title": "Algo deu errado",
+      "description": "Tivemos um problema inesperado. Recarregue a página para continuar.",
+      "reload": "Recarregar"
     }
   }
 }
