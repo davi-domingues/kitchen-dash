@@ -5,7 +5,7 @@
 
 ## 1. Visão geral
 
-Kitchen Dash será uma aplicação web com um jogo 2D de cozinha em visão top-down. Qualquer pessoa poderá iniciar uma partida sem criar uma conta. A autenticação será necessária para utilizar funcionalidades associadas ao perfil, como sincronização de dados e participação no ranking.
+Kitchen Dash será uma aplicação web com um jogo 2D de cozinha em visão top-down. Qualquer pessoa poderá iniciar uma partida sem criar uma conta. A autenticação será necessária para utilizar funcionalidades associadas ao perfil, como sincronização de dados e gravação remota de pontuações. A leitura do ranking é pública; uma sessão serve apenas para destacar o recorde da própria pessoa quando ele estiver visível.
 
 A arquitetura será dividida em três partes:
 - **Frontend:** interface da aplicação e experiência de jogo.
@@ -78,7 +78,7 @@ Usado como Backend as a Service, sem servidor próprio:
 - Login com `signInWithOtp({ email })` e validação com `verifyOtp({ email, token, type: 'email' })`.
 - O template "Magic Link" do Supabase deve ser alterado para conter `{{ .Token }}`, enviando um código em vez de link.
 - **E-mail:** SMTP padrão do Supabase durante o desenvolvimento (limite baixo de envios por hora); migrar para Resend (SMTP próprio) antes da abertura ao público.
-- Funcionalidades: sincronização entre dispositivos, registro remoto de pontuações, ranking e cosméticos vinculados ao perfil.
+- Funcionalidades: sincronização entre dispositivos, registro remoto de pontuações e cosméticos vinculados ao perfil. A leitura do ranking é pública para visitantes e pessoas autenticadas; quando há sessão, o ranking pode destacar a linha da própria pessoa.
 
 A autenticação nunca é barreira para iniciar uma partida.
 
@@ -86,8 +86,8 @@ A autenticação nunca é barreira para iniciar uma partida.
 
 | Contexto | Armazenamento | Uso |
 |---|---|---|
-| Visitante | `localStorage` | Preferências, cosméticos desbloqueados e recordes locais |
-| Usuário autenticado | Supabase / PostgreSQL | Perfil, cosméticos, pontuações e ranking |
+| Visitante | `localStorage` e leitura pública do Supabase | Preferências, cosméticos desbloqueados, recordes locais e ranking global |
+| Usuário autenticado | Supabase / PostgreSQL | Perfil, cosméticos, pontuações, sincronização e ranking global |
 
 ### 5.1 Migração no login
 
@@ -148,7 +148,7 @@ Itens futuros estão em [ROADMAP.md](ROADMAP.md).
 - [x] Supabase BaaS (Auth, PostgreSQL, Data API, RPC).
 - [x] OTP de 6 dígitos por e-mail; SMTP padrão agora, Resend antes do lançamento.
 - [x] Hospedagem na Cloudflare Pages (plano gratuito).
-- [x] Partidas sem login; ranking exige autenticação.
+- [x] Partidas sem login; leitura do ranking pública e gravação remota de pontuações autenticada.
 - [x] Ranking gravado apenas via RPC com validação.
 - [x] Migração completa dos dados locais no login, com recordes revalidados.
 - [x] Nome do produto: **Kitchen Dash** (sem "Ratatouille", por ser marca registrada).
