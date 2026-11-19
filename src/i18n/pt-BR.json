@@ -8,7 +8,8 @@
     "home": "Início",
     "ranking": "Ranking",
     "profile": "Perfil",
-    "privacy": "Privacidade"
+    "privacy": "Privacidade",
+    "settings": "Configurações"
   },
   "placeholder": {
     "comingSoon": "Esta página chega em breve."
@@ -58,6 +59,62 @@
       "move": "Jogador 1: setas e Enter. Jogador 2: WASD e Espaço.",
       "action": "Toque para pegar e entregar, segure para picar.",
       "pause": "P pausa a partida."
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "intro": "Ajuste as teclas de P1, P2 e da pausa. Em uma partida de 1 jogador, os dois conjuntos controlam o mesmo chef.",
+    "storageWarning": "O armazenamento deste navegador não está disponível: as teclas valem nesta sessão, mas não serão lembradas ao recarregar.",
+    "players": {
+      "p1": "Jogador 1",
+      "p2": "Jogador 2",
+      "pause": "Pausa"
+    },
+    "controls": {
+      "up": "Cima",
+      "down": "Baixo",
+      "left": "Esquerda",
+      "right": "Direita",
+      "action": "Ação"
+    },
+    "change": "Trocar a tecla de {{control}}",
+    "current": "Atual: {{key}}",
+    "restore": {
+      "button": "Restaurar padrão",
+      "title": "Restaurar o padrão?",
+      "body": "Todas as teclas personalizadas de P1, P2 e da pausa voltam ao padrão do jogo.",
+      "confirm": "Restaurar",
+      "cancel": "Cancelar"
+    },
+    "capture": {
+      "hint": "Pressione a nova tecla"
+    },
+    "status": {
+      "bound": "{{control}} agora usa {{key}}.",
+      "same": "{{control}} já usa {{key}}.",
+      "swapped": "{{control}} agora usa {{key}}; {{otherControl}} recebeu {{otherKey}}.",
+      "cancelled": "Troca cancelada; nada foi alterado.",
+      "restored": "Teclas restauradas ao padrão.",
+      "alreadyDefault": "As teclas já estão no padrão.",
+      "modifier": "A tecla {{key}}, sozinha, não serve como botão. Pressione outra tecla."
+    },
+    "keys": {
+      "arrowUp": "Seta para cima",
+      "arrowDown": "Seta para baixo",
+      "arrowLeft": "Seta para a esquerda",
+      "arrowRight": "Seta para a direita",
+      "enter": "Enter",
+      "space": "Espaço",
+      "escape": "Esc",
+      "tab": "Tab",
+      "backspace": "Backspace",
+      "delete": "Delete",
+      "home": "Home",
+      "end": "End",
+      "pageUp": "Page Up",
+      "pageDown": "Page Down",
+      "insert": "Insert",
+      "unknown": "Tecla {{code}}"
     }
   },
   "play": {
