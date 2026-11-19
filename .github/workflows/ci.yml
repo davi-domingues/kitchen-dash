@@ -81,6 +81,8 @@ jobs:
       - if: steps.app.outputs.existe == 'true'
         run: npm ci
       - if: steps.app.outputs.existe == 'true'
+        run: node scripts/check-content-version.js
+      - if: steps.app.outputs.existe == 'true'
         run: npm run format:check
       - if: steps.app.outputs.existe == 'true'
         run: npm run lint

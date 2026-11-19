@@ -86,7 +86,7 @@ flowchart LR
 
 - A importação roda **só na máquina do desenvolvedor**; a produção nunca chama a API.
 - A curadoria adiciona `steps: [{ station: 'cutting', durationMs: 1500 }, ...]`, `points`, `sprite` e nomes em pt-BR.
-- `content_version` (hash do JSON) vai em cada pontuação enviada.
+- `content_version` (hash do JSON) vai em cada pontuação enviada. O CI calcula a versão e exige que ela esteja na última migration que atualiza `accepted_content_versions`.
 - **Licença:** fotos do TheMealDB servem apenas de referência; sprites do jogo são próprios.
 
 ---
