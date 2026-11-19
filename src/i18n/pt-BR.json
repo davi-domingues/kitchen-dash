@@ -30,9 +30,21 @@
       "title": "Configurações",
       "clear": "Apagar progresso local",
       "clearConfirmTitle": "Apagar o progresso?",
-      "clearConfirmText": "Recordes, placar e estatísticas deste navegador serão apagados. Não dá para desfazer.",
+      "clearConfirmText": "Recordes, placar, estatísticas e cosméticos deste navegador serão apagados. Não dá para desfazer.",
       "cancel": "Cancelar",
       "confirm": "Apagar"
+    },
+    "cosmetics": {
+      "title": "Personalização",
+      "hint": "Sua maior pontuação: {{score}}. Faça mais pontos para desbloquear itens.",
+      "slotHat": "Chapéu",
+      "slotApron": "Avental",
+      "slotTheme": "Tema da cozinha",
+      "locked": "Faça {{score}} pontos",
+      "error": "Não foi possível carregar a personalização.",
+      "p1Title": "Jogador 1",
+      "p2Title": "Jogador 2",
+      "p2Hint": "Chapéu e avental do Jogador 2, entre os itens já desbloqueados. O tema da cozinha é o do Jogador 1. Esta escolha fica só neste navegador."
     }
   },
   "notFound": {
@@ -85,7 +97,9 @@
       "error": "Não foi possível ler o resultado da partida.",
       "newRecord": "Novo recorde!",
       "recordScore": "Seu recorde: {{score}} pontos",
-      "recordTime": "Seu melhor tempo: {{time}}"
+      "recordTime": "Seu melhor tempo: {{time}}",
+      "unlocked": "Desbloqueado: {{items}}.",
+      "customize": "Personalizar no perfil"
     }
   },
   "game": {
