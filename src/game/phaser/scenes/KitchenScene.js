@@ -1,5 +1,11 @@
 import Phaser from 'phaser'
 import { CONTENT_VERSION, INGREDIENTS, KITCHENS, RECIPES } from '../../../content/index.js'
+import {
+  consumeAutoActions,
+  filterManualDuplicates,
+  selectAutoActions,
+  setIdleBlocked,
+} from '../../core/idleSystem.js'
 import { canInteract } from '../../core/stations.js'
 import { findTargetStation } from '../../core/kitchenMap.js'
 import { toStationInputs } from '../../core/kitchenUpdate.js'
@@ -73,6 +79,7 @@ export class KitchenScene extends Phaser.Scene {
     this.input.keyboard.on('keydown', this.onKeyDown, this)
     this.input.keyboard.on('keyup', this.onKeyUp, this)
     this.game.events.on(Phaser.Core.Events.BLUR, this.onBlur, this)
+    this.game.events.on(Phaser.Core.Events.FOCUS, this.onFocus, this)
     EventBus.on(GAME_EVENTS.MATCH_RESUMED, this.resume, this)
     EventBus.on(GAME_EVENTS.MATCH_END_REQUESTED, this.requestEnd, this)
     // Listeners, timers e tweens não podem sobreviver ao fim da cena (AGENTS.md §4)
@@ -91,6 +98,11 @@ export class KitchenScene extends Phaser.Scene {
 
   onBlur() {
     this.inputMap.releaseAll()
+    this.match = setIdleBlocked(this.match, true)
+  }
+
+  onFocus() {
+    this.match = setIdleBlocked(this.match, false)
   }
 
   queue(inputEvents) {
@@ -103,7 +115,7 @@ export class KitchenScene extends Phaser.Scene {
 
   pause() {
     if (this.match.status !== MATCH_STATUS.RUNNING) return
-    this.match = pauseMatch(this.match)
+    this.match = pauseMatch(setIdleBlocked(this.match, true))
     // Teclas seguradas durante o menu não chegam como keyup: soltar evita chef andando ao retomar
     this.inputMap.releaseAll()
     this.pendingActions = []
@@ -111,7 +123,7 @@ export class KitchenScene extends Phaser.Scene {
   }
 
   resume() {
-    this.match = resumeMatch(this.match)
+    this.match = resumeMatch(setIdleBlocked(this.match, false))
   }
 
   // Arrow function: vira handler do botão do HUD sem bind
@@ -134,9 +146,14 @@ export class KitchenScene extends Phaser.Scene {
       action: MOVE_ACTION,
       ...this.inputMap.getMove(id),
     }))
-    const inputs = [...moves, ...toStationInputs(this.match, this.pendingActions)]
+    const manualActions = filterManualDuplicates(this.match, this.pendingActions)
+    // Botão e movimento do mesmo frame cancelam o auto-uso pendente do chef
+    const busyChefs = [...manualActions, ...moves.filter(({ x, y }) => x !== 0 || y !== 0)]
+    const autoActions = selectAutoActions(this.match, busyChefs)
+    const inputs = [...moves, ...toStationInputs(this.match, manualActions), ...autoActions]
     this.pendingActions = []
-    this.apply(this.step(this.match, inputs, delta))
+    // Consumir antes do step evita reenviar a mesma decisão no frame seguinte
+    this.apply(this.step(consumeAutoActions(this.match, autoActions), inputs, delta))
     this.draw()
   }
 
@@ -157,6 +174,7 @@ export class KitchenScene extends Phaser.Scene {
     this.tweens.killAll()
     this.input.keyboard?.removeAllListeners()
     this.game.events.off(Phaser.Core.Events.BLUR, this.onBlur, this)
+    this.game.events.off(Phaser.Core.Events.FOCUS, this.onFocus, this)
     EventBus.off(GAME_EVENTS.MATCH_RESUMED, this.resume, this)
     EventBus.off(GAME_EVENTS.MATCH_END_REQUESTED, this.requestEnd, this)
     this.inputMap.releaseAll()
