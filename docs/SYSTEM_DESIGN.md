@@ -51,7 +51,7 @@ src/
 ├── game/
 │   ├── core/            # JS puro: MatchState, OrderQueue, Recipe, Patience, Scoring, rng com seed
 │   ├── phaser/          # PhaserGame.jsx, EventBus, cenas (Boot, Preload, Kitchen, HUD)
-│   └── input/           # InputMap: ações abstratas (move, interact, drop) ← teclado hoje, toque depois
+│   └── input/           # InputMap: ações abstratas (move, interact, pause) ← teclado hoje, toque depois
 ├── content/             # recipes.json, kitchens.json, cosmetics.json + schemas
 ├── services/            # supabase.js, storage.js, scoreOutbox.js, monitoring.js, analytics.js (stub)
 ├── i18n/                # pt-BR.json
@@ -104,7 +104,8 @@ erDiagram
 
 | Tabela | Colunas principais | Observações |
 |---|---|---|
-| `profiles` | `id` (PK, FK `auth.users` on delete cascade), `display_name` (único, 3–20, regex), `settings jsonb`, `equipped jsonb`, `created_at` | Criada por trigger no cadastro |
+| `profiles` | `id` (PK, FK `auth.users` on delete cascade), `display_name` (único, 3–20, regex), `equipped jsonb`, `created_at` | Criada por trigger no cadastro |
+| `user_settings` | `user_id` (PK, FK `profiles`), `settings jsonb` | Privada: só o dono lê e altera. Criada pelo mesmo trigger |
 | `scores` | `id bigint identity`, `match_id uuid UNIQUE`, `user_id`, `board text default 'global'`, `score int`, `duration_ms int`, `seed`, `content_version`, `origin ('online'\|'local')`, `created_at` | Retida por 90 dias. Índices: `(user_id, created_at desc)`, `(created_at)` |
 | `best_scores` | PK `(board, user_id)`, `score`, `match_id`, `achieved_at` | Índice `(board, score desc, achieved_at)`. `board` permite rankings por desafio/cozinha no futuro |
 | `player_stats` | `user_id` PK, `matches_played`, `total_score`, `orders_completed`, `play_time_ms` | Sobrevive à retenção; base para desbloqueio de cosméticos |
@@ -120,26 +121,31 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 
 | Tabela | `anon` | `authenticated` |
 |---|---|---|
-| `profiles` | `select` (só `id`, `display_name`, `equipped` via view `public_profiles`) | `select`/`update` da própria linha |
+| `profiles` | `select` (só `id`, `display_name`, `equipped` via view `public_profiles`) | `select` e `update` de `display_name` da própria linha; `equipped` só por `set_equipped` |
 | `scores` | — | `select` das próprias linhas |
+| `user_settings` | — | `select`/`update` da própria linha |
 | `best_scores` | `select` | `select` |
 | `player_stats` | — | `select` da própria linha |
 | `user_cosmetics` | — | `select` das próprias linhas |
 
 **Nenhuma** policy de `insert`/`update`/`delete` direto em `scores`, `best_scores`, `player_stats` e `user_cosmetics`. Toda escrita passa por RPC.
 
+O ranking global (KD-36) consulta `best_scores` e `public_profiles` para `anon` e `authenticated`, selecionando somente quadro, usuário, pontuação, data do recorde e nome público. A consulta é ordenada por `score DESC`, `achieved_at ASC` e `user_id ASC`, com páginas de até 20 posições. A sessão, quando disponível, é usada apenas para realçar a própria linha visível; não condiciona a leitura.
+
 ### 6.2 RPCs (`security definer`, `set search_path = ''`, `execute` revogado de `anon`)
 
-**`submit_score(match_id, board, score, duration_ms, seed, content_version, origin)`**
+**`submit_score(p_match_id, p_board, p_score, p_duration_ms, p_seed, p_content_version, p_origin, p_orders_completed)`** → `{ match_id, is_new_best, best_score, unlocked_cosmetics }`. Contrato completo (tipos, erros e ação do cliente) em `specs/001-rpc-submit-score/contracts/submit_score.md`.
 1. Rejeita se `auth.uid()` for nulo.
 2. **Idempotência:** se `match_id` já existe, retorna o resultado anterior.
 3. **Rate limit:** no máximo N envios por usuário em 60 s.
 4. **Plausibilidade:**
    - `duration_ms` entre a duração mínima e a máxima da partida;
-   - `score ≤ duration_s × MAX_PONTOS_POR_SEGUNDO` (constante derivada do conteúdo);
+   - `score ≤ score_allowance + ceil(duration_s) × MAX_PONTOS_POR_SEGUNDO` (15 e folga de 180, regras da KD-14);
    - `content_version` dentro de uma lista aceita.
 5. Insere em `scores`, faz upsert em `best_scores` se for maior e atualiza `player_stats`.
 6. Avalia desbloqueios de cosméticos a partir de `player_stats`.
+
+**`set_equipped(p_equipped jsonb)`** → equipado gravado (KD-38). Slots `hat`/`apron`/`theme`, ids `^[a-z0-9_]{1,40}$`; item com custo em `game_rules.cosmetic_unlocks` só se estiver em `user_cosmetics` do usuário (`42501 cosmetic_not_owned`); formato inválido `22023`. Contrato em `specs/kd-38-cosmeticos-conta/contracts/cosmetics-api.md`.
 
 **`delete_my_account()`** remove os dados do usuário (exigência da LGPD).
 
@@ -171,7 +177,7 @@ sequenceDiagram
     participant R as React (features)
     participant O as scoreOutbox (localStorage)
     participant S as Supabase RPC
-    P->>R: EventBus match:ended {match_id, score, ...}
+    P->>R: EventBus match:ended {matchId, mode, players, seed, contentVersion, score, ordersCompleted, ordersFailed, durationMs}
     R->>O: enqueue(payload)
     R->>S: submit_score(payload)
     alt sucesso ou match_id duplicado
@@ -210,7 +216,8 @@ sequenceDiagram
 ## 8. Usabilidade e eficiência
 
 ### 8.1 Plataforma e input
-- Desktop com teclado: WASD/setas, `E`/`Espaço` para interagir, `Esc` para pausar.
+- Desktop com teclado (PRD): P1 setas + `Enter`, P2 WASD + `Espaço`, `P` pausa. Em 1 jogador, os dois conjuntos controlam o mesmo chef.
+- Um único botão de ação contextual (sem `drop` separado): toque rápido (< 220 ms) pega, solta, monta ou serve; segurar pica.
 - `InputMap` traduz teclas em ações. As teclas podem ser remapeadas e ficam salvas em `settings`. O joystick virtual entra no mesmo mapa no futuro.
 - Em telas de toque, a home funciona normalmente e a tela de jogo mostra um aviso.
 

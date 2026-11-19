@@ -1,31 +1,166 @@
 import Phaser from 'phaser'
-import { t } from '../../../i18n/index.js'
+import { CONTENT_VERSION, INGREDIENTS, KITCHENS, RECIPES } from '../../../content/index.js'
+import { canInteract } from '../../core/stations.js'
+import { findTargetStation } from '../../core/kitchenMap.js'
+import { toStationInputs } from '../../core/kitchenUpdate.js'
+import { createMatch, endMatch } from '../../core/match.js'
+import { DEFAULT_MATCH_CONFIG } from '../../core/matchModes.js'
+import { MATCH_STATUS, pauseMatch, resumeMatch } from '../../core/matchState.js'
+import { MOVE_ACTION } from '../../core/movementSystem.js'
+import { STATION_ACTIONS } from '../../core/stationsSystem.js'
+import { DEFAULT_KEY_BINDINGS } from '../../input/keyBindings.js'
+import { INPUT_EVENTS, createInputMap } from '../../input/inputMap.js'
 import { EventBus } from '../EventBus.js'
 import { GAME_EVENTS } from '../events.js'
+import { buildHudModel } from '../hudModel.js'
+import { HUD_HEIGHT, createHudView } from '../hudView.js'
+import { createKitchenView } from '../kitchenView.js'
+import { createMatchEndGuard } from '../matchEndGuard.js'
+import { resolveLook } from '../cosmeticLook.js'
+import { COSMETIC_LOOK_KEY, KEY_BINDINGS_KEY, MATCH_CONFIG_KEY } from '../registryKeys.js'
 import { SCENE_KEYS } from '../sceneKeys.js'
+
+const ACTION_BY_EVENT = Object.freeze({
+  [INPUT_EVENTS.TAP]: STATION_ACTIONS.TAP,
+  [INPUT_EVENTS.HOLD_START]: STATION_ACTIONS.HOLD_START,
+  [INPUT_EVENTS.HOLD_END]: STATION_ACTIONS.HOLD_END,
+})
+
+// Seed nova a cada partida; o Desafio troca pela seed fixa dentro do core
+const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0] >>> 1
 
 export class KitchenScene extends Phaser.Scene {
   constructor() {
     super(SCENE_KEYS.KITCHEN)
   }
 
+  // Modo, jogadores e teclas vêm do React pelo registry (game/phaser não importa services)
+  init() {
+    const { mode, players } = this.registry.get(MATCH_CONFIG_KEY) ?? DEFAULT_MATCH_CONFIG
+    this.kitchen = KITCHENS[0]
+    this.content = { recipes: RECIPES, ingredients: INGREDIENTS, kitchen: this.kitchen }
+    const match = createMatch({
+      mode,
+      players,
+      seed: randomSeed(),
+      contentVersion: CONTENT_VERSION,
+      content: this.content,
+    })
+    this.match = match.state
+    this.step = match.update
+    // Identificador da partida para a idempotência do submit_score (KD-21)
+    this.takeMatchEnded = createMatchEndGuard(crypto.randomUUID())
+    const bindings = this.registry.get(KEY_BINDINGS_KEY) ?? DEFAULT_KEY_BINDINGS
+    this.inputMap = createInputMap({ bindings, playerCount: players })
+    this.pendingActions = []
+  }
+
   create() {
     const { width, height } = this.scale
-    this.add
-      .text(width / 2, height / 2, t('game.kitchen.underConstruction'), {
-        fontFamily: 'sans-serif',
-        fontSize: '32px',
-        color: '#f5ead6',
-      })
-      .setOrigin(0.5)
+    this.hud = createHudView(this, { onEnd: this.requestEnd })
+    this.view = createKitchenView(
+      this,
+      this.kitchen,
+      this.match,
+      {
+        x: 0,
+        y: HUD_HEIGHT,
+        width,
+        height: height - HUD_HEIGHT,
+      },
+      resolveLook(this.registry.get(COSMETIC_LOOK_KEY)),
+    )
+    this.input.keyboard.on('keydown', this.onKeyDown, this)
+    this.input.keyboard.on('keyup', this.onKeyUp, this)
+    this.game.events.on(Phaser.Core.Events.BLUR, this.onBlur, this)
+    EventBus.on(GAME_EVENTS.MATCH_RESUMED, this.resume, this)
+    EventBus.on(GAME_EVENTS.MATCH_END_REQUESTED, this.requestEnd, this)
     // Listeners, timers e tweens não podem sobreviver ao fim da cena (AGENTS.md §4)
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.cleanup, this)
+    this.draw()
     EventBus.emit(GAME_EVENTS.SCENE_READY, this)
+  }
+
+  onKeyDown(event) {
+    this.queue(this.inputMap.keyDown(event.code, this.time.now))
+  }
+
+  onKeyUp(event) {
+    this.queue(this.inputMap.keyUp(event.code))
+  }
+
+  onBlur() {
+    this.inputMap.releaseAll()
+  }
+
+  queue(inputEvents) {
+    for (const { type, player } of inputEvents) {
+      if (type === INPUT_EVENTS.PAUSE) this.pause()
+      const action = ACTION_BY_EVENT[type]
+      if (action) this.pendingActions.push({ chefId: player, action })
+    }
+  }
+
+  pause() {
+    if (this.match.status !== MATCH_STATUS.RUNNING) return
+    this.match = pauseMatch(this.match)
+    // Teclas seguradas durante o menu não chegam como keyup: soltar evita chef andando ao retomar
+    this.inputMap.releaseAll()
+    this.pendingActions = []
+    EventBus.emit(GAME_EVENTS.MATCH_PAUSED)
+  }
+
+  resume() {
+    this.match = resumeMatch(this.match)
+  }
+
+  // Arrow function: vira handler do botão do HUD sem bind
+  requestEnd = () => {
+    this.apply(endMatch(this.match))
+  }
+
+  // Aplica o resultado do core; o guard garante um único match:ended por partida
+  apply({ state, events }) {
+    this.match = state
+    const payload = this.takeMatchEnded(events)
+    if (payload) EventBus.emit(GAME_EVENTS.MATCH_ENDED, payload)
+  }
+
+  update(time, delta) {
+    if (this.match.status !== MATCH_STATUS.RUNNING) return
+    this.queue(this.inputMap.update(time))
+    const moves = this.match.chefs.map(({ id }) => ({
+      chefId: id,
+      action: MOVE_ACTION,
+      ...this.inputMap.getMove(id),
+    }))
+    const inputs = [...moves, ...toStationInputs(this.match, this.pendingActions)]
+    this.pendingActions = []
+    this.apply(this.step(this.match, inputs, delta))
+    this.draw()
+  }
+
+  draw() {
+    const stationContent = { ...this.content, stoveBurnAfterMs: this.kitchen.stoveBurnAfterMs }
+    const targets = this.match.chefs.flatMap(({ id }) => {
+      const station = findTargetStation(this.match, id)
+      return station
+        ? [{ chefId: id, station, ready: canInteract(this.match, stationContent, id, station.id) }]
+        : []
+    })
+    this.view.render(this.match, targets)
+    this.hud.render(buildHudModel(this.match))
   }
 
   cleanup() {
     this.time.removeAllEvents()
     this.tweens.killAll()
     this.input.keyboard?.removeAllListeners()
+    this.game.events.off(Phaser.Core.Events.BLUR, this.onBlur, this)
+    EventBus.off(GAME_EVENTS.MATCH_RESUMED, this.resume, this)
+    EventBus.off(GAME_EVENTS.MATCH_END_REQUESTED, this.requestEnd, this)
+    this.inputMap.releaseAll()
+    this.view.destroy()
+    this.hud.destroy()
   }
 }

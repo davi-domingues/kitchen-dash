@@ -2,13 +2,14 @@ import Phaser from 'phaser'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BootScene } from './scenes/BootScene.js'
+import { COSMETIC_LOOK_KEY, KEY_BINDINGS_KEY, MATCH_CONFIG_KEY } from './registryKeys.js'
 import { KitchenScene } from './scenes/KitchenScene.js'
 import { PreloadScene } from './scenes/PreloadScene.js'
 
 const GAME_WIDTH = 960
 const GAME_HEIGHT = 540
 
-export default function PhaserGame() {
+export default function PhaserGame({ matchConfig, keyBindings, cosmeticLook }) {
   const { t } = useTranslation()
   const containerRef = useRef(null)
 
@@ -22,10 +23,18 @@ export default function PhaserGame() {
       scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
       // Só a primeira cena inicia sozinha; as demais seguem SCENE_ORDER via scene.start
       scene: [BootScene, PreloadScene, KitchenScene],
+      // As cenas leem modo e nº de jogadores do registry; o React não fala com elas diretamente
+      callbacks: {
+        preBoot: (bootingGame) => {
+          bootingGame.registry.set(MATCH_CONFIG_KEY, matchConfig)
+          bootingGame.registry.set(KEY_BINDINGS_KEY, keyBindings)
+          bootingGame.registry.set(COSMETIC_LOOK_KEY, cosmeticLook)
+        },
+      },
     })
     // Destrói o jogo ao sair da rota para não vazar canvas, listeners e loops
     return () => game.destroy(true)
-  }, [])
+  }, [matchConfig, keyBindings, cosmeticLook])
 
   return <div ref={containerRef} className="aspect-video w-full max-w-5xl" aria-label={t('play.gameArea')} />
 }
