@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import HomePage from './HomePage.jsx'
+import ControlsPage from '../features/controls/ControlsPage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 import PrivacyPage from './PrivacyPage.jsx'
 import ProfilePage from './ProfilePage.jsx'
@@ -17,6 +18,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/controles" element={<ControlsPage />} />
         <Route
           path="/jogar"
           element={

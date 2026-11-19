@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import { MATCH_MODES, PLAYER_COUNTS } from '../../game/core/matchModes.js'
 
 export default function MatchSetup({ initialConfig, onStart }) {
@@ -60,6 +61,9 @@ export default function MatchSetup({ initialConfig, onStart }) {
           ))}
         </fieldset>
 
+        <Link to="/controles" className="btn btn-outline">
+          {t('controls.title')}
+        </Link>
         <button type="submit" className="btn btn-primary btn-lg">
           {t('play.setup.start')}
         </button>

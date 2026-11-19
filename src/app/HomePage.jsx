@@ -20,7 +20,10 @@ export default function HomePage() {
           <Link to="/jogar" className="btn btn-primary btn-lg">
             {t('home.play')}
           </Link>
-          <nav aria-label={t('nav.label')} className="mt-6 flex justify-center gap-2">
+          <nav aria-label={t('nav.label')} className="mt-6 flex flex-wrap justify-center gap-2">
+            <Link to="/controles" className="btn btn-ghost btn-sm">
+              {t('controls.title')}
+            </Link>
             <Link to="/ranking" className="btn btn-ghost btn-sm">
               {t('nav.ranking')}
             </Link>

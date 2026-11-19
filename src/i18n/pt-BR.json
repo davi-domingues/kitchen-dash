@@ -52,10 +52,40 @@
     "tagline": "Colete, prepare e entregue os pedidos antes que os clientes percam a paciência.",
     "play": "Jogar",
     "howTo": {
-      "move": "Jogador 1: setas e Enter. Jogador 2: WASD e Espaço.",
+      "move": "Padrão: Jogador 1 usa setas e Enter; Jogador 2 usa WASD e Espaço.",
       "action": "Toque para pegar e entregar, segure para picar.",
-      "pause": "P pausa a partida."
+      "pause": "Por padrão, P pausa a partida. Personalize as teclas em Controles."
     }
+  },
+  "controls": {
+    "title": "Controles",
+    "instructions": "Escolha uma ação e pressione a nova tecla. Esc cancela; Tab cancela e continua a navegação.",
+    "playerOne": "Jogador 1",
+    "playerTwo": "Jogador 2",
+    "up": "Cima",
+    "down": "Baixo",
+    "left": "Esquerda",
+    "right": "Direita",
+    "action": "Ação",
+    "pause": "Pausar",
+    "keyUp": "Seta para cima",
+    "keyDown": "Seta para baixo",
+    "keyLeft": "Seta para esquerda",
+    "keyRight": "Seta para direita",
+    "keySpace": "Espaço",
+    "keyEnter": "Enter",
+    "keyNumpadEnter": "Enter numérico",
+    "keyNumpad": "Numérico {{number}}",
+    "changeLabel": "Alterar {{action}}: {{key}}",
+    "waiting": "Pressione uma tecla para {{action}}. Esc cancela.",
+    "pressKey": "Pressione uma tecla",
+    "invalidKey": "Use uma letra, número, seta, Espaço ou Enter, sem modificadores.",
+    "cancelled": "Alteração cancelada.",
+    "saved": "{{action}} alterado para {{key}}.",
+    "swapped": "As teclas de {{first}} e {{second}} foram trocadas.",
+    "restore": "Restaurar teclas padrão",
+    "restored": "Teclas padrão restauradas.",
+    "temporary": "Armazenamento indisponível: as alterações valem apenas nesta sessão."
   },
   "play": {
     "back": "Voltar",
