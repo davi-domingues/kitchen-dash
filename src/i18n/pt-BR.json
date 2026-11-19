@@ -117,6 +117,28 @@
       "unknown": "Tecla {{code}}"
     }
   },
+  "dailyChallenge": {
+    "title": "Desafio do dia",
+    "status": {
+      "completed": "Concluído hoje",
+      "pending": "Ainda não concluído"
+    },
+    "unavailable": "Desafio do dia indisponível.",
+    "challenge": {
+      "serveRatatouille": {
+        "title": "Ratatouille em dobro",
+        "description": "Entregue 3 ratatouilles em uma partida."
+      },
+      "noMissed": {
+        "title": "Sem perdas",
+        "description": "Termine a partida sem nenhum pedido perdido."
+      },
+      "score600": {
+        "title": "Pontuação 600",
+        "description": "Some pelo menos 600 pontos em uma partida."
+      }
+    }
+  },
   "play": {
     "back": "Voltar",
     "touchNotice": "Para jogar, conecte um teclado. Os controles por toque ainda não estão disponíveis.",
