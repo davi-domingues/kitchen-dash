@@ -6,13 +6,14 @@ import { loadCosmeticLook } from '../features/cosmetics/cosmeticsStore.js'
 import MatchResult from '../features/match/MatchResult.jsx'
 import MatchSetup from '../features/match/MatchSetup.jsx'
 import PauseDialog from '../features/match/PauseDialog.jsx'
+import { PLAY_PHASES, initialPlayState, playFlowReducer } from '../features/match/playFlow.js'
 import { useRecordedResult } from '../features/progress/useRecordedResult.js'
 import { useSubmitMatch } from '../features/progress/useScoreSync.js'
-import { PLAY_PHASES, initialPlayState, playFlowReducer } from '../features/match/playFlow.js'
+import { MATCH_MODES } from '../game/core/matchModes.js'
 import { EventBus } from '../game/phaser/EventBus.js'
 import PhaserGame from '../game/phaser/PhaserGame.jsx'
-import { MATCH_MODES } from '../game/core/matchModes.js'
 import { GAME_EVENTS } from '../game/phaser/events.js'
+import { setDailyChallengeCompletion } from '../services/dailyChallengeProgress.js'
 import { loadKeyBindings } from '../services/settings.js'
 
 export default function PlayPage({ reduceEffects, onReduceEffectsChange }) {
@@ -27,7 +28,16 @@ export default function PlayPage({ reduceEffects, onReduceEffectsChange }) {
 
   useEffect(() => {
     const onPaused = () => dispatch({ type: 'paused' })
-    const onEnded = (payload) => dispatch({ type: 'ended', payload })
+    const onEnded = (payload) => {
+      dispatch({ type: 'ended', payload })
+      const result = payload?.dailyChallengeResult
+      if (!result?.completed) return
+      setDailyChallengeCompletion({
+        dateUtc: result.dateUtc,
+        challengeId: result.challengeId,
+      })
+    }
+
     EventBus.on(GAME_EVENTS.MATCH_PAUSED, onPaused)
     EventBus.on(GAME_EVENTS.MATCH_ENDED, onEnded)
     return () => {

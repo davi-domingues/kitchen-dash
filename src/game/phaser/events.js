@@ -3,9 +3,10 @@ export const GAME_EVENTS = Object.freeze({
   // Payload: a cena ativa. Emitido quando a cena terminou o `create`.
   SCENE_READY: 'scene:ready',
   // Payload (contrato fechado na KD-21, ESTUDOS_E_DECISOES §7): `{ matchId, mode, players, seed,
-  // contentVersion, score, ordersCompleted, ordersFailed, durationMs }`. `matchId` é UUID gerado pela
-  // cena no início da partida (idempotência do submit_score); `board` e `origin` são do React.
-  // Validado por features/match/matchEnded.js.
+  // contentVersion, score, ordersCompleted, ordersFailed, durationMs, dailyChallengeResult }`.
+  // dailyChallengeResult: `{ dateUtc, challengeId, completed }`.
+  // `matchId` é UUID gerado pela cena no início da partida (idempotência do submit_score);
+  // `board` e `origin` são do React. Validado por features/match/matchEnded.js.
   MATCH_ENDED: 'match:ended',
   // Sem payload. O React abre o menu de pausa.
   MATCH_PAUSED: 'match:paused',
