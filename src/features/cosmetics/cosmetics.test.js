@@ -127,6 +127,7 @@ describe('getLook', () => {
     const state = equip(applyScore(createEmptyCosmetics(), 1000).state, 'hat_gold')
 
     expect(getLook(state)).toEqual({
+      themeId: 'theme_bistro',
       theme: '#7b1e3a',
       chefs: { p1: { hat: '#c9a227', apron: '#f5ead6' }, p2: { hat: '#f5ead6', apron: '#f5ead6' } },
     })

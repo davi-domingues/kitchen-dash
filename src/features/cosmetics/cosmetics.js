@@ -105,6 +105,8 @@ const colorsOf = (equipped) =>
 /** Cores equipadas no formato que a cena recebe pelo registry: tema único e visual por chef. */
 export function getLook(state) {
   return {
+    // A cena precisa do id para escolher a paleta inteira (piso, parede, balcão) do tema
+    themeId: state.equipped.theme,
     theme: byId.get(state.equipped.theme).color,
     chefs: { p1: colorsOf(state.equipped), p2: colorsOf(state.equippedP2) },
   }
