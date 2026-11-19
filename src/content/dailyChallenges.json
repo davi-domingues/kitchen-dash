@@ -1,0 +1,32 @@
+[
+  {
+    "id": "serve-ratatouille-3",
+    "titleKey": "dailyChallenge.challenge.serveRatatouille.title",
+    "descriptionKey": "dailyChallenge.challenge.serveRatatouille.description",
+    "criteria": {
+      "type": "deliver-recipe-count",
+      "recipeId": "ratatouille",
+      "count": 3
+    },
+    "applicableModes": ["classic", "free", "challenge"]
+  },
+  {
+    "id": "no-missed-orders",
+    "titleKey": "dailyChallenge.challenge.noMissed.title",
+    "descriptionKey": "dailyChallenge.challenge.noMissed.description",
+    "criteria": {
+      "type": "no-missed-orders"
+    },
+    "applicableModes": ["classic", "challenge"]
+  },
+  {
+    "id": "score-600",
+    "titleKey": "dailyChallenge.challenge.score600.title",
+    "descriptionKey": "dailyChallenge.challenge.score600.description",
+    "criteria": {
+      "type": "score-at-least",
+      "score": 600
+    },
+    "applicableModes": ["classic", "free", "challenge"]
+  }
+]

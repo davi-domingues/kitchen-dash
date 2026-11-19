@@ -112,6 +112,14 @@ export default function App() {
           }
         />
         <Route
+          path="/configuracoes"
+          element={
+            <ErrorBoundary>
+              <SettingsPage />
+            </ErrorBoundary>
+          }
+        />
+        <Route
           path="*"
           element={
             <ErrorBoundary>
@@ -119,11 +127,6 @@ export default function App() {
             </ErrorBoundary>
           }
         />
-        <Route path="/ranking" element={<RankingPage />} />
-        <Route path="/perfil" element={<ProfilePage />} />
-        <Route path="/configuracoes" element={<SettingsPage />} />
-        <Route path="/privacidade" element={<PrivacyPage />} />
-        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <MigrationNotice />
     </BrowserRouter>

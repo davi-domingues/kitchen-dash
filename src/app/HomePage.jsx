@@ -2,9 +2,26 @@ import { ChefHat } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import AccountStatus from '../features/auth/AccountStatus.jsx'
+import { getDailyChallenge } from '../game/core/dailyChallenge/index.js'
+import { getDailyChallengeCompletion } from '../services/dailyChallengeProgress.js'
 
 export default function HomePage() {
   const { t } = useTranslation()
+  void t('dailyChallenge.challenge.serveRatatouille.title')
+  void t('dailyChallenge.challenge.serveRatatouille.description')
+  void t('dailyChallenge.challenge.noMissed.title')
+  void t('dailyChallenge.challenge.noMissed.description')
+  void t('dailyChallenge.challenge.score600.title')
+  void t('dailyChallenge.challenge.score600.description')
+  let dailyChallenge
+  let completion
+
+  try {
+    dailyChallenge = getDailyChallenge()
+    completion = getDailyChallengeCompletion(dailyChallenge.dateUtc)
+  } catch {
+    dailyChallenge = null
+  }
 
   return (
     <main className="hero min-h-screen bg-base-200">
@@ -38,6 +55,24 @@ export default function HomePage() {
               {t('nav.privacy')}
             </Link>
           </nav>
+          <section className="mt-6 rounded-box bg-base-100 p-4 text-left shadow">
+            <h2 className="text-lg font-semibold">{t('dailyChallenge.title')}</h2>
+            {dailyChallenge ? (
+              <>
+                <p className="mt-2 text-base-content/80">{t(dailyChallenge.challenge.titleKey)}</p>
+                <p className="mt-1 text-sm text-base-content/70">
+                  {t(dailyChallenge.challenge.descriptionKey)}
+                </p>
+                <div className="mt-3">
+                  <span className="badge badge-outline">
+                    {completion ? t('dailyChallenge.status.completed') : t('dailyChallenge.status.pending')}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <p className="mt-2 text-sm text-base-content/70">{t('dailyChallenge.unavailable')}</p>
+            )}
+          </section>
         </div>
       </div>
     </main>

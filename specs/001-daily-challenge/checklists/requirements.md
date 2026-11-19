@@ -1,4 +1,4 @@
-# Specification Quality Checklist: Tela de remapeamento de teclas
+# Specification Quality Checklist: Desafio do dia
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-11-19
@@ -31,5 +31,4 @@
 
 ## Notes
 
-- Decisões desta sessão: preferências corrompidas caem no padrão sem aviso (FR-004 simplificado);
-  branch `feat/remapear-teclas` mantida, com rastreabilidade `Refs #75` / `Closes #75`.
+- Todas as pendências de clarificação foram resolvidas.

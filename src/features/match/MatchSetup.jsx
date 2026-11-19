@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router'
 import { MATCH_MODES, PLAYER_COUNTS } from '../../game/core/matchModes.js'
 
 export default function MatchSetup({ initialConfig, onStart, reduceEffects, onReduceEffectsChange }) {
@@ -60,6 +61,9 @@ export default function MatchSetup({ initialConfig, onStart, reduceEffects, onRe
           ))}
         </fieldset>
 
+        <Link to="/configuracoes" className="btn btn-outline">
+          {t('settings.title')}
+        </Link>
         <label className="label cursor-pointer gap-3 text-base-content">
           <input
             type="checkbox"

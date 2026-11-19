@@ -1,5 +1,7 @@
 import Phaser from 'phaser'
 import { CONTENT_VERSION, INGREDIENTS, KITCHENS, RECIPES } from '../../../content/index.js'
+import { CORE_EVENTS } from '../../core/coreEvents.js'
+import { getDailyChallengeResult } from '../../core/dailyChallenge/index.js'
 import {
   consumeAutoActions,
   filterManualDuplicates,
@@ -59,6 +61,7 @@ export class KitchenScene extends Phaser.Scene {
     const bindings = this.registry.get(KEY_BINDINGS_KEY) ?? DEFAULT_KEY_BINDINGS
     this.inputMap = createInputMap({ bindings, playerCount: players })
     this.pendingActions = []
+    this.deliveredByRecipe = {}
   }
 
   create() {
@@ -131,11 +134,31 @@ export class KitchenScene extends Phaser.Scene {
     this.apply(endMatch(this.match))
   }
 
+  trackDailyChallengeStats(events) {
+    for (const event of events) {
+      if (event.type === CORE_EVENTS.ORDER_DELIVERED) {
+        const recipeId = event.payload?.recipeId
+        if (!recipeId) continue
+        this.deliveredByRecipe[recipeId] = (this.deliveredByRecipe[recipeId] ?? 0) + 1
+      }
+    }
+  }
+
   // Aplica o resultado do core; o guard garante um único match:ended por partida
   apply({ state, events }) {
     this.match = state
+    this.trackDailyChallengeStats(events)
     const payload = this.takeMatchEnded(events)
-    if (payload) EventBus.emit(GAME_EVENTS.MATCH_ENDED, payload)
+    if (payload) {
+      const summary = {
+        mode: payload.mode,
+        score: payload.score,
+        missedOrders: payload.ordersFailed,
+        deliveredByRecipe: this.deliveredByRecipe,
+      }
+      const dailyChallengeResult = getDailyChallengeResult({ summary })
+      EventBus.emit(GAME_EVENTS.MATCH_ENDED, { ...payload, dailyChallengeResult })
+    }
   }
 
   update(time, delta) {
