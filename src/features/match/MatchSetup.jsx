@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MATCH_MODES, PLAYER_COUNTS } from '../../game/core/matchModes.js'
 
-export default function MatchSetup({ initialConfig, onStart }) {
+export default function MatchSetup({ initialConfig, onStart, reduceEffects, onReduceEffectsChange }) {
   const { t } = useTranslation()
   const [players, setPlayers] = useState(initialConfig.players)
   const [mode, setMode] = useState(initialConfig.mode)
@@ -59,6 +59,16 @@ export default function MatchSetup({ initialConfig, onStart }) {
             </label>
           ))}
         </fieldset>
+
+        <label className="label cursor-pointer gap-3 text-base-content">
+          <input
+            type="checkbox"
+            className="checkbox checkbox-primary"
+            checked={reduceEffects}
+            onChange={(event) => onReduceEffectsChange(event.target.checked)}
+          />
+          <span>{t('play.setup.reduceEffects')}</span>
+        </label>
 
         <button type="submit" className="btn btn-primary btn-lg">
           {t('play.setup.start')}
