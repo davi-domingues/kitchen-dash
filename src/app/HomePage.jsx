@@ -1,6 +1,7 @@
 import { ChefHat } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import AccountStatus from '../features/auth/AccountStatus.jsx'
 
 export default function HomePage() {
   const { t } = useTranslation()
@@ -20,6 +21,9 @@ export default function HomePage() {
           <Link to="/jogar" className="btn btn-primary btn-lg">
             {t('home.play')}
           </Link>
+          <div className="mt-6">
+            <AccountStatus />
+          </div>
           <nav aria-label={t('nav.label')} className="mt-6 flex flex-wrap justify-center gap-2">
             <Link to="/controles" className="btn btn-ghost btn-sm">
               {t('controls.title')}

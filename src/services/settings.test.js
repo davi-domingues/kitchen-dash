@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_KEY_BINDINGS, remapKey } from '../game/input/keyBindings.js'
-import { loadKeyBindings, saveKeyBindings } from './settings.js'
+import { loadKeyBindings, loadSettings, saveKeyBindings, saveSettings } from './settings.js'
 import { createStorage } from './storage.js'
 
 function memoryStore() {
@@ -27,5 +27,22 @@ describe('settings: teclas', () => {
 
     expect(loadKeyBindings(store).p1.action).toBe('KeyL')
     expect(store.get('settings').reduceEffects).toBe(true)
+  })
+})
+
+describe('settings: objeto completo', () => {
+  it('lê vazio quando o valor salvo não é objeto', () => {
+    const store = memoryStore()
+    store.set('settings', ['x'])
+
+    expect(loadSettings(store)).toEqual({})
+  })
+
+  it('grava e relê o objeto inteiro', () => {
+    const store = memoryStore()
+
+    saveSettings({ reduceEffects: true }, store)
+
+    expect(loadSettings(store)).toEqual({ reduceEffects: true })
   })
 })
