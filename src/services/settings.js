@@ -21,3 +21,14 @@ export function loadKeyBindings(store = defaultStorage) {
 export function saveKeyBindings(bindings, store = defaultStorage) {
   saveSettings({ ...loadSettings(store), keyBindings: sanitizeKeyBindings(bindings) }, store)
 }
+
+export function loadReduceEffects(store = defaultStorage) {
+  const value = store.get(SETTINGS_KEY, {})?.reduceEffects
+  return typeof value === 'boolean' ? value : null
+}
+
+export function saveReduceEffects(value, store = defaultStorage) {
+  const current = store.get(SETTINGS_KEY, {})
+  const base = typeof current === 'object' && current !== null ? current : {}
+  store.set(SETTINGS_KEY, { ...base, reduceEffects: Boolean(value) })
+}

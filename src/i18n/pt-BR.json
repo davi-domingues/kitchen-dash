@@ -92,9 +92,11 @@
   },
   "play": {
     "back": "Voltar",
+    "touchNotice": "Para jogar, conecte um teclado. Os controles por toque ainda não estão disponíveis.",
     "gameArea": "Área do jogo",
     "setup": {
       "title": "Nova partida",
+      "reduceEffects": "Reduzir efeitos visuais",
       "playersLegend": "Jogadores",
       "onePlayer": "1 jogador",
       "twoPlayers": "2 jogadores",
