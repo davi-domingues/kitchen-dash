@@ -4,6 +4,42 @@
   themes: false;
 }
 
+:focus-visible {
+  outline: 3px solid #000;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px #fff;
+}
+
+.touch-notice {
+  display: none;
+}
+
+@media (any-pointer: coarse) {
+  .touch-notice {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-reduce-effects]) *,
+  html:not([data-reduce-effects]) *::before,
+  html:not([data-reduce-effects]) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html[data-reduce-effects='true'] *,
+html[data-reduce-effects='true'] *::before,
+html[data-reduce-effects='true'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 /* Paleta do bistrô (PRD: vinho, creme e dourado) */
 @plugin 'daisyui/theme' {
   name: 'bistro';

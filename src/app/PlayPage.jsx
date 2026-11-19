@@ -12,7 +12,7 @@ import { MATCH_MODES } from '../game/core/matchModes.js'
 import { GAME_EVENTS } from '../game/phaser/events.js'
 import { loadKeyBindings } from '../services/settings.js'
 
-export default function PlayPage() {
+export default function PlayPage({ reduceEffects, onReduceEffectsChange }) {
   const { t } = useTranslation()
   const [state, dispatch] = useReducer(playFlowReducer, initialPlayState)
   // Lidas uma vez por visita: a cena recebe as teclas pelo registry
@@ -45,8 +45,17 @@ export default function PlayPage() {
         <ArrowLeft aria-hidden="true" /> {t('play.back')}
       </Link>
 
+      <p className="touch-notice alert max-w-lg" role="note">
+        {t('play.touchNotice')}
+      </p>
+
       {state.phase === PLAY_PHASES.SETUP && (
-        <MatchSetup initialConfig={state.config} onStart={(config) => dispatch({ type: 'start', config })} />
+        <MatchSetup
+          initialConfig={state.config}
+          onStart={(config) => dispatch({ type: 'start', config })}
+          reduceEffects={reduceEffects}
+          onReduceEffectsChange={onReduceEffectsChange}
+        />
       )}
 
       {inMatch && <PhaserGame key={state.run} matchConfig={state.config} keyBindings={keyBindings} />}
