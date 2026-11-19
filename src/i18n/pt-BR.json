@@ -13,36 +13,27 @@
   "placeholder": {
     "comingSoon": "Esta página chega em breve."
   },
-  "ranking": {
-    "title": "Ranking global",
-    "description": "Compare as melhores pontuações. A consulta é pública e não exige login.",
-    "back": "Voltar ao início",
-    "board": {
-      "label": "Modo e jogadores",
-      "classic_1p": "Clássico — 1 jogador",
-      "classic_2p": "Clássico — 2 jogadores",
-      "free_1p": "Livre — 1 jogador",
-      "free_2p": "Livre — 2 jogadores",
-      "challenge_1p": "Desafio — 1 jogador",
-      "challenge_2p": "Desafio — 2 jogadores"
+  "profile": {
+    "local": {
+      "visitorHint": "Seu progresso fica salvo neste navegador.",
+      "notPersistent": "O navegador bloqueou o armazenamento: o progresso some ao fechar a aba.",
+      "empty": "Você ainda não jogou nenhuma partida.",
+      "statsTitle": "Estatísticas",
+      "matches": "Partidas",
+      "playTime": "Tempo jogado",
+      "boardTitle": "Placar dos chefs",
+      "boardEmpty": "Nenhuma partida entrou no placar ainda.",
+      "boardCaption": "{{mode}} · {{players}}P",
+      "date": "Data"
     },
-    "loading": "Carregando o ranking…",
-    "offline": "O ranking está indisponível sem conexão. Tente novamente quando a rede voltar.",
-    "error": "Não foi possível carregar o ranking.",
-    "retry": "Tentar novamente",
-    "stale": "Exibindo dados em cache; eles podem estar desatualizados.",
-    "updating": "Atualizando o ranking…",
-    "sessionError": "Não foi possível verificar sua sessão; o ranking continua público, mas sua linha não será destacada.",
-    "empty": "Ainda não há pontuações neste quadro.",
-    "tableCaption": "Pontuações do quadro selecionado",
-    "position": "Posição",
-    "player": "Jogador",
-    "score": "Pontos",
-    "you": "Você",
-    "pagination": "Paginação do ranking",
-    "page": "Página {{page}}",
-    "previous": "Anterior",
-    "next": "Próxima"
+    "settings": {
+      "title": "Configurações",
+      "clear": "Apagar progresso local",
+      "clearConfirmTitle": "Apagar o progresso?",
+      "clearConfirmText": "Recordes, placar e estatísticas deste navegador serão apagados. Não dá para desfazer.",
+      "cancel": "Cancelar",
+      "confirm": "Apagar"
+    }
   },
   "notFound": {
     "title": "Página não encontrada",
@@ -91,7 +82,10 @@
       "replay": "Jogar de novo",
       "changeMode": "Trocar modo",
       "home": "Início",
-      "error": "Não foi possível ler o resultado da partida."
+      "error": "Não foi possível ler o resultado da partida.",
+      "newRecord": "Novo recorde!",
+      "recordScore": "Seu recorde: {{score}} pontos",
+      "recordTime": "Seu melhor tempo: {{time}}"
     }
   },
   "game": {
@@ -181,5 +175,36 @@
     "theme_provence": {
       "name": "Tema Provence"
     }
+  },
+  "ranking": {
+    "title": "Ranking global",
+    "description": "Compare as melhores pontuações. A consulta é pública e não exige login.",
+    "back": "Voltar ao início",
+    "board": {
+      "label": "Modo e jogadores",
+      "classic_1p": "Clássico — 1 jogador",
+      "classic_2p": "Clássico — 2 jogadores",
+      "free_1p": "Livre — 1 jogador",
+      "free_2p": "Livre — 2 jogadores",
+      "challenge_1p": "Desafio — 1 jogador",
+      "challenge_2p": "Desafio — 2 jogadores"
+    },
+    "loading": "Carregando o ranking…",
+    "offline": "O ranking está indisponível sem conexão. Tente novamente quando a rede voltar.",
+    "error": "Não foi possível carregar o ranking.",
+    "retry": "Tentar novamente",
+    "stale": "Exibindo dados em cache; eles podem estar desatualizados.",
+    "updating": "Atualizando o ranking…",
+    "sessionError": "Não foi possível verificar sua sessão; o ranking continua público, mas sua linha não será destacada.",
+    "empty": "Ainda não há pontuações neste quadro.",
+    "tableCaption": "Pontuações do quadro selecionado",
+    "position": "Posição",
+    "player": "Jogador",
+    "score": "Pontos",
+    "you": "Você",
+    "pagination": "Paginação do ranking",
+    "page": "Página {{page}}",
+    "previous": "Anterior",
+    "next": "Próxima"
   }
 }
