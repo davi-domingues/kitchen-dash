@@ -8,8 +8,8 @@
 
 ## 2. Como a cena consome a decisão
 
-- **Decisão**: o sistema grava `chef.autoAction` no estado; `selectAutoActions(state)` devolve as entradas `{ chefId, action, stationId, auto: true }`. A cena concatená-las às entradas manuais em `update()`, antes de `step()`.
-- **Rationale**: mantém `toStationInputs` e o EventBus inalterados; a decisão deriva somente do estado, então é reproducible em teste.
+- **Decisão**: o sistema grava `chef.autoAction` no estado; `selectAutoActions(state, busyActions)` devolve as entradas `{ chefId, action, stationId, auto: true }`. A cena concatená-las às entradas manuais em `update()`, chama `consumeAutoActions(state, autoActions)` e passa o estado resultante ao `step()`.
+- **Rationale**: mantém `toStationInputs` e o EventBus inalterados; a decisão deriva somente do estado, então é reproduzível em teste. Consumir a decisão antes do `step` evita que a mesma entrada pendente seja reenviada no frame seguinte.
 - **Alternativas consideradas**: injetar ações dentro do próprio `createUpdate` — reprovado porque todos os sistemas recebem os mesmos `inputs` e isso exigiria plumbagem entre sistemas; usar EventBus — reprovado por duplicar canal de comunicação já existente.
 
 ## 3. Gate por tipo de estação
@@ -21,7 +21,7 @@
 
 ## 4. Avisos repetidos e ação dupla
 
-- **Decisão**: o sistema de estações filtra `action:rejected` quando a entrada correspondente tem `auto: true`. Para o botão, `filterManualDuplicates(state, actions)` remove o toque manual na mesma estação em que o auto já disparou; um toque manual em qualquer outra situação continua cancelando o auto pendente ao reiniciar `idleMs`.
+- **Decisão**: o sistema de estações filtra `action:rejected` quando a entrada correspondente tem `auto: true`. Para o botão, `filterManualDuplicates(state, actions)` remove o toque manual na mesma estação **e com a mesma assinatura de estado** em que o auto já disparou; um toque manual em qualquer outra situação continua cancelando o auto pendente ao reiniciar `idleMs`.
 - **Rationale**: `interact` emite `action:rejected` para qualquer tap inválido. Como as entradas automáticas são resolvidas um frame antes de serem aplicadas, outro chef pode mudar a estação nesse intervalo; o filtro evita o aviso sem alterar o comportamento do botão.
 - **Alternativas consideradas**: não gerar `action:rejected` no `interact` — reprovado porque mudaria o contrato KD-12; filtrar eventos na cena — reprovado por acoplar a cena ao significado dos eventos do core.
 

@@ -8,7 +8,8 @@ Extensão do [contrato de estações (KD-12)](../../../specs/kd-12-core-estacoes
 IDLE_AUTO_MS // 250
 createIdleSystem(content) // content = { recipes, ... } para canInteract
   // => system(state, { dtMs, inputs }) => { state, events: [] }
-selectAutoActions(state) // => [{ chefId, action: 'holdStart'|'tap', stationId, auto: true }]
+selectAutoActions(state, busyActions = []) // => [{ chefId, action: 'holdStart'|'tap', stationId, auto: true }]
+consumeAutoActions(state, actions) // => state sem as decisões já enviadas ao step
 filterManualDuplicates(state, actions) // => actions sem o toque manual duplicado
 setIdleBlocked(state, blocked) // => state com idleBlocked e contadores zerados
 ```
@@ -19,9 +20,10 @@ setIdleBlocked(state, blocked) // => state com idleBlocked e contadores zerados
 
 1. Montar `moves` e as ações manuais pendentes normalmente.
 2. Aplicar `filterManualDuplicates(this.match, pendingActions)`.
-3. Resolver as estações alvo com `toStationInputs`, acrescentar `selectAutoActions(this.match)` e passar tudo ao `step`.
-4. Em `onBlur` e `pause()`, chamar `setIdleBlocked(this.match, true)`; em foco e `resume()`, `setIdleBlocked(..., false)`.
-5. Não criar timers, listeners de teclado novos nem eventos de EventBus para esta feature.
+3. Resolver as estações alvo com `toStationInputs`, acrescentar `selectAutoActions(this.match, busyChefs)` e passar tudo ao `step`. `busyChefs` são as ações manuais do frame e os movimentos com eixo diferente de zero, para que o botão cancele o auto pendente.
+4. Chamar `consumeAutoActions(this.match, autoActions)` antes do `step`, para que a decisão não seja reenviada no frame seguinte.
+5. Em `onBlur` e `pause()`, chamar `setIdleBlocked(this.match, true)`; em foco e `resume()`, `setIdleBlocked(..., false)`.
+6. Não criar timers, listeners de teclado novos nem eventos de EventBus para esta feature.
 
 ## Eventos
 

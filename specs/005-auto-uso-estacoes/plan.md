@@ -67,8 +67,8 @@ docs/ESTUDOS_E_DECISOES.md              # registro do limiar e da política de d
 
 ## Design Decisions (Fase 1)
 
-1. **Tempo no core, decisão consumida pela cena**: `createIdleSystem(content)` atualiza `chef.idleMs` e grava `chef.autoAction`; `selectAutoActions(state)` devolve as entradas já resolvidas. A cena não acumula tempo nem cria timers.
+1. **Tempo no core, decisão consumida pela cena**: `createIdleSystem(content)` atualiza `chef.idleMs` e grava `chef.autoAction`; `selectAutoActions(state, busyActions)` devolve as entradas já resolvidas e `consumeAutoActions` limpa a decisão antes do `step`. A cena não acumula tempo nem cria timers.
 2. **Tábua ≠ toque**: `holdStart` contínuo enquanto houver ingrediente cru **na tábua** e o chef estiver de mãos vazias. `canInteract` é verdadeiro nesse estado (resolveTap permite pegar o item), mas `tap` seria usado para pegá-lo — por isso o auto nunca usa `tap` na tábua. Colocar o ingrediente vindo da mão continua manual.
 3. **Fogão/passe one-shot**: `tap` automático somente com `canInteract` verdadeiro, travado por uma assinatura do estado da estação alvo; disparo único até o chef mudar de posição/alvo ou a estação mudar.
-4. **Silêncio e dedupe**: entradas automáticas levam `auto: true`; o wrapper de estações descarta `action:rejected` dessas entradas (cobre corrida com outro chef). A cena remove o toque manual duplicado antes de resolver a estação alvo; o botão, quando não duplicado, cancela o auto pendente.
+4. **Silêncio e dedupe**: entradas automáticas levam `auto: true`; o wrapper de estações descarta `action:rejected` dessas entradas (cobre corrida com outro chef). A cena remove o toque manual duplicado antes de resolver a estação alvo — apenas enquanto alvo e assinatura do estado seguem iguais —; o botão, quando não duplicado, cancela o auto pendente.
 5. **Pausa, blur e fim**: `update` já é no-op fora de `RUNNING`; `setIdleBlocked(state, true)` zera contadores e impede acumulação durante blur/pausa, e é desfeito ao recuperar o foco/retomar.

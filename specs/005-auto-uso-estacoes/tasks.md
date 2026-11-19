@@ -18,8 +18,8 @@
 
 **Purpose**: criar o módulo de core e o arcabouço de testes determinísticos.
 
-- [ ] T001 [P] Criar `src/game/core/idleSystem.js` com `IDLE_AUTO_MS = 250` e as assinaturas de `createIdleSystem(content)`, `selectAutoActions(state)`, `filterManualDuplicates(state, actions)` e `setIdleBlocked(state, blocked)`, conforme `specs/005-auto-uso-estacoes/contracts/auto-use-api.md`
-- [ ] T002 [P] Criar `src/game/core/idleSystem.test.js` com helper de avanço de tempo em passos fixos de `dtMs` e seed determinística, sem relógio real
+- [X] T001 [P] Criar `src/game/core/idleSystem.js` com `IDLE_AUTO_MS = 250` e as assinaturas de `createIdleSystem(content)`, `selectAutoActions(state, busyActions)`, `consumeAutoActions(state, actions)`, `filterManualDuplicates(state, actions)` e `setIdleBlocked(state, blocked)`, conforme `specs/005-auto-uso-estacoes/contracts/auto-use-api.md`
+- [X] T002 [P] Criar `src/game/core/idleSystem.test.js` com helper de avanço de tempo em passos fixos de `dtMs` e seed determinística, sem relógio real
 
 ---
 
@@ -29,10 +29,10 @@
 
 **CRÍTICO**: nenhuma user story começa antes desta fase.
 
-- [ ] T003 Adicionar `idleMs`, `idleKey`, `autoAction` e `autoFired` ao chef em `src/game/core/stations.js` (`createChef`) e manter `x`, `y` e `facing` de `src/game/core/kitchenMap.js`; adicionar `idleBlocked` em `src/game/core/matchState.js` (`createMatchState`)
-- [ ] T004 Registrar `createIdleSystem(content)` em `src/game/core/kitchenUpdate.js` (`createKitchenUpdate`), depois do movimento e antes do sistema de estações
-- [ ] T005 Implementar em `src/game/core/idleSystem.js` a acumulação de `idleMs` por `dtMs`, o reinício quando há movimento, ação manual ou mudança de `idleKey`, e o bloqueio por `state.idleBlocked`
-- [ ] T006 Escrever em `src/game/core/idleSystem.test.js` os testes de acumulação, reinício e bloqueio da regra de tempo parado
+- [X] T003 Adicionar `idleMs`, `idleKey`, `autoAction` e `autoFired` ao chef em `src/game/core/stations.js` (`createChef`) e manter `x`, `y` e `facing` de `src/game/core/kitchenMap.js`; adicionar `idleBlocked` em `src/game/core/matchState.js` (`createMatchState`)
+- [X] T004 Registrar `createIdleSystem(content)` em `src/game/core/kitchenUpdate.js` (`createKitchenUpdate`), depois do movimento e antes do sistema de estações
+- [X] T005 Implementar em `src/game/core/idleSystem.js` a acumulação de `idleMs` por `dtMs`, o reinício quando há movimento, ação manual ou mudança de `idleKey`, e o bloqueio por `state.idleBlocked`
+- [X] T006 Escrever em `src/game/core/idleSystem.test.js` os testes de acumulação, reinício e bloqueio da regra de tempo parado
 
 **Checkpoint**: fundação pronta — as histórias podem começar.
 
@@ -46,14 +46,14 @@
 
 ### Testes da User Story 1
 
-- [ ] T007 [US1] Testar em `src/game/core/idleSystem.test.js`: nenhuma ação antes de 250 ms; `holdStart` na tábua depois do limiar; fim do corte ao mover ou ao item ficar picado
+- [X] T007 [US1] Testar em `src/game/core/idleSystem.test.js`: nenhuma ação antes de 250 ms; `holdStart` na tábua depois do limiar; fim do corte ao mover ou ao item ficar picado
 
 ### Implementação da User Story 1
 
-- [ ] T008 [US1] Implementar em `src/game/core/idleSystem.js` o gatilho da tábua: `holdStart` contínuo quando há item cru na estação e o chef está de mãos vazias, sem gerar eventos próprios
-- [ ] T009 [US1] Implementar `selectAutoActions(state)` em `src/game/core/idleSystem.js`, devolvendo entradas com `auto: true` já com `stationId` resolvido
-- [ ] T010 [US1] Consumir `selectAutoActions` em `src/game/phaser/scenes/KitchenScene.js` (`update`) e enviar as entradas ao `step`, sem timers nem EventBus novos
-- [ ] T011 [US1] Adicionar em `src/game/core/kitchenUpdate.test.js` teste de integração: com item cru na tábua e chef parado, o corte avança sem entrada manual e para ao mover
+- [X] T008 [US1] Implementar em `src/game/core/idleSystem.js` o gatilho da tábua: `holdStart` contínuo quando há item cru na estação e o chef está de mãos vazias, sem gerar eventos próprios
+- [X] T009 [US1] Implementar `selectAutoActions(state, busyActions)` e `consumeAutoActions(state, actions)` em `src/game/core/idleSystem.js`, devolvendo entradas com `auto: true` já com `stationId` resolvido e limpando a decisão enviada
+- [X] T010 [US1] Consumir `selectAutoActions` em `src/game/phaser/scenes/KitchenScene.js` (`update`), chamar `consumeAutoActions` antes do `step` e enviar as entradas, sem timers nem EventBus novos
+- [X] T011 [US1] Adicionar em `src/game/core/kitchenUpdate.test.js` teste de integração: com item cru na tábua e chef parado, o corte avança sem entrada manual e para ao mover
 
 **Checkpoint**: US1 funcional e testável isoladamente.
 
@@ -67,13 +67,13 @@
 
 ### Testes da User Story 2
 
-- [ ] T012 [US2] Testar em `src/game/core/idleSystem.test.js`: estação inválida por vários passos não gera `tap` nem `action:rejected`; estação válida gera um `tap` por mudança de estado/alvo
+- [X] T012 [US2] Testar em `src/game/core/idleSystem.test.js`: estação inválida por vários passos não gera `tap` nem `action:rejected`; estação válida gera um `tap` por mudança de estado/alvo
 
 ### Implementação da User Story 2
 
-- [ ] T013 [US2] Implementar em `src/game/core/idleSystem.js` o gatilho one-shot do fogão e do passe usando `canInteract` e a assinatura do estado da estação em `autoFired`
-- [ ] T014 [US2] Filtrar em `src/game/core/kitchenUpdate.js` os eventos `action:rejected` cuja entrada correspondente tenha `auto: true`, sem alterar `interact` nem o contrato KD-12
-- [ ] T015 [US2] Adicionar em `src/game/core/kitchenUpdate.test.js` teste de integração: entrega automática gera um `dish:served` e nenhum `action:rejected`, inclusive quando outra chef muda a estação antes da aplicação
+- [X] T013 [US2] Implementar em `src/game/core/idleSystem.js` o gatilho one-shot do fogão e do passe usando `canInteract` e a assinatura do estado da estação em `autoFired`
+- [X] T014 [US2] Filtrar em `src/game/core/kitchenUpdate.js` os eventos `action:rejected` cuja entrada correspondente tenha `auto: true`, sem alterar `interact` nem o contrato KD-12
+- [X] T015 [US2] Adicionar em `src/game/core/kitchenUpdate.test.js` teste de integração: entrega automática gera um `dish:served` e nenhum `action:rejected`, inclusive quando outra chef muda a estação antes da aplicação
 
 **Checkpoint**: US1 e US2 funcionam de forma independente.
 
@@ -87,12 +87,12 @@
 
 ### Testes da User Story 3
 
-- [ ] T016 [US3] Testar em `src/game/core/idleSystem.test.js`: ação manual reinicia `idleMs` e cancela `autoAction`; `filterManualDuplicates` remove só o toque manual na estação já disparada e libera o botão ao mudar alvo ou estado
+- [X] T016 [US3] Testar em `src/game/core/idleSystem.test.js`: ação manual reinicia `idleMs` e cancela `autoAction`; `consumeAutoActions` não reenvia a decisão; `filterManualDuplicates` remove só o toque manual na estação já disparada e libera o botão ao mudar alvo ou estado
 
 ### Implementação da User Story 3
 
-- [ ] T017 [US3] Implementar `filterManualDuplicates(state, actions)` em `src/game/core/idleSystem.js`, resolvendo a estação alvo com `findTargetStation` e preservando ações manuais em outras estações
-- [ ] T018 [US3] Aplicar `filterManualDuplicates` a `pendingActions` em `src/game/phaser/scenes/KitchenScene.js` (`update`), antes de `toStationInputs`, mantendo o comportamento manual atual fora desses casos
+- [X] T017 [US3] Implementar `filterManualDuplicates(state, actions)` em `src/game/core/idleSystem.js`, resolvendo a estação alvo com `findTargetStation`, comparando também a assinatura do estado e preservando ações manuais em outras estações
+- [X] T018 [US3] Aplicar `filterManualDuplicates` a `pendingActions` em `src/game/phaser/scenes/KitchenScene.js` (`update`), antes de `toStationInputs`, mantendo o comportamento manual atual fora desses casos
 
 **Checkpoint**: US1, US2 e US3 funcionam juntas e isoladamente.
 
@@ -106,13 +106,13 @@
 
 ### Testes da User Story 4
 
-- [ ] T019 [US4] Testar em `src/game/core/idleSystem.test.js`: dois chefs com tempos distintos produzem decisões independentes e a mesma sequência de passos reproduz as mesmas decisões
-- [ ] T020 [US4] Testar em `src/game/core/idleSystem.test.js`: `setIdleBlocked(state, true)` zera contadores e impede ações e acúmulo; `false` retoma sem ação herdada
+- [X] T019 [US4] Testar em `src/game/core/idleSystem.test.js`: dois chefs com tempos distintos produzem decisões independentes e a mesma sequência de passos reproduz as mesmas decisões
+- [X] T020 [US4] Testar em `src/game/core/idleSystem.test.js`: `setIdleBlocked(state, true)` zera contadores e impede ações e acúmulo; `false` retoma sem ação herdada
 
 ### Implementação da User Story 4
 
-- [ ] T021 [US4] Implementar `setIdleBlocked(state, blocked)` em `src/game/core/idleSystem.js`, preservando imutabilidade do `MatchState`
-- [ ] T022 [US4] Conectar blur, foco, `pause()` e `resume()` em `src/game/phaser/scenes/KitchenScene.js` a `setIdleBlocked`, registrando e removendo o listener de foco no `cleanup()` junto dos existentes
+- [X] T021 [US4] Implementar `setIdleBlocked(state, blocked)` em `src/game/core/idleSystem.js`, preservando imutabilidade do `MatchState`
+- [X] T022 [US4] Conectar blur, foco, `pause()` e `resume()` em `src/game/phaser/scenes/KitchenScene.js` a `setIdleBlocked`, registrando e removendo o listener de foco no `cleanup()` junto dos existentes
 
 **Checkpoint**: todas as histórias funcionam de forma independente.
 
@@ -122,9 +122,9 @@
 
 **Purpose**: documentação, gates e revisão final.
 
-- [ ] T023 Registrar em `docs/ESTUDOS_E_DECISOES.md` a decisão do limiar de 250 ms, o silêncio do auto-uso e a política de prevalência do botão, com o motivo e a data (2026-11-19)
-- [ ] T024 Rodar em sequência `npm run lint`, `npm run format:check`, `npm test`, `npm run build` e `npm run check-size` e validar os cenários de `specs/005-auto-uso-estacoes/quickstart.md`
-- [ ] T025 [P] Revisar o diff inteiro: sem código morto, comentários de depuração, `TODO` sem issue, texto visível novo fora do i18n ou dependência nova
+- [X] T023 Registrar em `docs/ESTUDOS_E_DECISOES.md` a decisão do limiar de 250 ms, o silêncio do auto-uso e a política de prevalência do botão, com o motivo e a data (2026-11-19)
+- [X] T024 Rodar em sequência `npm run lint`, `npm run format:check`, `npm test`, `npm run build` e `npm run check-size` e validar os cenários de `specs/005-auto-uso-estacoes/quickstart.md`
+- [X] T025 [P] Revisar o diff inteiro: sem código morto, comentários de depuração, `TODO` sem issue, texto visível novo fora do i18n ou dependência nova
 
 ---
 

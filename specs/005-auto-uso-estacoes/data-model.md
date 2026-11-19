@@ -7,7 +7,7 @@
 | `idleBlocked` | `boolean` | `false` | Quando `true`, nenhum chef acumula tempo parado nem dispara auto-uso |
 | `chefs[].idleMs` | `number` | `0` | Soma de `dtMs` enquanto o chef está parado; nunca negativo; zera ao mover, agir manualmente, mudar alvo ou bloquear |
 | `chefs[].idleKey` | `string \| null` | `null` | Assinatura de `x,y,facing,stationId,holding` do frame anterior; mudança reinicia `idleMs` e `autoFired` |
-| `chefs[].autoAction` | `AutoAction \| null` | `null` | Decisão do frame atual; sempre recalculada, nunca persistida entre frames |
+| `chefs[].autoAction` | `AutoAction \| null` | `null` | Decisão pronta para o frame; recalculada a cada passo do core e consumida pela cena antes do `step` seguinte |
 | `chefs[].autoFired` | `{ stationId, signature } \| null` | `null` | Travamento de uma ação automática já realizada no fogão/passe |
 
 ## `AutoAction`
@@ -35,7 +35,7 @@ parado (idleMs >= 250, fogão/passe e canInteract) ──> autoAction = tap (uma
         │ assinatura da estação muda
         └──────────────> autoFired liberado para novo tap
 
-autoAction ──> cena envia entrada com auto: true ──> sistema de estações aplica
+autoAction ──> cena envia entrada com auto: true e consome a decisão ──> sistema de estações aplica
 ```
 
 ## Regras de validação

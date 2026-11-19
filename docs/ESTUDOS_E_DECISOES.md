@@ -238,7 +238,15 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
-## 12. Referências
+## 13. Auto-uso de estações ao ficar parado (issue #89)
+
+- **Limiar de 250 ms (2026-11-19):** definido pela pessoa responsável; fica acima dos ~220 ms do "toque rápido" do PRD e evita que uma troca de direção dispare o auto-uso. O valor é `IDLE_AUTO_MS` no core e coincide com `MAX_DT_MS`, então a decisão é lida no frame seguinte ao cruzamento — atraso de no máximo um frame e replay determinístico.
+- **Auto-uso silencioso (2026-11-19):** entradas com `auto: true` nunca geram `action:rejected`. O wrapper de estações descarta a recusa porque outro chef pode ter mudado a estação entre a decisão e a aplicação; o botão continua com aviso normal, sem alterar o contrato KD-12.
+- **Prevalência do botão (2026-11-19):** uma ação manual no mesmo frame bloqueia o auto pendente daquele chef. Depois de um auto já disparado, um toque manual é suprimido somente enquanto alvo **e assinatura do estado** da estação permanecem iguais; mover, mudar de alvo ou mudar o estado da estação libera o botão. A cena consome a decisão antes do `step` para que a mesma entrada não seja reenviada no frame seguinte.
+
+---
+
+## 14. Referências
 
 **Documentação oficial**
 - Supabase: [Pricing](https://supabase.com/pricing) · [Billing](https://supabase.com/docs/guides/platform/billing-on-supabase) · [Database size](https://supabase.com/docs/guides/platform/database-size) · [Disk size](https://supabase.com/docs/guides/platform/manage-your-usage/disk-size) · [MAU](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users) · [Egress](https://supabase.com/docs/guides/platform/manage-your-usage/egress.md) · [Passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless) · [Auth CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha) · [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security) · [API quickstart (leaderboard)](https://supabase.com/docs/guides/api/quickstart)
