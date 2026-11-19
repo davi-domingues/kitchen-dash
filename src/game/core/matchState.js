@@ -35,6 +35,8 @@ export function createMatchState({
     stats: { ordersCompleted: 0, ordersFailed: 0 },
     chefs,
     stations,
+    // Bloqueio do auto-uso durante pausa ou perda de foco (issue #89)
+    idleBlocked: false,
     items: [],
     orders: [],
     // Entregas no passe ainda não consumidas pelo sistema de pedidos (KD-13)

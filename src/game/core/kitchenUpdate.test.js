@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { INGREDIENTS, KITCHENS, RECIPES } from '../../content/index.js'
 import { CORE_EVENTS } from './coreEvents.js'
+import { consumeAutoActions, selectAutoActions } from './idleSystem.js'
 import { createKitchenMatch, createKitchenUpdate, toStationInputs } from './kitchenUpdate.js'
 import { MOVE_ACTION } from './movementSystem.js'
 
@@ -69,6 +70,78 @@ describe('createKitchenUpdate', () => {
 
   it('repassa os eventos do sistema de estações', () => {
     const { events } = update(start(), [{ chefId: 'p1', action: 'tap', stationId: 'pass-5-7' }], 16)
+    expect(events.map((e) => e.type)).toEqual([CORE_EVENTS.ACTION_REJECTED])
+  })
+})
+
+// A cena envia as decisões do core em cada passo; aqui se reproduz esse ciclo sem Phaser
+function playAuto(state, ms = 500) {
+  let next = state
+  const events = []
+  for (let elapsed = 0; elapsed < ms; elapsed += 100) {
+    const autoActions = selectAutoActions(next)
+    const result = update(consumeAutoActions(next, autoActions), autoActions, 100)
+    next = result.state
+    events.push(...result.events)
+  }
+  return { state: next, events }
+}
+
+const inFrontOf = (state, stationId) => {
+  const target = state.stations.find((s) => s.id === stationId)
+  return { x: target.x + 1, y: target.y, facing: 'left' }
+}
+
+describe('createKitchenUpdate: auto-uso', () => {
+  it('pica sozinho com ingrediente cru na tábua', () => {
+    let state = start()
+    const board = state.stations.find((s) => s.kind === 'cutting')
+    state = withChef(state, inFrontOf(state, board.id))
+    state = {
+      ...state,
+      stations: state.stations.map((s) =>
+        s.id === board.id
+          ? { ...s, item: { type: 'ingredient', ingredientId: 'tomato', chopped: false, chopProgressMs: 0 } }
+          : s,
+      ),
+    }
+
+    const { state: next } = playAuto(state, 2000)
+
+    expect(next.stations.find((s) => s.id === board.id).item.chopped).toBe(true)
+    expect(next.chefs[0].workingAt).toBe(board.id)
+  })
+
+  it('entrega uma vez no passe, sem aviso de recusa', () => {
+    let state = start()
+    const pass = state.stations.find((s) => s.kind === 'pass')
+    state = withChef(state, {
+      ...inFrontOf(state, pass.id),
+      holding: { type: 'plate', ingredients: ['tomato'], recipeId: 'salad' },
+    })
+
+    const { state: next, events } = playAuto(state, 500)
+
+    expect(next.deliveries).toHaveLength(1)
+    expect(events.filter((e) => e.type === CORE_EVENTS.DISH_SERVED)).toHaveLength(1)
+    expect(events.filter((e) => e.type === CORE_EVENTS.ACTION_REJECTED)).toHaveLength(0)
+  })
+
+  it('não transforma recusa automática em aviso', () => {
+    const state = start()
+    const pass = state.stations.find((s) => s.kind === 'pass')
+
+    const { events } = update(state, [{ chefId: 'p1', action: 'tap', stationId: pass.id, auto: true }], 100)
+
+    expect(events).toEqual([])
+  })
+
+  it('mantém o aviso da ação manual recusada', () => {
+    const state = start()
+    const pass = state.stations.find((s) => s.kind === 'pass')
+
+    const { events } = update(state, [{ chefId: 'p1', action: 'tap', stationId: pass.id }], 100)
+
     expect(events.map((e) => e.type)).toEqual([CORE_EVENTS.ACTION_REJECTED])
   })
 })

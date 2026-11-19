@@ -37,8 +37,32 @@ describe('createKitchenChefs', () => {
   it('põe P1 e P2 nos spawns olhando para baixo', () => {
     const chefs = createKitchenChefs(BISTRO, 2)
     expect(chefs).toEqual([
-      { id: 'p1', holding: null, workingAt: null, x: 3, y: 2, facing: 'down', stepCooldownMs: 0 },
-      { id: 'p2', holding: null, workingAt: null, x: 9, y: 5, facing: 'down', stepCooldownMs: 0 },
+      {
+        id: 'p1',
+        holding: null,
+        workingAt: null,
+        x: 3,
+        y: 2,
+        facing: 'down',
+        stepCooldownMs: 0,
+        idleMs: 0,
+        idleKey: null,
+        autoAction: null,
+        autoFired: null,
+      },
+      {
+        id: 'p2',
+        holding: null,
+        workingAt: null,
+        x: 9,
+        y: 5,
+        facing: 'down',
+        stepCooldownMs: 0,
+        idleMs: 0,
+        idleKey: null,
+        autoAction: null,
+        autoFired: null,
+      },
     ])
   })
 

@@ -45,7 +45,16 @@ export function createStations(kitchen) {
 }
 
 export function createChef(id) {
-  return { id, holding: null, workingAt: null }
+  return {
+    id,
+    holding: null,
+    workingAt: null,
+    // Estado do auto-uso por ficar parado (issue #89)
+    idleMs: 0,
+    idleKey: null,
+    autoAction: null,
+    autoFired: null,
+  }
 }
 
 const findOrThrow = (list, id, type) => {

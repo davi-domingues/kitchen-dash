@@ -1,5 +1,7 @@
 // Monta a partida da cozinha: chefs nos spawns, estações do mapa e o update com movimento +
 // estações. Os sistemas do modo (pedidos, pontuação, fim) entram por `extraSystems` (KD-15/KD-20).
+import { CORE_EVENTS } from './coreEvents.js'
+import { createIdleSystem } from './idleSystem.js'
 import { createKitchenChefs, findTargetStation } from './kitchenMap.js'
 import { createMatchState } from './matchState.js'
 import { MOVE_ACTION, createMovementSystem } from './movementSystem.js'
@@ -23,9 +25,25 @@ export function createKitchenMatch({ kitchen, playerCount, seed, mode, contentVe
 export function createKitchenUpdate({ kitchen, content, extraSystems = [] }) {
   const stationsSystem = createStationsSystem(content)
   // O sistema de estações rejeita ação desconhecida, então só recebe as ações dele
-  const stationsOnly = (state, context) =>
-    stationsSystem(state, { ...context, inputs: context.inputs.filter((i) => i.action !== MOVE_ACTION) })
-  return createUpdate([createMovementSystem(kitchen), stationsOnly, ...extraSystems])
+  const stationsOnly = (state, context) => {
+    const inputs = context.inputs.filter((i) => i.action !== MOVE_ACTION)
+    const result = stationsSystem(state, { ...context, inputs })
+    const autoChefs = new Set(inputs.filter((i) => i.auto).map((i) => i.chefId))
+    // Uma ação automática é silenciosa: se outro chef mudou a estação, não vira aviso repetido
+    if (autoChefs.size === 0) return result
+    return {
+      state: result.state,
+      events: result.events.filter(
+        (event) => !(event.type === CORE_EVENTS.ACTION_REJECTED && autoChefs.has(event.payload.chefId)),
+      ),
+    }
+  }
+  return createUpdate([
+    createMovementSystem(kitchen),
+    createIdleSystem(content),
+    stationsOnly,
+    ...extraSystems,
+  ])
 }
 
 /**
