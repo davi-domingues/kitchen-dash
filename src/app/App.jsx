@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import { useCosmeticsSync } from '../features/cosmetics/useCosmeticsSync.js'
 import MigrationNotice from '../features/migration/MigrationNotice.jsx'
 import { useScoreSync } from '../features/progress/useScoreSync.js'
+import ErrorBoundary from '../ui/ErrorBoundary.jsx'
 import HomePage from './HomePage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
 import PrivacyPage from './PrivacyPage.jsx'
@@ -26,19 +27,26 @@ function Lazy({ page: Page }) {
   )
 }
 
+// Um boundary por rota: o erro de uma tela não derruba as outras (KD-40)
+const ROUTES = [
+  ['/', <HomePage key="home" />],
+  ['/jogar', <Lazy key="play" page={PlayPage} />],
+  ['/entrar', <Lazy key="login" page={LoginPage} />],
+  ['/ranking', <RankingPage key="ranking" />],
+  ['/perfil', <ProfilePage key="profile" />],
+  ['/privacidade', <PrivacyPage key="privacy" />],
+  ['*', <NotFoundPage key="404" />],
+]
+
 export default function App() {
   useScoreSync()
   useCosmeticsSync()
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/jogar" element={<Lazy page={PlayPage} />} />
-        <Route path="/entrar" element={<Lazy page={LoginPage} />} />
-        <Route path="/ranking" element={<RankingPage />} />
-        <Route path="/perfil" element={<ProfilePage />} />
-        <Route path="/privacidade" element={<PrivacyPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+        {ROUTES.map(([path, page]) => (
+          <Route key={path} path={path} element={<ErrorBoundary>{page}</ErrorBoundary>} />
+        ))}
       </Routes>
       <MigrationNotice />
     </BrowserRouter>

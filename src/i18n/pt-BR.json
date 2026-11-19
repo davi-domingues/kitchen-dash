@@ -259,5 +259,12 @@
       "discarded": "{{count}} partidas antigas não puderam ser validadas e ficaram de fora.",
       "dismiss": "Fechar aviso"
     }
+  },
+  "ui": {
+    "error": {
+      "title": "Algo deu errado",
+      "description": "Tivemos um problema inesperado. Recarregue a página para continuar.",
+      "reload": "Recarregar"
+    }
   }
 }
