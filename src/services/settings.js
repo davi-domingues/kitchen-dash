@@ -4,12 +4,20 @@ import { storage as defaultStorage } from './storage.js'
 
 const SETTINGS_KEY = 'settings'
 
+/** Objeto completo de preferências (usado na migração para a conta, KD-37). */
+export function loadSettings(store = defaultStorage) {
+  const current = store.get(SETTINGS_KEY, {})
+  return typeof current === 'object' && current !== null && !Array.isArray(current) ? current : {}
+}
+
+export function saveSettings(settings, store = defaultStorage) {
+  store.set(SETTINGS_KEY, settings)
+}
+
 export function loadKeyBindings(store = defaultStorage) {
-  return sanitizeKeyBindings(store.get(SETTINGS_KEY, {})?.keyBindings)
+  return sanitizeKeyBindings(loadSettings(store).keyBindings)
 }
 
 export function saveKeyBindings(bindings, store = defaultStorage) {
-  const current = store.get(SETTINGS_KEY, {})
-  const base = typeof current === 'object' && current !== null ? current : {}
-  store.set(SETTINGS_KEY, { ...base, keyBindings: sanitizeKeyBindings(bindings) })
+  saveSettings({ ...loadSettings(store), keyBindings: sanitizeKeyBindings(bindings) }, store)
 }

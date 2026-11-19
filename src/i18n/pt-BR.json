@@ -107,13 +107,15 @@
       "chef": {
         "p1": "P1",
         "p2": "P2"
-      }
+      },
+      "pass": "PASSE"
     },
     "hud": {
-      "score": "Pontos: {{score}}",
       "order": "#{{number}}",
       "queued": "+{{count}} na fila",
-      "end": "⏹ Encerrar"
+      "end": "⏹ Encerrar",
+      "scoreLabel": "Pontos",
+      "timeLabel": "Tempo"
     }
   },
   "ingredient": {
@@ -249,5 +251,13 @@
     "page": "Página {{page}}",
     "previous": "Anterior",
     "next": "Próxima"
+  },
+  "migration": {
+    "notice": {
+      "progress": "Salvando seus dados na conta: {{done}} de {{total}} partidas…",
+      "done": "Dados deste navegador salvos na conta ({{count}} partidas enviadas).",
+      "discarded": "{{count}} partidas antigas não puderam ser validadas e ficaram de fora.",
+      "dismiss": "Fechar aviso"
+    }
   }
 }

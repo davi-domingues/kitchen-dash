@@ -160,5 +160,7 @@ export class KitchenScene extends Phaser.Scene {
     EventBus.off(GAME_EVENTS.MATCH_RESUMED, this.resume, this)
     EventBus.off(GAME_EVENTS.MATCH_END_REQUESTED, this.requestEnd, this)
     this.inputMap.releaseAll()
+    this.view.destroy()
+    this.hud.destroy()
   }
 }
