@@ -133,6 +133,7 @@ O tempo parado é uma regra do jogo, reproduzível a partir do estado e do tempo
 - O limiar de 250 ms foi decidido nesta sessão (2026-11-19) e é superior aos ~220 ms definidos para o toque rápido no PRD.
 - Escopo do auto-uso: somente tábua, fogão e passe. Caixas, balcão, pilha de pratos e lixeira continuam exigindo o botão, conforme o critério de pronto da issue.
 - "Parado" significa ausência de comandos de movimento e de ação do jogador; pressionar a direção contra uma parede não conta como parado.
+- Na tábua, o gatilho é um ingrediente cru **sobre a tábua** com o chef de mãos vazias — estado em que a ação de pegar também seria válida. Colocar um ingrediente que está na mão do chef continua sendo ação manual.
 - Uma estação que se torna elegível enquanto o chef já está parado (por exemplo, panela que termina de cozinhar) pode gerar uma única ação automática na transição para "dá certo".
 - O destaque da estação alvo, as regras de movimentação e o contrato de estações (KD-12) já existem e não mudam de forma; esta feature consome esses contratos.
 - Funciona tanto para um quanto para dois chefs, com contagens independentes.
