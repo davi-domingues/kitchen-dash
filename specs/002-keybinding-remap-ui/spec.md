@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-19
 
-**Status**: Draft
+**Status**: Ready for implementation
 
 **Input**: Issue #75. Tela para o jogador remapear as teclas de P1 e P2; o remapeamento já persiste em `settings`. Falta a UI. Deve ser acessível por teclado, tratar conflito de tecla, ter botão de restaurar o padrão, usar textos via i18n pt-BR e não adicionar dependência nova.
 
@@ -133,7 +133,7 @@ Depois de várias trocas, o jogador volta todas as teclas ao padrão do jogo em 
 
 ### Resultados mensuráveis
 
-- **SC-001**: Um jogador conclui uma troca de tecla em até 3 ações (abrir a tela, escolher o controle, pressionar a nova tecla) e em menos de 20 segundos.
+- **SC-001**: Um jogador conclui uma troca de tecla em até 3 ações (abrir a tela, escolher o controle, pressionar a nova tecla), sem passos extras. É uma meta de UX verificada no cenário M2 do quickstart, avaliada pela fluidez do fluxo e não por cronômetro.
 - **SC-002**: 100% das operações da tela (troca, conflito, cancelamento, restauração e confirmação) podem ser concluídas sem mouse.
 - **SC-003**: 100% das trocas salvas continuam valendo depois de recarregar a página com armazenamento disponível.
 - **SC-004**: Após qualquer sequência de trocas, a tela nunca mostra e o jogo nunca aceita a mesma tecla em duas funções.
