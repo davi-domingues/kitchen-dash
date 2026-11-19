@@ -189,5 +189,36 @@
     "theme_provence": {
       "name": "Tema Provence"
     }
+  },
+  "ranking": {
+    "title": "Ranking global",
+    "description": "Compare as melhores pontuações. A consulta é pública e não exige login.",
+    "back": "Voltar ao início",
+    "board": {
+      "label": "Modo e jogadores",
+      "classic_1p": "Clássico — 1 jogador",
+      "classic_2p": "Clássico — 2 jogadores",
+      "free_1p": "Livre — 1 jogador",
+      "free_2p": "Livre — 2 jogadores",
+      "challenge_1p": "Desafio — 1 jogador",
+      "challenge_2p": "Desafio — 2 jogadores"
+    },
+    "loading": "Carregando o ranking…",
+    "offline": "O ranking está indisponível sem conexão. Tente novamente quando a rede voltar.",
+    "error": "Não foi possível carregar o ranking.",
+    "retry": "Tentar novamente",
+    "stale": "Exibindo dados em cache; eles podem estar desatualizados.",
+    "updating": "Atualizando o ranking…",
+    "sessionError": "Não foi possível verificar sua sessão; o ranking continua público, mas sua linha não será destacada.",
+    "empty": "Ainda não há pontuações neste quadro.",
+    "tableCaption": "Pontuações do quadro selecionado",
+    "position": "Posição",
+    "player": "Jogador",
+    "score": "Pontos",
+    "you": "Você",
+    "pagination": "Paginação do ranking",
+    "page": "Página {{page}}",
+    "previous": "Anterior",
+    "next": "Próxima"
   }
 }
