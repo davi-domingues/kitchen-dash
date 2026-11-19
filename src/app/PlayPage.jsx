@@ -2,9 +2,12 @@ import { ArrowLeft } from 'lucide-react'
 import { useEffect, useReducer, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import { loadCosmeticLook } from '../features/cosmetics/cosmeticsStore.js'
 import MatchResult from '../features/match/MatchResult.jsx'
 import MatchSetup from '../features/match/MatchSetup.jsx'
 import PauseDialog from '../features/match/PauseDialog.jsx'
+import { useRecordedResult } from '../features/progress/useRecordedResult.js'
+import { useSubmitMatch } from '../features/progress/useScoreSync.js'
 import { PLAY_PHASES, initialPlayState, playFlowReducer } from '../features/match/playFlow.js'
 import { EventBus } from '../game/phaser/EventBus.js'
 import PhaserGame from '../game/phaser/PhaserGame.jsx'
@@ -12,11 +15,14 @@ import { MATCH_MODES } from '../game/core/matchModes.js'
 import { GAME_EVENTS } from '../game/phaser/events.js'
 import { loadKeyBindings } from '../services/settings.js'
 
-export default function PlayPage() {
+export default function PlayPage({ reduceEffects, onReduceEffectsChange }) {
   const { t } = useTranslation()
   const [state, dispatch] = useReducer(playFlowReducer, initialPlayState)
+  const recorded = useRecordedResult(state.phase === PLAY_PHASES.RESULT ? state.result : null)
   // Lidas uma vez por visita: a cena recebe as teclas pelo registry
   const [keyBindings] = useState(loadKeyBindings)
+  const [cosmeticLook] = useState(loadCosmeticLook)
+  useSubmitMatch(recorded ? state.result.matchId : null)
   const inMatch = state.phase === PLAY_PHASES.PLAYING || state.phase === PLAY_PHASES.PAUSED
 
   useEffect(() => {
@@ -45,11 +51,27 @@ export default function PlayPage() {
         <ArrowLeft aria-hidden="true" /> {t('play.back')}
       </Link>
 
+      <p className="touch-notice alert max-w-lg" role="note">
+        {t('play.touchNotice')}
+      </p>
+
       {state.phase === PLAY_PHASES.SETUP && (
-        <MatchSetup initialConfig={state.config} onStart={(config) => dispatch({ type: 'start', config })} />
+        <MatchSetup
+          initialConfig={state.config}
+          onStart={(config) => dispatch({ type: 'start', config })}
+          reduceEffects={reduceEffects}
+          onReduceEffectsChange={onReduceEffectsChange}
+        />
       )}
 
-      {inMatch && <PhaserGame key={state.run} matchConfig={state.config} keyBindings={keyBindings} />}
+      {inMatch && (
+        <PhaserGame
+          key={state.run}
+          matchConfig={state.config}
+          keyBindings={keyBindings}
+          cosmeticLook={cosmeticLook}
+        />
+      )}
       {state.phase === PLAY_PHASES.PAUSED && (
         <PauseDialog
           onResume={resume}
@@ -61,6 +83,7 @@ export default function PlayPage() {
       {state.phase === PLAY_PHASES.RESULT && (
         <MatchResult
           result={state.result}
+          recorded={recorded}
           onReplay={() => dispatch({ type: 'replay' })}
           onChangeMode={backToSetup}
         />

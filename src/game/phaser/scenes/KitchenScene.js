@@ -16,7 +16,8 @@ import { buildHudModel } from '../hudModel.js'
 import { HUD_HEIGHT, createHudView } from '../hudView.js'
 import { createKitchenView } from '../kitchenView.js'
 import { createMatchEndGuard } from '../matchEndGuard.js'
-import { KEY_BINDINGS_KEY, MATCH_CONFIG_KEY } from '../registryKeys.js'
+import { resolveLook } from '../cosmeticLook.js'
+import { COSMETIC_LOOK_KEY, KEY_BINDINGS_KEY, MATCH_CONFIG_KEY } from '../registryKeys.js'
 import { SCENE_KEYS } from '../sceneKeys.js'
 
 const ACTION_BY_EVENT = Object.freeze({
@@ -57,12 +58,18 @@ export class KitchenScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale
     this.hud = createHudView(this, { onEnd: this.requestEnd })
-    this.view = createKitchenView(this, this.kitchen, this.match, {
-      x: 0,
-      y: HUD_HEIGHT,
-      width,
-      height: height - HUD_HEIGHT,
-    })
+    this.view = createKitchenView(
+      this,
+      this.kitchen,
+      this.match,
+      {
+        x: 0,
+        y: HUD_HEIGHT,
+        width,
+        height: height - HUD_HEIGHT,
+      },
+      resolveLook(this.registry.get(COSMETIC_LOOK_KEY)),
+    )
     this.input.keyboard.on('keydown', this.onKeyDown, this)
     this.input.keyboard.on('keyup', this.onKeyUp, this)
     this.game.events.on(Phaser.Core.Events.BLUR, this.onBlur, this)
@@ -153,5 +160,7 @@ export class KitchenScene extends Phaser.Scene {
     EventBus.off(GAME_EVENTS.MATCH_RESUMED, this.resume, this)
     EventBus.off(GAME_EVENTS.MATCH_END_REQUESTED, this.requestEnd, this)
     this.inputMap.releaseAll()
+    this.view.destroy()
+    this.hud.destroy()
   }
 }

@@ -27,7 +27,7 @@
 | D4 | Testes | Vitest no core e serviços + ESLint/Prettier no CI | Playwright E2E (pós-MVP) |
 | D5 | Falha de envio | Outbox local com retry e RPC idempotente por `match_id` | Erro manual; descarte |
 | D6 | Ranking | Histórico (`scores`) + melhor por jogador (`best_scores`) | Só histórico; só melhor |
-| D7 | Retenção | Histórico de 90 dias via `pg_cron`; recordes e estatísticas permanentes | Sem retenção; 30 dias |
+| D7 | Retenção | Histórico de 90 dias via `pg_cron`, diariamente às 03:00 UTC; recordes e estatísticas permanentes | Sem retenção; 30 dias |
 | D8 | Plataforma | Só desktop com teclado no MVP; input abstraído | Mobile/gamepad (ROADMAP) |
 | D9 | Anti-bot | Cloudflare Turnstile no login OTP | hCaptcha; só rate limit |
 | D10 | Ambientes | Supabase CLI local (Docker) + 1 projeto de produção; migrations no repo | 2 projetos na nuvem; edição pelo painel |
@@ -86,7 +86,7 @@ flowchart LR
 
 - A importação roda **só na máquina do desenvolvedor**; a produção nunca chama a API.
 - A curadoria adiciona `steps: [{ station: 'cutting', durationMs: 1500 }, ...]`, `points`, `sprite` e nomes em pt-BR.
-- `content_version` (hash do JSON) vai em cada pontuação enviada.
+- `content_version` (hash do JSON) vai em cada pontuação enviada. O CI calcula a versão e exige que ela esteja na última migration que atualiza `accepted_content_versions`.
 - **Licença:** fotos do TheMealDB servem apenas de referência; sprites do jogo são próprios.
 
 ---
@@ -121,7 +121,7 @@ Catálogos (receitas, cosméticos) **não** ficam no banco no MVP. Eles vão par
 
 | Tabela | `anon` | `authenticated` |
 |---|---|---|
-| `profiles` | `select` (só `id`, `display_name`, `equipped` via view `public_profiles`) | `select`/`update` da própria linha |
+| `profiles` | `select` (só `id`, `display_name`, `equipped` via view `public_profiles`) | `select` e `update` de `display_name` da própria linha; `equipped` só por `set_equipped` |
 | `scores` | — | `select` das próprias linhas |
 | `user_settings` | — | `select`/`update` da própria linha |
 | `best_scores` | `select` | `select` |
@@ -144,6 +144,8 @@ O ranking global (KD-36) consulta `best_scores` e `public_profiles` para `anon` 
    - `content_version` dentro de uma lista aceita.
 5. Insere em `scores`, faz upsert em `best_scores` se for maior e atualiza `player_stats`.
 6. Avalia desbloqueios de cosméticos a partir de `player_stats`.
+
+**`set_equipped(p_equipped jsonb)`** → equipado gravado (KD-38). Slots `hat`/`apron`/`theme`, ids `^[a-z0-9_]{1,40}$`; item com custo em `game_rules.cosmetic_unlocks` só se estiver em `user_cosmetics` do usuário (`42501 cosmetic_not_owned`); formato inválido `22023`. Contrato em `specs/kd-38-cosmeticos-conta/contracts/cosmetics-api.md`.
 
 **`delete_my_account()`** remove os dados do usuário (exigência da LGPD).
 
