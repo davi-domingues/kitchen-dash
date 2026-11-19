@@ -1,10 +1,12 @@
 import { Lock } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { COSMETIC_SLOTS, COSMETICS, contentKey } from '../../content/index.js'
 import { storage } from '../../services/storage.js'
 import { CHEF_SLOTS, isUnlocked } from './cosmetics.js'
-import { equipCosmetic, equipCosmeticP2, loadCosmetics } from './cosmeticsStore.js'
+import { useAuth } from '../auth/AuthContext.js'
+import { equipCosmeticP2, loadCosmetics, subscribeCosmetics } from './cosmeticsStore.js'
+import { equipAndSync } from './cosmeticsSync.js'
 
 // O localStorage é síncrono, então não há estado de carregamento; erro de leitura vira aviso
 function readCosmetics() {
@@ -67,9 +69,13 @@ function SlotGroup({ slot, state, equippedId, group, onEquip }) {
 
 export default function CosmeticsPicker() {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const [{ state, failed }, setData] = useState(readCosmetics)
 
-  const onEquip = (id) => setData({ state: equipCosmetic(id), failed: false })
+  useEffect(() => subscribeCosmetics((next) => setData({ state: next, failed: false })), [])
+
+  const onEquip = (id) => setData({ state: equipAndSync(id, user), failed: false })
+  // P2 só local: a conta guarda o equipado do P1 (set_equipped)
   const onEquipP2 = (id) => setData({ state: equipCosmeticP2(id), failed: false })
 
   return (

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { createStorage } from '../../services/storage.js'
+import { loadCosmetics } from '../cosmetics/cosmeticsStore.js'
 import { recordMatchResult, loadProgress } from './progressStore.js'
 import { createAppOutbox, submitMatch } from './scoreSync.js'
 
@@ -41,6 +42,17 @@ describe('submitMatch', () => {
     })
     expect(loadProgress(store).pending).toEqual([])
     expect(loadProgress(store).board).toHaveLength(1)
+  })
+
+  it('aplica nos cosméticos locais o que o servidor liberou', async () => {
+    const store = memoryStore()
+    recordMatchResult(RESULT, { store, now: new Date('2026-11-18T12:00:00Z') })
+    const submitScore = vi.fn().mockResolvedValue({ unlockedCosmetics: ['hat_navy'] })
+    const outbox = createAppOutbox({ store, loadService: async () => ({ submitScore }) })
+
+    await submitMatch(outbox, RESULT.matchId, USER)
+
+    expect(loadCosmetics(store).unlocked).toContain('hat_navy')
   })
 
   it('visitante não enfileira nem envia', async () => {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  applyAccountEquipped,
   applyScore,
   createEmptyCosmetics,
   equip,
@@ -186,5 +187,31 @@ describe('sanitizeCosmetics — P2', () => {
     const state = sanitizeCosmetics({ unlocked: [], equippedP2: { hat: 'hat_gold', apron: 'theme_bistro' } })
 
     expect(state.equippedP2).toEqual({ hat: 'hat_classic', apron: 'apron_cream' })
+  })
+})
+
+describe('applyAccountEquipped', () => {
+  it('a conta vence nos slots com item liberado', () => {
+    const start = mergeUnlocked(createEmptyCosmetics(), ['hat_navy']).state
+
+    const state = applyAccountEquipped(start, { hat: 'hat_navy' })
+
+    expect(state.equipped.hat).toBe('hat_navy')
+    expect(state.equipped.apron).toBe('apron_cream')
+  })
+
+  it('ignora item bloqueado, desconhecido ou no slot errado', () => {
+    const start = createEmptyCosmetics()
+
+    const state = applyAccountEquipped(start, { hat: 'hat_gold', apron: 'nope', theme: 'hat_classic' })
+
+    expect(state).toEqual(start)
+  })
+
+  it('equipado ausente ou inválido não muda nada', () => {
+    const start = createEmptyCosmetics()
+
+    expect(applyAccountEquipped(start, null)).toBe(start)
+    expect(applyAccountEquipped(start, 'x')).toBe(start)
   })
 })

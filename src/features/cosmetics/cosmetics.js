@@ -81,6 +81,15 @@ export function equip(state, id) {
   return { ...state, equipped: { ...state.equipped, [item.slot]: id } }
 }
 
+/** KD-38: o equipado da conta vence, slot a slot, quando o item está liberado e no slot certo. */
+export function applyAccountEquipped(state, equipped) {
+  if (!equipped || typeof equipped !== 'object') return state
+  return COSMETIC_SLOTS.reduce((current, slot) => {
+    const id = equipped[slot]
+    return isEquippable(current, id, slot) ? equip(current, id) : current
+  }, state)
+}
+
 /** Equipa no P2 um item ganho (os mesmos itens do P1); tema não é por chef e não muda nada. */
 export function equipP2(state, id) {
   const item = byId.get(id)

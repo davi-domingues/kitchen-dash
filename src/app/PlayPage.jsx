@@ -19,10 +19,10 @@ export default function PlayPage() {
   const { t } = useTranslation()
   const [state, dispatch] = useReducer(playFlowReducer, initialPlayState)
   const recorded = useRecordedResult(state.phase === PLAY_PHASES.RESULT ? state.result : null)
-  useSubmitMatch(recorded ? state.result.matchId : null)
   // Lidas uma vez por visita: a cena recebe as teclas pelo registry
   const [keyBindings] = useState(loadKeyBindings)
   const [cosmeticLook] = useState(loadCosmeticLook)
+  useSubmitMatch(recorded ? state.result.matchId : null)
   const inMatch = state.phase === PLAY_PHASES.PLAYING || state.phase === PLAY_PHASES.PAUSED
 
   useEffect(() => {

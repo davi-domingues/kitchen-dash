@@ -28,12 +28,14 @@ function isItem(item) {
  * @param {() => Promise<{ submitScore: Function } | null>} deps.loadService
  * @param {() => object[]} deps.listPending pendentes da KD-22
  * @param {(matchIds: string[]) => void} deps.removePending
+ * @param {(entry: object, result: object) => void} [deps.onSubmitted] recebe o retorno do submit_score
  */
 export function createScoreOutbox({
   store,
   loadService,
   listPending,
   removePending,
+  onSubmitted = () => {},
   now = () => Date.now(),
   rng = Math.random,
   setTimer = (fn, ms) => setTimeout(fn, ms),
@@ -85,7 +87,9 @@ export function createScoreOutbox({
     for (const item of items) {
       if (item.userId !== userId || item.nextAt > now()) continue
       try {
-        await service.submitScore(pending.get(item.matchId), { origin: 'online' })
+        const entry = pending.get(item.matchId)
+        const result = await service.submitScore(entry, { origin: 'online' })
+        onSubmitted(entry, result)
         done.push(item.matchId)
         summary.sent += 1
       } catch (error) {
