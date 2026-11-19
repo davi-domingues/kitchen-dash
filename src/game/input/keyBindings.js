@@ -76,3 +76,31 @@ export function remapKey(bindings, slot, code) {
   writeSlot(next, slot, code)
   return next
 }
+
+/**
+ * Controle que usa `code`, na mesma convenção do `remapKey`: `{}` representa a pausa.
+ * @param {ReturnType<typeof sanitizeKeyBindings>} bindings
+ * @param {string} code KeyboardEvent.code
+ * @returns {{player?: 'p1'|'p2', control?: string} | null} `null` quando a tecla está livre
+ */
+export function keyOwner(bindings, code) {
+  if (!isCode(code) || typeof bindings !== 'object' || bindings === null) return null
+  const owner = allSlots().find((slot) => {
+    const value = slot.player ? bindings[slot.player]?.[slot.control] : bindings.pause
+    return value === code
+  })
+  return owner ?? null
+}
+
+/**
+ * Compara os onze valores com o padrão sem sanitizar: entrada incompleta ou inválida não é padrão.
+ * @param {unknown} bindings
+ * @returns {boolean}
+ */
+export function isDefaultKeyBindings(bindings) {
+  if (typeof bindings !== 'object' || bindings === null) return false
+  return allSlots().every((slot) => {
+    const value = slot.player ? bindings[slot.player]?.[slot.control] : bindings.pause
+    return value === readSlot(DEFAULT_KEY_BINDINGS, slot)
+  })
+}

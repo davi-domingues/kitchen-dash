@@ -34,18 +34,18 @@ Projeto único: `src/`, sem pasta `tests/` separada — os testes ficam ao lado 
 
 **⚠️ CRITICAL**: nenhuma história começa antes desta fase.
 
-- [ ] T002 [P] Acrescentar `nav.settings`, `settings.title`, `settings.intro` e `settings.storageWarning` em `src/i18n/pt-BR.json` — `nav.settings` é usado em T004 e as demais em T003, então as chaves entram no mesmo commit dessas tarefas (rodar o teste de i18n só ao fim do grupo)
-- [ ] T003 Criar `src/app/SettingsPage.jsx`: `<main>` com `<h1>` (`settings.title`) e `<p>` com `settings.intro`, cujo texto MUST citar P1, P2 e que, em partida de 1 jogador, os dois conjuntos controlam o mesmo chef (FR-014); link de volta para `/` no padrão de `PlayPage`, estado `useState(loadKeyBindings)`, leitura única de `storage.isPersistent` e o aviso `role="status"` com `settings.storageWarning` quando `false` (FR-016)
-- [ ] T004 [P] Adicionar o link `nav.settings` na `<nav aria-label={t('nav.label')}>` de `src/app/HomePage.jsx`, no mesmo padrão visual dos links de ranking e perfil
-- [ ] T005 Registrar a rota `/configuracoes` apontando para `SettingsPage` em `src/app/App.jsx`, sem `lazy` (a tela não importa Phaser); depende do esqueleto criado em T003
-- [ ] T006 [P] Acrescentar `keyOwner(bindings, code)` e `isDefaultKeyBindings(bindings)` em `src/game/input/keyBindings.js`, sem alterar `remapKey`/`sanitizeKeyBindings`: `keyOwner` devolve `{ player, control }`, `{}` para a pausa ou `null`; `isDefaultKeyBindings` compara os onze valores com `DEFAULT_KEY_BINDINGS` e devolve `false` para entrada inválida
-- [ ] T007 Acrescentar casos de `keyOwner` (jogador, pausa e tecla livre) e `isDefaultKeyBindings` (padrão, personalizado e inválido) em `src/game/input/keyBindings.test.js`
-- [ ] T008 [P] Criar `src/features/settings/captureKey.js` com `classifyCaptureKey({ code, repeat = false })` e `isModifierCode(code)`: `Escape`/`Tab` → `'cancel'`, `repeat: true` → `'ignore'`, `ShiftLeft/Right`, `ControlLeft/Right`, `AltLeft/Right`, `MetaLeft/Right` → `'ignore'`, `code` vazio → `'ignore'`, resto → `'bind'` (inclui `Enter` e `Space`)
-- [ ] T009 Criar `src/features/settings/captureKey.test.js` cobrindo Esc, Tab, **evento repetido (`repeat: true`)**, os quatro modificadores, `Enter`, `Space`, tecla comum e `code` vazio; o caso de repetição afirma `'ignore'` (tecla segurada não regrava nem encerra a captura)
-- [ ] T010 [P] Criar `src/features/settings/keyLabels.js` com `keyLabel(code)` devolvendo **somente o `labelId`** (`'arrowUp'`, `'enter'`, `'a'`, `'1'`, `'numpad1'`, `'unknown'`), sem receber `t` e sem importar i18n; nunca devolve string vazia
-- [ ] T011 Criar `src/features/settings/keyLabels.test.js` cobrindo seta, Enter, letra, dígito, numpad e desconhecido; nenhuma asserção de texto traduzido
-- [ ] T012 [P] Criar `src/features/settings/statusMessage.js` com `boundMessage`, `swappedMessage`, `sameMessage`, `cancelledMessage`, `restoredMessage`, `alreadyDefaultMessage` e `modifierMessage`, devolvendo apenas `{ kind, params }` com `kind` de conjunto fechado
-- [ ] T013 Criar `src/features/settings/statusMessage.test.js` cobrindo cada `kind` e o formato dos `params`
+- [X] T002 [P] Acrescentar `nav.settings`, `settings.title`, `settings.intro` e `settings.storageWarning` em `src/i18n/pt-BR.json` — `nav.settings` é usado em T004 e as demais em T003, então as chaves entram no mesmo commit dessas tarefas (rodar o teste de i18n só ao fim do grupo)
+- [X] T003 Criar `src/app/SettingsPage.jsx`: `<main>` com `<h1>` (`settings.title`) e `<p>` com `settings.intro`, cujo texto MUST citar P1, P2 e que, em partida de 1 jogador, os dois conjuntos controlam o mesmo chef (FR-014); link de volta para `/` no padrão de `PlayPage`, estado `useState(loadKeyBindings)`, leitura única de `storage.isPersistent` e o aviso `role="status"` com `settings.storageWarning` quando `false` (FR-016)
+- [X] T004 [P] Adicionar o link `nav.settings` na `<nav aria-label={t('nav.label')}>` de `src/app/HomePage.jsx`, no mesmo padrão visual dos links de ranking e perfil
+- [X] T005 Registrar a rota `/configuracoes` apontando para `SettingsPage` em `src/app/App.jsx`, sem `lazy` (a tela não importa Phaser); depende do esqueleto criado em T003
+- [X] T006 [P] Acrescentar `keyOwner(bindings, code)` e `isDefaultKeyBindings(bindings)` em `src/game/input/keyBindings.js`, sem alterar `remapKey`/`sanitizeKeyBindings`: `keyOwner` devolve `{ player, control }`, `{}` para a pausa ou `null`; `isDefaultKeyBindings` compara os onze valores com `DEFAULT_KEY_BINDINGS` e devolve `false` para entrada inválida
+- [X] T007 Acrescentar casos de `keyOwner` (jogador, pausa e tecla livre) e `isDefaultKeyBindings` (padrão, personalizado e inválido) em `src/game/input/keyBindings.test.js`
+- [X] T008 [P] Criar `src/features/settings/captureKey.js` com `classifyCaptureKey({ code, repeat = false })` e `isModifierCode(code)`: `Escape`/`Tab` → `'cancel'`, `repeat: true` → `'ignore'`, `ShiftLeft/Right`, `ControlLeft/Right`, `AltLeft/Right`, `MetaLeft/Right` → `'ignore'`, `code` vazio → `'ignore'`, resto → `'bind'` (inclui `Enter` e `Space`)
+- [X] T009 Criar `src/features/settings/captureKey.test.js` cobrindo Esc, Tab, **evento repetido (`repeat: true`)**, os quatro modificadores, `Enter`, `Space`, tecla comum e `code` vazio; o caso de repetição afirma `'ignore'` (tecla segurada não regrava nem encerra a captura)
+- [X] T010 [P] Criar `src/features/settings/keyLabels.js` com `keyLabel(code)` devolvendo **somente o `labelId`** (`'arrowUp'`, `'enter'`, `'a'`, `'1'`, `'numpad1'`, `'unknown'`), sem receber `t` e sem importar i18n; nunca devolve string vazia
+- [X] T011 Criar `src/features/settings/keyLabels.test.js` cobrindo seta, Enter, letra, dígito, numpad e desconhecido; nenhuma asserção de texto traduzido
+- [X] T012 [P] Criar `src/features/settings/statusMessage.js` com `boundMessage`, `swappedMessage`, `sameMessage`, `cancelledMessage`, `restoredMessage`, `alreadyDefaultMessage` e `modifierMessage`, devolvendo apenas `{ kind, params }` com `kind` de conjunto fechado
+- [X] T013 Criar `src/features/settings/statusMessage.test.js` cobrindo cada `kind` e o formato dos `params`
 
 **Checkpoint**: rota acessível, casca com aviso de storage e módulos puros verdes.
 
@@ -59,12 +59,12 @@ Projeto único: `src/`, sem pasta `tests/` separada — os testes ficam ao lado 
 
 ### Implementation for User Story 1
 
-- [ ] T014 [US1] Criar `src/features/settings/KeyBindingsPanel.jsx` com três `<section>` e `<h2>`: `settings.players.p1`, `settings.players.p2` e `settings.players.pause`; ordem fixa `up`, `down`, `left`, `right`, `action` (pausa é item único); declarar nele a **única** região `<p role="status" aria-live="polite">` que recebe a mensagem de estado vinda de `SettingsPage`, sem outra região viva para as ações; incluir as chaves em `src/i18n/pt-BR.json`
-- [ ] T015 [US1] Criar `src/features/settings/KeyBindingRow.jsx` como `<button type="button">` com `aria-label={t('settings.change', { control })}`, nome do controle (`settings.controls.*`), tecla atual (`settings.current`) e instrução (`settings.capture.hint`); incluir as chaves no dicionário
-- [ ] T016 [US1] Traduzir o `labelId` de T010 em `src/features/settings/KeyBindingRow.jsx` com um `switch` de chamadas literais `t('settings.keys.arrowUp')`, …, `t('settings.keys.unknown', { code })`; letras e dígitos são exibidos como caractere derivado do `code`; incluir exatamente as chaves usadas
-- [ ] T017 [US1] Implementar a captura em `src/features/settings/KeyBindingRow.jsx`: armar no clique/ativação, ignorar `event.repeat` e o keydown que armou a linha, chamar `classifyCaptureKey` e, para `'bind'`, aplicar `remapKey(bindings, slot, code)` sem nunca escrever tecla repetida (invariante dos onze `code` distintos)
-- [ ] T018 [US1] Persistir cada troca em `src/app/SettingsPage.jsx` chamando `saveKeyBindings(next)` antes de atualizar o estado, e publicar a mensagem de `statusMessage` (`settings.status.bound` / `settings.status.same`) na única região `<p role="status" aria-live="polite">` declarada no `KeyBindingsPanel` (T014); acrescentar `settings.status.bound` e `settings.status.same` em `src/i18n/pt-BR.json` no mesmo commit das chamadas literais (FR-003, FR-010, FR-015)
-- [ ] T019 [US1] Verificar que `src/app/PlayPage.jsx` continua lendo `loadKeyBindings()` na montagem e que a próxima partida usa as teclas novas, sem alterar o arquivo (FR-003)
+- [X] T014 [US1] Criar `src/features/settings/KeyBindingsPanel.jsx` com três `<section>` e `<h2>`: `settings.players.p1`, `settings.players.p2` e `settings.players.pause`; ordem fixa `up`, `down`, `left`, `right`, `action` (pausa é item único); declarar nele a **única** região `<p role="status" aria-live="polite">` que recebe a mensagem de estado vinda de `SettingsPage`, sem outra região viva para as ações; incluir as chaves em `src/i18n/pt-BR.json`
+- [X] T015 [US1] Criar `src/features/settings/KeyBindingRow.jsx` como `<button type="button">` com `aria-label={t('settings.change', { control })}`, nome do controle (`settings.controls.*`), tecla atual (`settings.current`) e instrução (`settings.capture.hint`); incluir as chaves no dicionário
+- [X] T016 [US1] Traduzir o `labelId` de T010 em `src/features/settings/KeyBindingRow.jsx` com um `switch` de chamadas literais `t('settings.keys.arrowUp')`, …, `t('settings.keys.unknown', { code })`; letras e dígitos são exibidos como caractere derivado do `code`; incluir exatamente as chaves usadas
+- [X] T017 [US1] Implementar a captura em `src/features/settings/KeyBindingRow.jsx`: armar no clique/ativação, ignorar `event.repeat` e o keydown que armou a linha, chamar `classifyCaptureKey` e, para `'bind'`, aplicar `remapKey(bindings, slot, code)` sem nunca escrever tecla repetida (invariante dos onze `code` distintos)
+- [X] T018 [US1] Persistir cada troca em `src/app/SettingsPage.jsx` chamando `saveKeyBindings(next)` antes de atualizar o estado, e publicar a mensagem de `statusMessage` (`settings.status.bound` / `settings.status.same`) na única região `<p role="status" aria-live="polite">` declarada no `KeyBindingsPanel` (T014); acrescentar `settings.status.bound` e `settings.status.same` em `src/i18n/pt-BR.json` no mesmo commit das chamadas literais (FR-003, FR-010, FR-015)
+- [X] T019 [US1] Verificar que `src/app/PlayPage.jsx` continua lendo `loadKeyBindings()` na montagem e que a próxima partida usa as teclas novas, sem alterar o arquivo (FR-003)
 
 **Checkpoint**: troca de tecla livre e persistência funcionando; US1 testável sozinha.
 
@@ -78,10 +78,10 @@ Projeto único: `src/`, sem pasta `tests/` separada — os testes ficam ao lado 
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Tratar `'cancel'` em `src/features/settings/KeyBindingRow.jsx`: `Escape` encerra a captura com `preventDefault()` e anúncio `settings.status.cancelled`; `Tab` encerra **sem** `preventDefault()`, deixando o foco avançar (FR-006, FR-009); acrescentar `settings.status.cancelled` em `src/i18n/pt-BR.json` no mesmo commit da chamada literal
-- [ ] T021 [US2] Cancelar a captura em `blur` da linha e na desmontagem do componente, sem gravar nada, em `src/features/settings/KeyBindingRow.jsx`; manter o foco no botão quando a saída for causada pelo próprio `Esc` (FR-006, FR-009)
-- [ ] T022 [US2] Em `src/features/settings/KeyBindingsPanel.jsx`, ajustar apenas os atributos da única `<p role="status" aria-live="polite">` criada em T014 — sem criar uma segunda região viva —, ligar `aria-describedby` à instrução de captura e não usar `tabIndex` positivo; critério explícito: foco visível em todo elemento focável (anel de foco do tema) e ordem de foco coerente com a ordem DOM, P1 → P2 → pausa → restaurar (FR-009, FR-010, FR-015)
-- [ ] T023 [US2] Garantir recusa com orientação para modificador isolado (`settings.status.modifier`) mantendo a captura ativa em `src/features/settings/KeyBindingRow.jsx`, e retorno de foco ao controle após cancelar (`src/features/settings/KeyBindingRow.jsx` e `src/app/SettingsPage.jsx`) (FR-007, FR-009); acrescentar `settings.status.modifier` em `src/i18n/pt-BR.json` no mesmo commit da chamada literal
+- [X] T020 [US2] Tratar `'cancel'` em `src/features/settings/KeyBindingRow.jsx`: `Escape` encerra a captura com `preventDefault()` e anúncio `settings.status.cancelled`; `Tab` encerra **sem** `preventDefault()`, deixando o foco avançar (FR-006, FR-009); acrescentar `settings.status.cancelled` em `src/i18n/pt-BR.json` no mesmo commit da chamada literal
+- [X] T021 [US2] Cancelar a captura em `blur` da linha e na desmontagem do componente, sem gravar nada, em `src/features/settings/KeyBindingRow.jsx`; manter o foco no botão quando a saída for causada pelo próprio `Esc` (FR-006, FR-009)
+- [X] T022 [US2] Em `src/features/settings/KeyBindingsPanel.jsx`, ajustar apenas os atributos da única `<p role="status" aria-live="polite">` criada em T014 — sem criar uma segunda região viva —, ligar `aria-describedby` à instrução de captura e não usar `tabIndex` positivo; critério explícito: foco visível em todo elemento focável (anel de foco do tema) e ordem de foco coerente com a ordem DOM, P1 → P2 → pausa → restaurar (FR-009, FR-010, FR-015)
+- [X] T023 [US2] Garantir recusa com orientação para modificador isolado (`settings.status.modifier`) mantendo a captura ativa em `src/features/settings/KeyBindingRow.jsx`, e retorno de foco ao controle após cancelar (`src/features/settings/KeyBindingRow.jsx` e `src/app/SettingsPage.jsx`) (FR-007, FR-009); acrescentar `settings.status.modifier` em `src/i18n/pt-BR.json` no mesmo commit da chamada literal
 
 **Checkpoint**: fluxo completo sem mouse, com anúncios; US1 continua funcionando.
 
@@ -95,9 +95,9 @@ Projeto único: `src/`, sem pasta `tests/` separada — os testes ficam ao lado 
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Em `src/features/settings/KeyBindingRow.jsx`, consultar `keyOwner(bindings, code)` **antes** de `remapKey` e usar o slot retornado para compor `swappedMessage` com os dois controles e as duas teclas
-- [ ] T025 [US3] Acrescentar `settings.status.swapped` em `src/i18n/pt-BR.json` com parâmetros para controle, tecla, outro controle e tecla anterior; exibir somente a última mensagem, sem acumular
-- [ ] T026 [US3] Acrescentar em `src/game/input/keyBindings.test.js` um caso de conflito entre jogadores diferentes (`p1.action` recebendo tecla de `p2`) garantindo que a troca mantém os onze `code` distintos
+- [X] T024 [US3] Em `src/features/settings/KeyBindingRow.jsx`, consultar `keyOwner(bindings, code)` **antes** de `remapKey` e usar o slot retornado para compor `swappedMessage` com os dois controles e as duas teclas
+- [X] T025 [US3] Acrescentar `settings.status.swapped` em `src/i18n/pt-BR.json` com parâmetros para controle, tecla, outro controle e tecla anterior; exibir somente a última mensagem, sem acumular
+- [X] T026 [US3] Acrescentar em `src/game/input/keyBindings.test.js` um caso de conflito entre jogadores diferentes (`p1.action` recebendo tecla de `p2`) garantindo que a troca mantém os onze `code` distintos
 
 **Checkpoint**: conflito resolvido por troca e comunicado; nenhuma tecla com duas funções.
 
@@ -111,9 +111,9 @@ Projeto único: `src/`, sem pasta `tests/` separada — os testes ficam ao lado 
 
 ### Implementation for User Story 4
 
-- [ ] T027 [US4] Criar `src/features/settings/RestoreDefaultsDialog.jsx` no padrão de `src/features/match/PauseDialog.jsx`: `<dialog className="modal">` aberto com `showModal()` em `useEffect`, fechado no cleanup, `aria-labelledby`, ação principal com `autoFocus`, `onCancel` com `preventDefault()` e fechamento; incluir `settings.restore.title/body/confirm/cancel` em `src/i18n/pt-BR.json` no mesmo commit das chamadas literais
-- [ ] T028 [US4] Ligar o botão `settings.restore.button` em `src/app/SettingsPage.jsx`: abrir o diálogo, aplicar `sanitizeKeyBindings(null)` ao confirmar, salvar com `saveKeyBindings` e anunciar `settings.status.restored`; devolver o foco ao botão ao fechar; acrescentar `settings.restore.button` e `settings.status.restored` em `src/i18n/pt-BR.json` no mesmo commit das chamadas literais
-- [ ] T029 [US4] Em `src/app/SettingsPage.jsx`, quando `isDefaultKeyBindings(bindings)` for `true`, confirmar sem alterar nada e anunciar `settings.status.alreadyDefault`, mantendo o botão habilitado (sem `disabled`); acrescentar `settings.status.alreadyDefault` em `src/i18n/pt-BR.json` no mesmo commit da chamada literal
+- [X] T027 [US4] Criar `src/features/settings/RestoreDefaultsDialog.jsx` no padrão de `src/features/match/PauseDialog.jsx`: `<dialog className="modal">` aberto com `showModal()` em `useEffect`, fechado no cleanup, `aria-labelledby`, ação principal com `autoFocus`, `onCancel` com `preventDefault()` e fechamento; incluir `settings.restore.title/body/confirm/cancel` em `src/i18n/pt-BR.json` no mesmo commit das chamadas literais
+- [X] T028 [US4] Ligar o botão `settings.restore.button` em `src/app/SettingsPage.jsx`: abrir o diálogo, aplicar `sanitizeKeyBindings(null)` ao confirmar, salvar com `saveKeyBindings` e anunciar `settings.status.restored`; devolver o foco ao botão ao fechar; acrescentar `settings.restore.button` e `settings.status.restored` em `src/i18n/pt-BR.json` no mesmo commit das chamadas literais
+- [X] T029 [US4] Em `src/app/SettingsPage.jsx`, quando `isDefaultKeyBindings(bindings)` for `true`, confirmar sem alterar nada e anunciar `settings.status.alreadyDefault`, mantendo o botão habilitado (sem `disabled`); acrescentar `settings.status.alreadyDefault` em `src/i18n/pt-BR.json` no mesmo commit da chamada literal
 
 **Checkpoint**: restauração com confirmação acessível e aviso do caso "já no padrão".
 
@@ -121,10 +121,10 @@ Projeto único: `src/`, sem pasta `tests/` separada — os testes ficam ao lado 
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T030 [P] Rodar `npm test` em todo o repositório e conferir que `src/i18n/i18n.test.js` passa sem chave faltante nem chave sem uso
-- [ ] T031 [P] Rodar `npm run lint` e `npm run format:check` em todo o repositório e corrigir o que aparecer nos arquivos tocados
-- [ ] T032 [P] Rodar `npm run build` e `npm run check-size` e confirmar que o JS inicial segue ≤ 250 KB gzip (`dist/`)
-- [ ] T033 Confirmar que `package.json` e `package-lock.json` não mudaram (`git diff -- package.json package-lock.json` vazio)
+- [X] T030 [P] Rodar `npm test` em todo o repositório e conferir que `src/i18n/i18n.test.js` passa sem chave faltante nem chave sem uso
+- [X] T031 [P] Rodar `npm run lint` e `npm run format:check` em todo o repositório e corrigir o que aparecer nos arquivos tocados
+- [X] T032 [P] Rodar `npm run build` e `npm run check-size` e confirmar que o JS inicial segue ≤ 250 KB gzip (`dist/`)
+- [X] T033 Confirmar que `package.json` e `package-lock.json` não mudaram (`git diff -- package.json package-lock.json` vazio)
 - [ ] T034 Executar os cenários M1–M15 de [quickstart.md](./quickstart.md) e registrar o resultado para o corpo do PR, incluindo foco preso, `Esc`, retorno de foco, foco visível e ordem de foco (T022), `aria-live`, o aviso de armazenamento indisponível (M12) e as preferências corrompidas caindo no padrão sem aviso (M15, FR-004)
 - [ ] T035 Preparar o texto do PR com `Closes #75`, listando as exceções e o débito das dicas fixas da home (`home.howTo.*`); abrir o PR é ação da pessoa, e o merge também
 

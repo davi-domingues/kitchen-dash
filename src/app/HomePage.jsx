@@ -24,6 +24,9 @@ export default function HomePage() {
             <Link to="/ranking" className="btn btn-ghost btn-sm">
               {t('nav.ranking')}
             </Link>
+            <Link to="/configuracoes" className="btn btn-ghost btn-sm">
+              {t('nav.settings')}
+            </Link>
             <Link to="/perfil" className="btn btn-ghost btn-sm">
               {t('nav.profile')}
             </Link>

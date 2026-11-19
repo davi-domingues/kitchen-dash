@@ -6,6 +6,7 @@ import NotFoundPage from './NotFoundPage.jsx'
 import PrivacyPage from './PrivacyPage.jsx'
 import ProfilePage from './ProfilePage.jsx'
 import RankingPage from './RankingPage.jsx'
+import SettingsPage from './SettingsPage.jsx'
 
 // Phaser só é baixado na rota do jogo (orçamento de JS inicial, SYSTEM_DESIGN §8.5)
 const PlayPage = lazy(() => import('./PlayPage.jsx'))
@@ -31,6 +32,7 @@ export default function App() {
         />
         <Route path="/ranking" element={<RankingPage />} />
         <Route path="/perfil" element={<ProfilePage />} />
+        <Route path="/configuracoes" element={<SettingsPage />} />
         <Route path="/privacidade" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
