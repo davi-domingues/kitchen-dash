@@ -1,6 +1,6 @@
 # Tasks: Migração de partidas de visitante pós-login
 
-**Input**: specs/010-migracao-pos-login (spec, plan, research, data-model)
+**Input**: specs/024-migracao-pos-login (spec, plan, research, data-model)
 **Tests**: obrigatórios (regressão de bug, AGENTS.md §5)
 
 ## Phase 1: Setup

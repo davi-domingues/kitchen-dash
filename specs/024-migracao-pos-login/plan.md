@@ -25,7 +25,7 @@
 ## Project Structure
 
 ```text
-specs/010-migracao-pos-login/   # spec, plan, research, data-model, quickstart, tasks
+specs/024-migracao-pos-login/   # spec, plan, research, data-model, quickstart, tasks
 src/features/migration/accountMigration.js       # isMigrationDone e reabertura de etapas
 src/features/migration/accountMigration.test.js  # regressão #73
 ```
