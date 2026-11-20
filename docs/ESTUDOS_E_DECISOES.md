@@ -246,6 +246,14 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
+## 13.1 Ambiente DOM para testes de componente (débito #70)
+
+- **happy-dom em vez de jsdom (2026-11-20):** os testes de componente só precisam de DOM, eventos, foco e `<dialog>`, que o happy-dom cobre; ele instala e inicia bem mais rápido e tem menos dependências transitivas. O jsdom fica como alternativa se algum teste precisar de uma API que o happy-dom não implemente.
+- **Ambiente por arquivo:** cada `*.test.jsx` declara `// @vitest-environment happy-dom`; o resto da suíte (core, services) continua no ambiente Node, sem custo extra. O Vitest atual não tem mais `environmentMatchGlobs`.
+- **Sem rede:** serviços remotos são substituídos por `vi.mock` e a sessão por um `AuthContext` fixo (`src/test/renderWithProviders.jsx`).
+
+---
+
 ## 14. Referências
 
 **Documentação oficial**
