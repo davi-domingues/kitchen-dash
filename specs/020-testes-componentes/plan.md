@@ -18,6 +18,10 @@ Adicionar `happy-dom` e `@testing-library/react@16.3.3` como devDependencies exa
 
 - Core intocado e continua em Node (§4). Sem rede/Supabase (§5 Testes). Dependências aprovadas pelo débito #70, com versão exata (§7). Decisão em ESTUDOS_E_DECISOES. Sem impacto no bundle.
 
+## Artefatos
+
+[research.md](research.md) e [quickstart.md](quickstart.md). Sem data-model nem contracts (só testes).
+
 ## Structure
 
 ```

@@ -5,6 +5,13 @@
 **Status**: Draft
 **Input**: Débito #70 — ambiente DOM só para testes de componente e testes das telas tocadas na KD-21/22/23/37.
 
+## Clarifications
+
+### Session 2026-11-20
+
+- Q: Onde fica o "estado de erro" do Perfil/placar pedido no #70? → A: O Perfil lê o progresso local de forma síncrona e não tem estado de erro (só vazio e aviso de armazenamento); o erro é coberto no placar global (RankingPageContent). Resolvido pelo código da KD-22, sem pergunta.
+- Q: Como selecionar o ambiente DOM só para componentes? → A: Diretiva `// @vitest-environment happy-dom` por arquivo `*.test.jsx` (o Vitest 5 não tem `environmentMatchGlobs`).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Telas principais protegidas contra regressão (Priority: P1)
@@ -24,7 +31,7 @@ Como pessoa do time, quero que a suíte de testes renderize as telas principais 
 
 ### Edge Cases
 
-- `localStorage` indisponível: o aviso de armazenamento não persistente aparece no Perfil.
+- Com `localStorage` disponível, o aviso de armazenamento não persistente não aparece no Perfil (simular a indisponibilidade fica fora do escopo: o `storage` detecta isso no import do módulo).
 - Nenhum teste de componente acessa rede ou Supabase (serviços substituídos por dublês).
 
 ## Requirements *(mandatory)*
