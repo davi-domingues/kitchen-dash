@@ -3,6 +3,13 @@
     "name": "Kitchen Dash",
     "loading": "Carregando…"
   },
+  "pwa": {
+    "update": {
+      "message": "Nova versão disponível.",
+      "reload": "Recarregar",
+      "dismiss": "Agora não"
+    }
+  },
   "nav": {
     "label": "Navegação principal",
     "home": "Início",
