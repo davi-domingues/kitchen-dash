@@ -4,13 +4,12 @@ import { loadCosmeticsService } from '../../services/cosmeticsLoader.js'
 import { loadScoreService } from '../../services/scoreLoader.js'
 import { FAILURE_KINDS } from '../../services/scoreFailure.js'
 import { OUTBOX_KEY, backoffDelay } from '../../services/scoreOutbox.js'
-import { loadSettings, saveSettings } from '../../services/settings.js'
 import { loadSettingsService } from '../../services/settingsLoader.js'
 import { storage } from '../../services/storage.js'
 import { mergeUnlockedCosmetics } from '../cosmetics/cosmeticsStore.js'
 import { pullAccountCosmetics, pushEquipped } from '../cosmetics/cosmeticsSync.js'
 import { loadProgress, removePending } from '../progress/progressStore.js'
-import { mergeSettings } from './settingsMerge.js'
+import { pullAccountSettings } from '../settings/settingsSync.js'
 
 export const MIGRATION_KEY = 'migration'
 export const MIGRATION_VERSION = 1
@@ -99,19 +98,8 @@ async function migrateCosmetics(user, deps) {
   return deps.pushEquipped(user)
 }
 
-async function migrateSettings(user, deps) {
-  const service = await deps.loadSettingsService()
-  if (!service) return false
-  try {
-    const account = await service.fetchSettings(user.id)
-    const { settings, changedAccount } = mergeSettings(loadSettings(deps.store), account)
-    if (changedAccount) await service.saveSettings(user.id, settings)
-    saveSettings(settings, deps.store)
-    return true
-  } catch (error) {
-    console.warn('[migration] falha ao conciliar as configurações', error)
-    return false
-  }
+function migrateSettings(user, deps) {
+  return pullAccountSettings(user.id, { loadService: deps.loadSettingsService, store: deps.store })
 }
 
 function defaults(overrides) {

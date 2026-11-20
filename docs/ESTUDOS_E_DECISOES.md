@@ -244,6 +244,12 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - **Auto-uso silencioso (2026-11-19):** entradas com `auto: true` nunca geram `action:rejected`. O wrapper de estações descarta a recusa porque outro chef pode ter mudado a estação entre a decisão e a aplicação; o botão continua com aviso normal, sem alterar o contrato KD-12.
 - **Prevalência do botão (2026-11-19):** uma ação manual no mesmo frame bloqueia o auto pendente daquele chef. Depois de um auto já disparado, um toque manual é suprimido somente enquanto alvo **e assinatura do estado** da estação permanecem iguais; mover, mudar de alvo ou mudar o estado da estação libera o botão. A cena consome a decisão antes do `step` para que a mesma entrada não seja reenviada no frame seguinte.
 
+## 13.1 Perfil da conta (KD-34)
+
+- **Nome por update direto (2026-11-20):** o `display_name` é gravado por `update` em `profiles` (grant de coluna + RLS da própria linha, KD-30), sem RPC nova: o check e o `unique` do banco já são a autoridade. O cliente valida a mesma regex só para dar erro rápido e mapeia `23505` → "em uso" e `23514` → "formato".
+- **Logout local após excluir (2026-11-20):** depois de `delete_my_account`, o cliente chama `signOut({ scope: 'local' })`; o logout global faria uma chamada para um usuário que já não existe. O progresso local do navegador não é apagado, porque pertence ao visitante e tem botão próprio.
+- **Configurações sempre sincronizadas (2026-11-20):** a conciliação da KD-37 (a conta vence por campo) passa a rodar em todo login (`pullAccountSettings`, reaproveitada pela migração) e cada mudança com sessão envia o objeto local inteiro em segundo plano. Sem outbox: falha remota só registra aviso e o próximo login ou mudança reenvia.
+
 ---
 
 ## 14. Referências

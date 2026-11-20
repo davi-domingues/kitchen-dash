@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import AccountSection from '../features/profile/AccountSection.jsx'
 import CosmeticsPicker from '../features/cosmetics/CosmeticsPicker.jsx'
 import LocalProgress from '../features/progress/LocalProgress.jsx'
 
@@ -16,6 +17,7 @@ export default function ProfilePage() {
       </Link>
       <h1 className="text-4xl font-bold text-primary">{t('nav.profile')}</h1>
       <p className="text-sm opacity-80">{t('profile.local.visitorHint')}</p>
+      <AccountSection />
       <CosmeticsPicker key={resetCount} />
       <LocalProgress onCleared={() => setResetCount((n) => n + 1)} />
     </main>

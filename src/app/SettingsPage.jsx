@@ -2,15 +2,18 @@ import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import { useAuth } from '../features/auth/AuthContext.js'
 import { isDefaultKeyBindings, sanitizeKeyBindings } from '../game/input/keyBindings.js'
 import KeyBindingsPanel from '../features/settings/KeyBindingsPanel.jsx'
 import RestoreDefaultsDialog from '../features/settings/RestoreDefaultsDialog.jsx'
+import { pushAccountSettings } from '../features/settings/settingsSync.js'
 import { alreadyDefaultMessage, restoredMessage } from '../features/settings/statusMessage.js'
 import { loadKeyBindings, saveKeyBindings } from '../services/settings.js'
 import { storage } from '../services/storage.js'
 
 export default function SettingsPage() {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const [bindings, setBindings] = useState(loadKeyBindings)
   const [status, setStatus] = useState(null)
   const [persistent] = useState(() => storage.isPersistent)
@@ -20,6 +23,7 @@ export default function SettingsPage() {
   function handleRemap(next, message) {
     if (next) {
       saveKeyBindings(next)
+      pushAccountSettings(user)
       setBindings(next)
     }
     setStatus(message)
@@ -33,6 +37,7 @@ export default function SettingsPage() {
     }
     const next = sanitizeKeyBindings(null)
     saveKeyBindings(next)
+    pushAccountSettings(user)
     setBindings(next)
     setStatus(restoredMessage())
   }
