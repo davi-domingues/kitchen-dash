@@ -250,6 +250,11 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - **Logout local após excluir (2026-11-20):** depois de `delete_my_account`, o cliente chama `signOut({ scope: 'local' })`; o logout global faria uma chamada para um usuário que já não existe. O progresso local do navegador não é apagado, porque pertence ao visitante e tem botão próprio.
 - **Configurações sempre sincronizadas (2026-11-20):** a conciliação da KD-37 (a conta vence por campo) passa a rodar em todo login (`pullAccountSettings`, reaproveitada pela migração) e cada mudança com sessão envia o objeto local inteiro em segundo plano. Sem outbox: falha remota só registra aviso e o próximo login ou mudança reenvia.
 
+## 13.2 Política de privacidade (KD-44)
+
+- **Texto do MVP com marcadores (2026-11-20):** a política em `/privacidade` descreve os fatos de D7, D9, D11 e D13 em 7 seções. Controlador e encarregado ficam como "[a definir]" até a pessoa responsável preencher; nenhum dado da empresa é inventado. Revisão jurídica antes do lançamento.
+- **Caminho até a exclusão (2026-11-20):** a política aponta para `/perfil#excluir-conta`; o perfil rola até a âncora quando a seção aparece e mostra ao visitante como entrar. O rodapé com o link fica só nas telas de navegação (início e perfil), não na partida.
+
 ---
 
 ## 14. Referências

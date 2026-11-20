@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 
-// Casca das rotas cujo conteúdo chega em tasks futuras (ranking, perfil, privacidade, 404)
+// Casca de páginas só com título e mensagem (hoje, a 404)
 export default function PlaceholderPage({ title, message }) {
   const { t } = useTranslation()
 

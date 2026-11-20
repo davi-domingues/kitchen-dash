@@ -1,6 +1,7 @@
 import { ChefHat } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
+import SiteFooter from '../ui/SiteFooter.jsx'
 import AccountStatus from '../features/auth/AccountStatus.jsx'
 import { getDailyChallenge } from '../game/core/dailyChallenge/index.js'
 import { getDailyChallengeCompletion } from '../services/dailyChallengeProgress.js'
@@ -73,6 +74,7 @@ export default function HomePage() {
               <p className="mt-2 text-sm text-base-content/70">{t('dailyChallenge.unavailable')}</p>
             )}
           </section>
+          <SiteFooter />
         </div>
       </div>
     </main>
