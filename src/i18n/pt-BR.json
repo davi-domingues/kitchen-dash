@@ -46,6 +46,25 @@
       "p1Title": "Jogador 1",
       "p2Title": "Jogador 2",
       "p2Hint": "Chapéu e avental do Jogador 2, entre os itens já desbloqueados. O tema da cozinha é o do Jogador 1. Esta escolha fica só neste navegador."
+    },
+    "account": {
+      "title": "Conta",
+      "signedInAs": "Conectado como {{email}}",
+      "loadError": "Não foi possível carregar os dados da conta. Verifique a conexão e recarregue a página.",
+      "nameLabel": "Nome de exibição",
+      "nameHint": "De 3 a 20 caracteres: letras sem acento, números e _. Aparece no ranking.",
+      "nameSave": "Salvar nome",
+      "nameSaved": "Nome atualizado.",
+      "nameInvalid": "Use de 3 a 20 caracteres, só letras sem acento, números e _.",
+      "nameTaken": "Esse nome já está em uso. Escolha outro.",
+      "nameError": "Não foi possível salvar o nome. Tente de novo.",
+      "deleteTitle": "Excluir conta",
+      "deleteHint": "Apaga a conta, o nome, as pontuações, as estatísticas e os cosméticos da conta. O progresso deste navegador continua.",
+      "delete": "Excluir minha conta",
+      "deleteConfirmTitle": "Excluir a conta?",
+      "deleteConfirmText": "Todos os dados da conta serão apagados de forma definitiva. Não dá para desfazer.",
+      "deleteConfirm": "Excluir definitivamente",
+      "deleteError": "Não foi possível excluir a conta. Tente de novo."
     }
   },
   "notFound": {
