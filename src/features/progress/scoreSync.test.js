@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { createStorage } from '../../services/storage.js'
 import { loadCosmetics } from '../cosmetics/cosmeticsStore.js'
 import { recordMatchResult, loadProgress } from './progressStore.js'
-import { createAppOutbox, submitMatch } from './scoreSync.js'
+import { createAppOutbox, reportDiscarded, submitMatch } from './scoreSync.js'
 
 const RESULT = {
   matchId: '00000000-0000-4000-8000-000000000001',
@@ -66,5 +66,23 @@ describe('submitMatch', () => {
     expect(submitScore).not.toHaveBeenCalled()
     expect(outbox.items()).toEqual([])
     expect(loadProgress(store).pending).toHaveLength(1)
+  })
+})
+
+describe('reportDiscarded', () => {
+  it('reporta o descarte ao monitoramento sem dados do jogador', () => {
+    const capture = vi.fn()
+
+    reportDiscarded(
+      { ...RESULT, userId: USER.id, email: USER.email },
+      { reason: 'rejected', attempts: 1 },
+      capture,
+    )
+
+    expect(capture).toHaveBeenCalledWith('score.discarded', {
+      tags: { reason: 'rejected', mode: 'classic' },
+      extra: { attempts: 1, matchId: RESULT.matchId, contentVersion: RESULT.contentVersion },
+    })
+    expect(JSON.stringify(capture.mock.calls)).not.toMatch(/user-a|example\.com/)
   })
 })
