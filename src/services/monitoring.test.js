@@ -8,7 +8,7 @@ async function loadModule() {
 }
 
 function fakeSdk() {
-  return { init: vi.fn(), captureException: vi.fn() }
+  return { init: vi.fn(), captureException: vi.fn(), captureMessage: vi.fn() }
 }
 
 describe('initMonitoring', () => {
@@ -53,6 +53,23 @@ describe('initMonitoring', () => {
     monitoring.captureError(error, { scene: 'Kitchen' })
 
     expect(sdk.captureException).toHaveBeenCalledWith(error, { extra: { scene: 'Kitchen' } })
+  })
+
+  it('captureEvent é no-op sem inicialização', () => {
+    expect(() => monitoring.captureEvent('x')).not.toThrow()
+  })
+
+  it('encaminha eventos ao SDK como aviso por padrão', async () => {
+    const sdk = fakeSdk()
+    await monitoring.initMonitoring({ VITE_SENTRY_DSN: DSN }, async () => sdk)
+
+    monitoring.captureEvent('score.discarded', { tags: { reason: 'expired' }, extra: { attempts: 8 } })
+
+    expect(sdk.captureMessage).toHaveBeenCalledWith('score.discarded', {
+      level: 'warning',
+      tags: { reason: 'expired' },
+      extra: { attempts: 8 },
+    })
   })
 })
 
