@@ -143,6 +143,9 @@
     "back": "Voltar",
     "touchNotice": "Para jogar, conecte um teclado. Os controles por toque ainda não estão disponíveis.",
     "gameArea": "Área do jogo",
+    "crash": {
+      "notice": "A partida foi interrompida por um erro. Escolha o modo e tente de novo."
+    },
     "setup": {
       "title": "Nova partida",
       "reduceEffects": "Reduzir efeitos visuais",
