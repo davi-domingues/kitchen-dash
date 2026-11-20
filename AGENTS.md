@@ -107,7 +107,7 @@ O scaffold (KD-02) ainda não existe. Os scripts abaixo são o **contrato** que 
 | `git commit` | `commit-msg` | Mensagem fora do Conventional Commits ou com mais de 72 caracteres |
 | CI, check **Convenções** | Nome da branch e título do PR | Merge |
 | CI, check **Segredos** | gitleaks no histórico do PR | Merge |
-| CI, check **Qualidade** | `format:check`, `lint`, `test`, `build`, `check-size`, `npm audit` | Merge |
+| CI, check **Qualidade** | `format:check`, `lint`, `test`, `build`, `check-size`, `npm audit` (produção ≥ high; todas ≥ moderate) | Merge |
 | CI, **CodeQL** | Análise estática de JS e de workflows | Alertas em *Security* |
 | Ruleset `main` | PR obrigatório, 1 aprovação, checks verdes, threads resolvidas, sem force push | Merge |
 
