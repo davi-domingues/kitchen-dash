@@ -244,6 +244,11 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - **Auto-uso silencioso (2026-11-19):** entradas com `auto: true` nunca geram `action:rejected`. O wrapper de estações descarta a recusa porque outro chef pode ter mudado a estação entre a decisão e a aplicação; o botão continua com aviso normal, sem alterar o contrato KD-12.
 - **Prevalência do botão (2026-11-19):** uma ação manual no mesmo frame bloqueia o auto pendente daquele chef. Depois de um auto já disparado, um toque manual é suprimido somente enquanto alvo **e assinatura do estado** da estação permanecem iguais; mover, mudar de alvo ou mudar o estado da estação libera o botão. A cena consome a decisão antes do `step` para que a mesma entrada não seja reenviada no frame seguinte.
 
+## 13.1 Reenvio do equipado (issue #74)
+
+- **Fila de um item, não a outbox de pontuação (2026-11-20):** o equipado é estado (a última escolha vence), não um evento por partida. `services/equippedOutbox.js` guarda só `{ userId, rev, attempts, nextAt }` em `kd:v1:equippedOutbox` e lê o equipado local no envio. O backoff e o teto (8 tentativas, 2 s a 5 min, *equal jitter*) vêm de `scoreOutbox.js`, sem cópia. Generalizar `createScoreOutbox` foi descartado para não mexer na peça crítica da KD-35.
+- **Login com pendência não lê a conta (2026-11-20):** `useCosmeticsSync` tenta o reenvio antes; se a pendência continuar, pula a leitura, porque o equipado da conta reverteria a escolha local. Falhas não são classificadas: o teto limita o custo de uma recusa definitiva.
+
 ---
 
 ## 14. Referências

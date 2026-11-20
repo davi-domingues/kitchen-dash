@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createStorage } from '../../services/storage.js'
 import { equipCosmetic, equipCosmeticP2, loadCosmetics, mergeUnlockedCosmetics } from './cosmeticsStore.js'
-import { equipAndSync, pullAccountCosmetics, pushEquipped } from './cosmeticsSync.js'
+import { equipAndSync, equippedOutboxFor, pullAccountCosmetics, pushEquipped } from './cosmeticsSync.js'
 
 const USER = { id: '11111111-1111-1111-1111-111111111111', email: 'ana@example.com' }
 
@@ -52,6 +52,35 @@ describe('pullAccountCosmetics', () => {
 
     expect(await pullAccountCosmetics(USER.id, d)).toBeNull()
     expect(loadCosmetics(d.store).unlocked).toContain('hat_navy')
+  })
+})
+
+describe('equipAndSync com reenvio (#74)', () => {
+  it('falha ao gravar agenda o reenvio do último equipado', async () => {
+    let time = 0
+    const timers = []
+    const service = {
+      saveEquipped: vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValue({}),
+    }
+    const d = {
+      ...deps(service),
+      now: () => time,
+      rng: () => 0.5,
+      setTimer: (fn, ms) => timers.push({ fn, at: time + ms }),
+      clearTimer: () => {},
+    }
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    mergeUnlockedCosmetics(['hat_navy'], d.store)
+
+    equipAndSync('hat_navy', USER, d)
+    await vi.waitFor(() => expect(equippedOutboxFor(d).isPending(USER.id)).toBe(true))
+    await vi.waitFor(() => expect(timers).toHaveLength(1))
+    time = timers[0].at
+    await timers[0].fn()
+
+    expect(service.saveEquipped).toHaveBeenCalledTimes(2)
+    expect(service.saveEquipped).toHaveBeenLastCalledWith(expect.objectContaining({ hat: 'hat_navy' }))
+    expect(equippedOutboxFor(d).isPending(USER.id)).toBe(false)
   })
 })
 
