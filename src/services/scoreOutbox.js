@@ -73,7 +73,7 @@ export function createScoreOutbox({
   }
 
   async function run(userId) {
-    const summary = { sent: 0, discarded: 0, retrying: 0 }
+    const summary = { sent: 0, discarded: 0, retrying: 0, outcomes: {} }
     const pending = new Map(listPending().map((entry) => [entry.matchId, entry]))
     // Pendente que saiu da KD-22 (limite de 50 ou "apagar progresso") não tem mais o que enviar
     let items = read().filter((item) => pending.has(item.matchId))
@@ -92,6 +92,7 @@ export function createScoreOutbox({
         onSubmitted(entry, result)
         done.push(item.matchId)
         summary.sent += 1
+        summary.outcomes[item.matchId] = 'sent'
       } catch (error) {
         const kind = error?.kind ?? FAILURE_KINDS.RETRY
         if (kind === FAILURE_KINDS.AUTH) break
@@ -99,10 +100,12 @@ export function createScoreOutbox({
         if (kind === FAILURE_KINDS.DISCARD || attempts >= maxAttempts) {
           done.push(item.matchId)
           summary.discarded += 1
+          summary.outcomes[item.matchId] = 'discarded'
         } else {
           item.attempts = attempts
           item.nextAt = now() + backoffDelay(attempts, rng, { baseDelayMs, maxDelayMs })
           summary.retrying += 1
+          summary.outcomes[item.matchId] = 'retrying'
         }
       }
     }
@@ -124,7 +127,7 @@ export function createScoreOutbox({
     currentUser = userId ?? null
     if (!currentUser) {
       schedule([])
-      return Promise.resolve({ sent: 0, discarded: 0, retrying: 0 })
+      return Promise.resolve({ sent: 0, discarded: 0, retrying: 0, outcomes: {} })
     }
     if (!running) {
       running = run(currentUser).finally(() => {
