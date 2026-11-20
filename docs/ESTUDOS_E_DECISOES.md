@@ -244,6 +244,10 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - **Auto-uso silencioso (2026-11-19):** entradas com `auto: true` nunca geram `action:rejected`. O wrapper de estações descarta a recusa porque outro chef pode ter mudado a estação entre a decisão e a aplicação; o botão continua com aviso normal, sem alterar o contrato KD-12.
 - **Prevalência do botão (2026-11-19):** uma ação manual no mesmo frame bloqueia o auto pendente daquele chef. Depois de um auto já disparado, um toque manual é suprimido somente enquanto alvo **e assinatura do estado** da estação permanecem iguais; mover, mudar de alvo ou mudar o estado da estação libera o botão. A cena consome a decisão antes do `step` para que a mesma entrada não seja reenviada no frame seguinte.
 
+### 13.10. Auditoria de dependências de desenvolvimento (débito #55)
+
+- **Auditoria moderada de todas as dependências (2026-11-20):** o job Qualidade ganhou o passo `npm audit --audit-level=moderate`, sem `--omit=dev`, além do passo existente `--audit-level=high --omit=dev`. Advisories moderados do `minimatch` via `eslint` passaram despercebidos porque o CI só auditava produção no nível alto; ferramentas de desenvolvimento também rodam no CI e nas máquinas do time. O passo antigo foi mantido como gate explícito de produção. Alternativas rejeitadas: nível `low` (ruído) e confiar só no Dependabot (não barra merge).
+
 ---
 
 ## 14. Referências

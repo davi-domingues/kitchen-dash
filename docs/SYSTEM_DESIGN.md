@@ -158,7 +158,7 @@ As constantes de validação ficam numa tabela `game_rules` (somente leitura), p
 - **Cabeçalhos de segurança** via arquivo `_headers` da Cloudflare Pages: CSP restringindo `connect-src` ao Supabase, Sentry e Turnstile; `X-Frame-Options: DENY`; `Referrer-Policy`.
 - **Sentry:** `sendDefaultPii: false` e remoção de e-mail dos eventos.
 - `display_name`: validado por regex e tamanho no banco. Filtro de palavrões vai para o ROADMAP.
-- **Dependências:** Dependabot ativo e `npm audit` no CI.
+- **Dependências:** Dependabot ativo e `npm audit` no CI em dois passos: dependências de produção no nível `high` e todas, inclusive as de desenvolvimento, no nível `moderate` (ESTUDOS_E_DECISOES §13.10).
 
 ### 6.4 Privacidade (LGPD)
 - Dados pessoais coletados: e-mail (Auth) e nome de exibição.

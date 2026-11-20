@@ -94,3 +94,6 @@ jobs:
         run: npm run check-size
       - if: steps.app.outputs.existe == 'true'
         run: npm audit --audit-level=high --omit=dev
+      # Ferramentas de desenvolvimento também rodam no CI e nas máquinas do time (débito #55).
+      - if: steps.app.outputs.existe == 'true'
+        run: npm audit --audit-level=moderate
