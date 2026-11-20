@@ -116,7 +116,7 @@ src/
 
 5. Toda ação chama `saveKeyBindings(next)` antes de atualizar o estado. O resultado vira `{ kind, params }` em `statusMessage.js` e é renderizado na única `<p role="status" aria-live="polite">` do `KeyBindingsPanel`.
 6. "Restaurar padrão" abre `RestoreDefaultsDialog` (`<dialog>` + `showModal()`), com foco preso pelo navegador e cancelável por Esc. Confirmar aplica `DEFAULT_KEY_BINDINGS` (via `sanitizeKeyBindings(null)`) e salva; se `isDefaultKeyBindings()` já for verdadeiro, só anuncia que está no padrão. Ao fechar, o foco volta ao botão que abriu.
-7. `App.jsx` ganha `path="/configuracoes"`; `HomePage` ganha o link `nav.settings` na navegação principal.
+7. `App.jsx` ganha `path="/configuracoes"`; `HomePage` ganha o link `nav.settings` na navegação principal, e `src/features/match/MatchSetup.jsx` ganha um link para `/configuracoes` (entrada adicionada pelo PR #85, ver FR-001).
 
 ### Contrato de captura e acessibilidade
 
