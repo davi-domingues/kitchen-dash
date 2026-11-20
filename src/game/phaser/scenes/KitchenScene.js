@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { guardScene } from '../sceneErrorGuard.js'
 import { CONTENT_VERSION, INGREDIENTS, KITCHENS, RECIPES } from '../../../content/index.js'
 import { CORE_EVENTS } from '../../core/coreEvents.js'
 import { getDailyChallengeResult } from '../../core/dailyChallenge/index.js'
@@ -40,6 +41,7 @@ const randomSeed = () => crypto.getRandomValues(new Uint32Array(1))[0] >>> 1
 export class KitchenScene extends Phaser.Scene {
   constructor() {
     super(SCENE_KEYS.KITCHEN)
+    guardScene(this, SCENE_KEYS.KITCHEN, (event, payload) => EventBus.emit(event, payload))
   }
 
   // Modo, jogadores e teclas vêm do React pelo registry (game/phaser não importa services)

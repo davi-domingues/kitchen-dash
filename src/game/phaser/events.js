@@ -14,4 +14,6 @@ export const GAME_EVENTS = Object.freeze({
   MATCH_RESUMED: 'match:resumed',
   // Sem payload. O React pediu o fim do turno ("Encerrar" do Livre); a cena responde com match:ended.
   MATCH_END_REQUESTED: 'match:endRequested',
+  // Payload: `{ error, sceneKey }`, no máximo uma vez por cena. O React reporta e volta ao menu (débito #90).
+  GAME_CRASHED: 'game:crashed',
 })
