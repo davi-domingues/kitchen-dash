@@ -246,6 +246,12 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
+## 13.2 Partidas descartadas no Sentry (débito #71)
+
+- **Decisão:** a outbox chama `onDiscarded(entry, { reason, attempts })` uma vez por partida descartada (`rejected` pela RPC ou `expired` por tentativas). O app reporta `score.discarded` via `captureEvent` (nível `warning`) com `reason`, `mode`, `attempts`, `matchId` e `contentVersion`.
+- **Por quê:** descartes eram silenciosos. Callback mantém a outbox desacoplada do Sentry; a lista explícita de campos garante zero PII além do `scrubPii`.
+- **Alternativa descartada:** `captureException` com `ScoreFailure`, que misturaria descartes esperados com erros reais.
+
 ## 14. Referências
 
 **Documentação oficial**
