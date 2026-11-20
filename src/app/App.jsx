@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router'
 import { useCosmeticsSync } from '../features/cosmetics/useCosmeticsSync.js'
 import MigrationNotice from '../features/migration/MigrationNotice.jsx'
 import { useScoreSync } from '../features/progress/useScoreSync.js'
+import { useSettingsSync } from '../features/settings/useSettingsSync.js'
 import ErrorBoundary from '../ui/ErrorBoundary.jsx'
 import HomePage from './HomePage.jsx'
 import NotFoundPage from './NotFoundPage.jsx'
@@ -48,9 +49,12 @@ export default function App() {
     document.documentElement.dataset.reduceEffects = String(reduceEffects)
   }, [reduceEffects])
 
+  const pushSettings = useSettingsSync()
+
   function changeReduceEffects(value) {
     saveReduceEffects(value)
     setPreference(value)
+    pushSettings()
   }
 
   useScoreSync()
