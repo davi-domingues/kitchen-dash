@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { FAILURE_KINDS, ScoreFailure } from './scoreFailure.js'
-import { MAX_ATTEMPTS, backoffDelay, createScoreOutbox } from './scoreOutbox.js'
+import { DISCARD_REASONS, MAX_ATTEMPTS, backoffDelay, createScoreOutbox } from './scoreOutbox.js'
 import { createStorage } from './storage.js'
 
 const USER = 'user-a'
@@ -16,7 +16,13 @@ function memoryBackend() {
   }
 }
 
-function setup({ submit = vi.fn().mockResolvedValue({}), pending = [entry()], service, onSubmitted } = {}) {
+function setup({
+  submit = vi.fn().mockResolvedValue({}),
+  pending = [entry()],
+  service,
+  onSubmitted,
+  onDiscarded,
+} = {}) {
   let clock = 1000
   const timers = []
   let list = [...pending]
@@ -29,6 +35,7 @@ function setup({ submit = vi.fn().mockResolvedValue({}), pending = [entry()], se
     listPending: () => list,
     removePending,
     onSubmitted,
+    onDiscarded,
     now: () => clock,
     rng: () => 0.5,
     setTimer: (fn, ms) => timers.push({ fn, ms }) - 1,
@@ -192,6 +199,45 @@ describe('createScoreOutbox', () => {
 
     expect(summary.discarded).toBe(1)
     expect(removePending).toHaveBeenCalledWith([MATCH])
+  })
+
+  it('avisa o descarte por rejeição com a partida e as tentativas', async () => {
+    const onDiscarded = vi.fn()
+    const submit = vi.fn().mockRejectedValue(new ScoreFailure(FAILURE_KINDS.DISCARD))
+    const { outbox } = setup({ submit, onDiscarded })
+    outbox.enqueue(MATCH, USER)
+
+    await outbox.flush(USER)
+
+    expect(onDiscarded).toHaveBeenCalledWith(entry(), { reason: DISCARD_REASONS.REJECTED, attempts: 1 })
+  })
+
+  it('avisa o descarte por tentativas esgotadas uma única vez', async () => {
+    const onDiscarded = vi.fn()
+    const submit = vi.fn().mockRejectedValue(new Error('offline'))
+    const { outbox, advance } = setup({ submit, onDiscarded })
+    outbox.enqueue(MATCH, USER)
+
+    for (let i = 0; i < MAX_ATTEMPTS; i += 1) {
+      await outbox.flush(USER)
+      advance(10 * 60 * 1000)
+    }
+
+    expect(onDiscarded).toHaveBeenCalledTimes(1)
+    expect(onDiscarded).toHaveBeenCalledWith(entry(), {
+      reason: DISCARD_REASONS.EXPIRED,
+      attempts: MAX_ATTEMPTS,
+    })
+  })
+
+  it('não avisa descarte em falha transitória', async () => {
+    const onDiscarded = vi.fn()
+    const { outbox } = setup({ submit: vi.fn().mockRejectedValue(new Error('offline')), onDiscarded })
+    outbox.enqueue(MATCH, USER)
+
+    await outbox.flush(USER)
+
+    expect(onDiscarded).not.toHaveBeenCalled()
   })
 
   it('sem sessão para o envio e mantém a partida', async () => {
