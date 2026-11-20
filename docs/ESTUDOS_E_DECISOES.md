@@ -244,6 +244,11 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - **Auto-uso silencioso (2026-11-19):** entradas com `auto: true` nunca geram `action:rejected`. O wrapper de estações descarta a recusa porque outro chef pode ter mudado a estação entre a decisão e a aplicação; o botão continua com aviso normal, sem alterar o contrato KD-12.
 - **Prevalência do botão (2026-11-19):** uma ação manual no mesmo frame bloqueia o auto pendente daquele chef. Depois de um auto já disparado, um toque manual é suprimido somente enquanto alvo **e assinatura do estado** da estação permanecem iguais; mover, mudar de alvo ou mudar o estado da estação libera o botão. A cena consome a decisão antes do `step` para que a mesma entrada não seja reenviada no frame seguinte.
 
+## 13.1 Estado de envio ao ranking no resultado (débito #72)
+
+- **Desfecho por partida (2026-11-20):** a rodada da outbox devolve `outcomes[matchId]` (`sent`, `discarded`, `retrying`), porque depois do envio a partida sai da fila tanto aceita quanto descartada. Rejeitado: guardar o status no `localStorage` (estado durável sem uso) ou eventos da outbox (mais código para uma única tela).
+- **Pendente × falhou (2026-11-20):** rede, backend indisponível, sessão expirada ou rodada concorrente contam como *pendente*, pois a fila reenvia (SYSTEM_DESIGN §7.1). *Falhou* só para descarte definitivo ou erro inesperado. Sem backend configurado (`disabled`) é tratado como visitante. O estado reflete a rodada do fim da partida; reenvios em segundo plano não o atualizam (ver specs/013-estado-envio-ranking).
+
 ---
 
 ## 14. Referências

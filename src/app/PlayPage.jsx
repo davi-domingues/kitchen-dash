@@ -23,7 +23,7 @@ export default function PlayPage({ reduceEffects, onReduceEffectsChange }) {
   // Lidas uma vez por visita: a cena recebe as teclas pelo registry
   const [keyBindings] = useState(loadKeyBindings)
   const [cosmeticLook] = useState(loadCosmeticLook)
-  useSubmitMatch(recorded ? state.result.matchId : null)
+  const submitStatus = useSubmitMatch(recorded ? state.result.matchId : null)
   const inMatch = state.phase === PLAY_PHASES.PLAYING || state.phase === PLAY_PHASES.PAUSED
 
   useEffect(() => {
@@ -94,6 +94,7 @@ export default function PlayPage({ reduceEffects, onReduceEffectsChange }) {
         <MatchResult
           result={state.result}
           recorded={recorded}
+          submitStatus={submitStatus}
           onReplay={() => dispatch({ type: 'replay' })}
           onChangeMode={backToSetup}
         />

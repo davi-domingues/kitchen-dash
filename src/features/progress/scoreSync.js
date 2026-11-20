@@ -17,11 +17,33 @@ export function createAppOutbox({ store = storage, loadService = loadScoreServic
   })
 }
 
+export const SUBMIT_STATUS = Object.freeze({
+  SENDING: 'sending',
+  SENT: 'sent',
+  PENDING: 'pending',
+  FAILED: 'failed',
+  GUEST: 'guest',
+})
+
+// Fora da rodada (envio concorrente, sem backend, sessão expirada) a partida segue na fila: pendente
+export function submitStatus(summary, matchId) {
+  const outcome = summary?.outcomes?.[matchId]
+  if (outcome === 'sent') return SUBMIT_STATUS.SENT
+  if (outcome === 'discarded') return SUBMIT_STATUS.FAILED
+  return SUBMIT_STATUS.PENDING
+}
+
 // Visitante não envia: as partidas dele vão na migração local → conta (KD-37) com origin 'local'
-export function submitMatch(outbox, matchId, user) {
-  if (!user || !matchId) return Promise.resolve(null)
-  outbox.enqueue(matchId, user.id)
-  return outbox.flush(user.id)
+export async function submitMatch(outbox, matchId, user) {
+  if (!matchId) return null
+  if (!user) return SUBMIT_STATUS.GUEST
+  try {
+    outbox.enqueue(matchId, user.id)
+    return submitStatus(await outbox.flush(user.id), matchId)
+  } catch {
+    // Erro inesperado não pode derrubar a tela de resultado
+    return SUBMIT_STATUS.FAILED
+  }
 }
 
 export const scoreOutbox = createAppOutbox()

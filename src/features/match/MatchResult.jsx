@@ -4,9 +4,19 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { contentKey } from '../../content/index.js'
 import { MATCH_MODES } from '../../game/core/matchModes.js'
+import { SUBMIT_STATUS } from '../progress/scoreSync.js'
 import { formatDuration } from './matchEnded.js'
 
-export default function MatchResult({ result, recorded, onReplay, onChangeMode }) {
+// Chaves literais para o i18n.test enxergar cada uma
+const SUBMIT_TEXT = {
+  [SUBMIT_STATUS.SENDING]: (t) => t('play.result.sync.sending'),
+  [SUBMIT_STATUS.SENT]: (t) => t('play.result.sync.sent'),
+  [SUBMIT_STATUS.PENDING]: (t) => t('play.result.sync.pending'),
+  [SUBMIT_STATUS.FAILED]: (t) => t('play.result.sync.failed'),
+  [SUBMIT_STATUS.GUEST]: (t) => t('play.result.sync.guest'),
+}
+
+export default function MatchResult({ result, recorded, submitStatus, onReplay, onChangeMode }) {
   const { t } = useTranslation()
   const headingRef = useRef(null)
 
@@ -35,6 +45,10 @@ export default function MatchResult({ result, recorded, onReplay, onChangeMode }
             <dd className="stat-value">{formatDuration(result.durationMs)}</dd>
           </div>
         </dl>
+
+        <p role="status" aria-live="polite" className="text-sm">
+          {SUBMIT_TEXT[submitStatus]?.(t)}
+        </p>
 
         {recorded?.isNewRecord && (
           <p role="status" className="badge badge-lg badge-accent gap-2">

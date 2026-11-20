@@ -66,7 +66,7 @@ describe('createScoreOutbox', () => {
 
     expect(submit).toHaveBeenCalledWith(entry(), { origin: 'online' })
     expect(removePending).toHaveBeenCalledWith([MATCH])
-    expect(summary).toEqual({ sent: 1, discarded: 0, retrying: 0 })
+    expect(summary).toEqual({ sent: 1, discarded: 0, retrying: 0, outcomes: { [MATCH]: 'sent' } })
     expect(outbox.items()).toEqual([])
   })
 
@@ -146,6 +146,7 @@ describe('createScoreOutbox', () => {
 
     const first = await outbox.flush(USER)
     expect(first.retrying).toBe(1)
+    expect(first.outcomes).toEqual({ [MATCH]: 'retrying' })
     expect(outbox.items()[0]).toMatchObject({ attempts: 1, nextAt: 1000 + 1500 })
     expect(timers.at(-1).ms).toBe(1500)
 
@@ -191,6 +192,7 @@ describe('createScoreOutbox', () => {
     const summary = await outbox.flush(USER)
 
     expect(summary.discarded).toBe(1)
+    expect(summary.outcomes).toEqual({ [MATCH]: 'discarded' })
     expect(removePending).toHaveBeenCalledWith([MATCH])
   })
 
