@@ -18,6 +18,10 @@
 - Q: O que "Restaurar padrão" faz quando as teclas já estão no padrão? → A: Continua acionável e avisa que as teclas já estão no padrão, sem alterar nada.
 - Q: Como a confirmação de "Restaurar padrão" aparece? → A: Modal na própria tela, com foco preso enquanto aberto, cancelamento por Esc e retorno de foco ao botão.
 
+### Session 2026-11-20
+
+- Q: Por onde o jogador chega à tela de configurações? → A: Pela rota `/configuracoes`, com links na página inicial e na configuração da partida (resolvido pela implementação em `HomePage.jsx` e `MatchSetup.jsx`).
+
 ## Cenários de usuário e testes _(obrigatório)_
 
 ### História 1 - Trocar a tecla de um controle (Prioridade: P1)
@@ -105,7 +109,7 @@ Depois de várias trocas, o jogador volta todas as teclas ao padrão do jogo em 
 
 ### Requisitos funcionais
 
-- **FR-001**: O sistema MUST oferecer uma tela dedicada de configuração de teclas, alcançável pela navegação principal, listando os cinco controles de P1, os cinco de P2 e a pausa, cada um com sua tecla atual legível.
+- **FR-001**: O sistema MUST oferecer uma tela dedicada de configuração de teclas em `/configuracoes`, alcançável pela página inicial e pela configuração da partida, listando os cinco controles de P1, os cinco de P2 e a pausa, cada um com sua tecla atual legível.
 - **FR-002**: O jogador MUST poder escolher qualquer um dos onze controles e definir uma nova tecla pressionando-a.
 - **FR-003**: Cada troca MUST ser salva imediatamente na preferência local e MUST valer para a próxima partida, sem exigir recarregar a página.
 - **FR-004**: A tela MUST exibir as teclas salvas ao abrir e MUST recuperar o padrão quando as preferências estiverem corrompidas, sem avisar o jogador e sem quebrar o jogo.
