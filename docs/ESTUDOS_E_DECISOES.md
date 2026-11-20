@@ -246,6 +246,13 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
+## 13.1 Erro no Phaser volta ao menu (débito #90)
+
+- **Decisão:** `guardScene` (em `game/phaser/sceneErrorGuard.js`) envolve `init`, `create` e `update` de cada cena; na primeira exceção emite `game:crashed` `{ error, sceneKey }` e a cena vira no-op. A `PlayPage` reporta via `captureError` e volta à configuração da partida com `role="alert"`.
+- **Por quê:** o `ErrorBoundary` não vê o loop do Phaser, e §4 proíbe `game/phaser` importar `services/`. O `game.destroy(true)` do React dispara o `shutdown` que remove os listeners.
+- **Alternativas descartadas:** `window.onerror` (pega erros alheios ao jogo); patch em `Game.step` (API interna do Phaser).
+- **Fora do escopo:** exceções em handlers de teclado/eventos, que não passam pelo guarda.
+
 ## 14. Referências
 
 **Documentação oficial**
