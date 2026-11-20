@@ -180,7 +180,14 @@
       "recordScore": "Seu recorde: {{score}} pontos",
       "recordTime": "Seu melhor tempo: {{time}}",
       "unlocked": "Desbloqueado: {{items}}.",
-      "customize": "Personalizar no perfil"
+      "customize": "Personalizar no perfil",
+      "sync": {
+        "sending": "Enviando pontuação ao ranking…",
+        "sent": "Pontuação enviada ao ranking.",
+        "pending": "Envio pendente: a pontuação vai ao ranking quando a conexão voltar.",
+        "failed": "Não foi possível enviar a pontuação ao ranking.",
+        "guest": "Partida salva só neste aparelho. Entre na conta para ir ao ranking."
+      }
     }
   },
   "game": {
