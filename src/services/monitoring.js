@@ -39,3 +39,9 @@ export function captureError(error, context) {
   if (!sdk) return
   sdk.captureException(error, context ? { extra: context } : undefined)
 }
+
+// Eventos sem exceção (ex.: partida descartada da outbox). Passa pelo mesmo beforeSend/scrubPii
+export function captureEvent(message, { level = 'warning', tags, extra } = {}) {
+  if (!sdk) return
+  sdk.captureMessage(message, { level, tags, extra })
+}

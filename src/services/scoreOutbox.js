@@ -4,6 +4,8 @@ import { FAILURE_KINDS } from './scoreFailure.js'
 
 export const OUTBOX_KEY = 'outbox'
 export const MAX_ATTEMPTS = 8
+// rejected: a RPC recusou (permanente); expired: esgotou as tentativas transitórias
+export const DISCARD_REASONS = Object.freeze({ REJECTED: 'rejected', EXPIRED: 'expired' })
 export const BASE_DELAY_MS = 2000
 export const MAX_DELAY_MS = 5 * 60 * 1000
 
@@ -29,6 +31,8 @@ function isItem(item) {
  * @param {() => object[]} deps.listPending pendentes da KD-22
  * @param {(matchIds: string[]) => void} deps.removePending
  * @param {(entry: object, result: object) => void} [deps.onSubmitted] recebe o retorno do submit_score
+ * @param {(entry: object, info: { reason: string, attempts: number }) => void} [deps.onDiscarded]
+ *   partida que saiu da fila sem ser aceita (#71)
  */
 export function createScoreOutbox({
   store,
@@ -36,6 +40,7 @@ export function createScoreOutbox({
   listPending,
   removePending,
   onSubmitted = () => {},
+  onDiscarded = () => {},
   now = () => Date.now(),
   rng = Math.random,
   setTimer = (fn, ms) => setTimeout(fn, ms),
@@ -99,6 +104,8 @@ export function createScoreOutbox({
         if (kind === FAILURE_KINDS.DISCARD || attempts >= maxAttempts) {
           done.push(item.matchId)
           summary.discarded += 1
+          const reason = kind === FAILURE_KINDS.DISCARD ? DISCARD_REASONS.REJECTED : DISCARD_REASONS.EXPIRED
+          onDiscarded(pending.get(item.matchId), { reason, attempts })
         } else {
           item.attempts = attempts
           item.nextAt = now() + backoffDelay(attempts, rng, { baseDelayMs, maxDelayMs })
