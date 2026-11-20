@@ -32,7 +32,7 @@ export function initialScripts(html) {
   return [...new Set(refs)]
 }
 
-// Lista do precache do vite-plugin-pwa (KD-41). Antes do PWA não há precache para medir.
+// Soma os arquivos listados no precache do service worker gerado pelo vite-plugin-pwa (KD-41)
 function precacheSize(distDir) {
   const sw = join(distDir, 'sw.js')
   if (!existsSync(sw)) return null
@@ -96,7 +96,10 @@ function main() {
       `${ok ? '✔' : '✖'} ${metric.padEnd(14)} ${format(metric, value).padStart(11)} / ${format(metric, limit)}${extra}`,
     )
   }
-  if (stats.precache === null) console.warn('ℹ precache: sem service worker ainda (KD-41), não medido')
+  if (stats.precache === null) {
+    console.error('✖ precache: dist/sw.js ausente; o PWA (KD-41) deveria gerá-lo.')
+    process.exit(1)
+  }
   if (results.some((r) => !r.ok)) {
     console.error('✖ Orçamento de tamanho ultrapassado (SYSTEM_DESIGN §8.5).')
     process.exit(1)

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { useCosmeticsSync } from '../features/cosmetics/useCosmeticsSync.js'
 import MigrationNotice from '../features/migration/MigrationNotice.jsx'
+import UpdateNotice from '../features/pwa/UpdateNotice.jsx'
 import { useScoreSync } from '../features/progress/useScoreSync.js'
 import ErrorBoundary from '../ui/ErrorBoundary.jsx'
 import HomePage from './HomePage.jsx'
@@ -129,6 +130,7 @@ export default function App() {
         />
       </Routes>
       <MigrationNotice />
+      <UpdateNotice />
     </BrowserRouter>
   )
 }

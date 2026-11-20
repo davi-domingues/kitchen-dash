@@ -246,6 +246,12 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
+## 13.1 PWA offline e aviso de atualização (KD-41)
+
+- **Decisão:** `vite-plugin-pwa@2.0.0` (aprovado na SYSTEM_DESIGN §11) em modo `generateSW` com `registerType: 'prompt'`. O precache cobre JS, CSS, HTML, imagens e sons; Supabase, Sentry e Turnstile ficam `NetworkOnly`. O aviso "nova versão" não aparece em `/jogar`, e a versão nova só assume quando o jogador clica em recarregar.
+- **Por quê:** `autoUpdate` poderia trocar a versão no meio de uma partida; `injectManifest` exigiria um SW próprio sem ganho no MVP. O registro manual em `services/pwa.js` (`injectRegister: false`) evita script inline e respeita a CSP.
+- **Consequências:** o limite de arquivo do Workbox sobe para 5 MiB para incluir o chunk do Phaser. O `check-size` falha se `dist/sw.js` sumir. O ícone é um SVG único; PNGs 192/512 para instalação em todos os navegadores ficam como pendência (o gerador de ícones seria dependência nova).
+
 ## 14. Referências
 
 **Documentação oficial**

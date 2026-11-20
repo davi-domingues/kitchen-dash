@@ -6,5 +6,12 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
 
+# O navegador precisa revalidar o service worker e o manifesto para detectar um deploy novo
+/sw.js
+  Cache-Control: no-cache
+
+/manifest.webmanifest
+  Cache-Control: no-cache
+
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
