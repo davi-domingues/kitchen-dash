@@ -21,7 +21,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:status": "supabase status",
-    "db:test": "supabase test db"
+    "db:test": "supabase test db",
+    "db:content-version": "node scripts/check-content-version.js --write"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "1.6.3",

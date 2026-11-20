@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -43,19 +43,49 @@ export function assertCurrentVersionAccepted({ contentDirectory, migrationsDirec
   if (!migration.versions.includes(version)) {
     throw new Error(
       `A versão de conteúdo ${version} não está em ${migration.file}. ` +
-        'Crie uma migration que a inclua em accepted_content_versions.',
+        'Rode `npm run db:content-version` para gerar a migration e commite-a.',
     )
   }
 
   return { version, migration }
 }
 
+function migrationTimestamp(now) {
+  return now.toISOString().replace(/\D/g, '').slice(0, 14)
+}
+
+export function writeAcceptedVersionsMigration({ contentDirectory, migrationsDirectory, now = new Date() }) {
+  const version = readContentVersion(contentDirectory)
+  const migration = findAcceptedVersionsMigration(migrationsDirectory)
+  if (migration.versions.includes(version)) return { version, file: null }
+
+  // Versões antigas seguem aceitas: clientes PWA em cache ainda enviam a anterior.
+  const versions = [...migration.versions, version]
+  const file = `${migrationTimestamp(now)}_accept_content_version_${version}.sql`
+  const source =
+    `-- Gerada por npm run db:content-version: aceita o CONTENT_VERSION ${version}.\n` +
+    `update public.game_rules set value = '${JSON.stringify(versions)}' where key = 'accepted_content_versions';\n`
+  writeFileSync(join(migrationsDirectory, file), source)
+  return { version, file }
+}
+
 function main() {
   const root = fileURLToPath(new URL('..', import.meta.url))
-  const { version, migration } = assertCurrentVersionAccepted({
+  const directories = {
     contentDirectory: join(root, 'src', 'content'),
     migrationsDirectory: join(root, 'supabase', 'migrations'),
-  })
+  }
+
+  if (process.argv.includes('--write')) {
+    const { version, file } = writeAcceptedVersionsMigration(directories)
+    const message = file
+      ? `Migration ${file} criada para a versão ${version}.`
+      : `Versão ${version} já aceita.`
+    process.stdout.write(`${message}\n`)
+    return
+  }
+
+  const { version, migration } = assertCurrentVersionAccepted(directories)
   process.stdout.write(`Versão de conteúdo ${version} aceita em ${migration.file}.\n`)
 }
 

@@ -225,6 +225,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 - **Check, não geração:** o CI recalcula `CONTENT_VERSION` e falha quando ela não aparece na última migration que atualiza `accepted_content_versions`. A migration continua explícita, revisável e criada pela pessoa que muda o conteúdo.
 - **Busca da migration relevante:** migrations posteriores que não alteram a lista não a substituem; o check percorre os arquivos em ordem inversa até encontrar a atualização da chave.
+- **Geração local (débito #56):** `npm run db:content-version` cria a migration com as versões já aceitas mais a atual (antigas seguem válidas por causa do cache do PWA) e não faz nada se a versão já está aceita. O CI continua só verificando e a falha aponta o comando; um bot que commitasse migrations exigiria `contents: write` e contornaria a revisão.
 
 ---
 
