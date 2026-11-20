@@ -48,6 +48,19 @@ describe('measure', () => {
   })
 })
 
+describe('precache', () => {
+  it('soma os arquivos listados no sw.js gerado pelo Workbox', () => {
+    const dist = fakeDist({
+      'index.html': '<script type="module" src="/assets/index.js"></script>',
+      'assets/index.js': 'a'.repeat(1000),
+      'assets/PlayPage.js': 'b'.repeat(5000),
+      'sw.js': 'precacheAndRoute([{url:"assets/index.js",revision:null},{url:"index.html",revision:"1"}])',
+    })
+
+    expect(measure(dist).precache).toBe(1000 + 54)
+  })
+})
+
 describe('evaluate', () => {
   const ok = { fileCount: 10, largestFile: 1, totalSize: 1, precache: null, initialJsGzip: 1 }
 
