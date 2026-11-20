@@ -8,6 +8,13 @@
 
 **Input**: User description: "Débito #56: gerar automaticamente a migration de accepted_content_versions quando CONTENT_VERSION mudar (comando npm run db:content-version), mantendo o check do CI (#87) e fazendo sua falha apontar o comando."
 
+## Clarifications
+
+### Session 2026-11-20
+
+- Q: O CI deve gerar e commitar a migration sozinho? → A: Não; só verifica (decisão "Check, não geração" do #87). A geração é local e revisada no PR.
+- Q: Versões antigas continuam aceitas após a mudança? → A: Sim; clientes PWA em cache ainda enviam a anterior. Remoção é manual.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Registrar a nova versão com um comando (Priority: P1)

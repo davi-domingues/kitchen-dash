@@ -18,3 +18,7 @@
 ## Analyze
 
 Cobertura: FR-001→T002 (reusa `readContentVersion`); FR-002/003/004→T001/T002; FR-005→T004; FR-006→sem mudança no workflow. Sem lacunas.
+
+## Dependencies
+
+T001 → T002 → T003 (US1, mesmo arquivo, sequenciais) → T004 (US2) → T005/T006. MVP = US1.

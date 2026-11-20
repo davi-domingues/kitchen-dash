@@ -30,3 +30,9 @@ Estender `scripts/check-content-version.js` (#87) com a função `writeAcceptedV
 - Gerar localmente, não no CI: um bot que commita migrations exigiria `contents: write` e contornaria a revisão.
 - Manter versões antigas: clientes PWA em cache ainda enviam a versão anterior.
 - Timestamp em UTC, como o Supabase CLI.
+
+## Quickstart
+
+1. Altere um `src/content/*.json`; `node scripts/check-content-version.js` falha citando `npm run db:content-version`.
+2. Rode `npm run db:content-version`: cria `supabase/migrations/<timestamp>_accept_content_version_<versão>.sql`.
+3. Rode o check de novo: passa. Rode o comando de novo: "Versão … já aceita.", nenhum arquivo novo.
