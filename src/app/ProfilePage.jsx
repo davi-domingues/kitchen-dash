@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import AccountSection from '../features/profile/AccountSection.jsx'
+import SiteFooter from '../ui/SiteFooter.jsx'
 import CosmeticsPicker from '../features/cosmetics/CosmeticsPicker.jsx'
 import LocalProgress from '../features/progress/LocalProgress.jsx'
 
@@ -20,6 +21,7 @@ export default function ProfilePage() {
       <AccountSection />
       <CosmeticsPicker key={resetCount} />
       <LocalProgress onCleared={() => setResetCount((n) => n + 1)} />
+      <SiteFooter />
     </main>
   )
 }

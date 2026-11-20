@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { DELETE_ACCOUNT_ANCHOR } from './anchors.js'
 
 export default function DeleteAccountSection({ service }) {
@@ -27,6 +27,9 @@ export default function DeleteAccountSection({ service }) {
     <div id={DELETE_ACCOUNT_ANCHOR} className="flex flex-col gap-2 border-t border-base-300 pt-4">
       <h3 className="font-semibold">{t('profile.account.deleteTitle')}</h3>
       <p className="text-sm opacity-80">{t('profile.account.deleteHint')}</p>
+      <Link to="/privacidade" className="link text-sm">
+        {t('profile.account.privacyLink')}
+      </Link>
       <button
         type="button"
         className="btn btn-outline btn-error self-start"

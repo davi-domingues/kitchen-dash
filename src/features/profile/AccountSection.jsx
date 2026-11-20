@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link, useLocation } from 'react-router'
 import { loadProfileService } from '../../services/profileLoader.js'
 import { useAuth } from '../auth/AuthContext.js'
+import { DELETE_ACCOUNT_ANCHOR } from './anchors.js'
 import DeleteAccountSection from './DeleteAccountSection.jsx'
 import DisplayNameForm from './DisplayNameForm.jsx'
 
-// Só aparece com sessão; o visitante continua com o perfil local (KD-22/KD-23)
+// Com sessão: nome e exclusão. O visitante só vê como entrar para excluir (link da política, KD-44)
 export default function AccountSection({ loadService = loadProfileService }) {
   const { t } = useTranslation()
   const { status, user } = useAuth()
@@ -24,6 +26,22 @@ export default function AccountSection({ loadService = loadProfileService }) {
     }
   }, [authenticated, loadService])
 
+  // O react-router não rola até o #hash, e a seção de exclusão só existe depois de carregar o serviço
+  const { hash } = useLocation()
+  useEffect(() => {
+    if (hash === `#${DELETE_ACCOUNT_ANCHOR}`) document.getElementById(DELETE_ACCOUNT_ANCHOR)?.scrollIntoView()
+  }, [hash, service, status])
+
+  if (status === 'guest') {
+    return (
+      <p id={DELETE_ACCOUNT_ANCHOR} className="text-sm">
+        {t('profile.account.guestDelete')}{' '}
+        <Link to="/entrar" className="link">
+          {t('profile.account.signIn')}
+        </Link>
+      </p>
+    )
+  }
   if (!authenticated) return null
 
   return (
