@@ -244,6 +244,11 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 - **Auto-uso silencioso (2026-11-19):** entradas com `auto: true` nunca geram `action:rejected`. O wrapper de estações descarta a recusa porque outro chef pode ter mudado a estação entre a decisão e a aplicação; o botão continua com aviso normal, sem alterar o contrato KD-12.
 - **Prevalência do botão (2026-11-19):** uma ação manual no mesmo frame bloqueia o auto pendente daquele chef. Depois de um auto já disparado, um toque manual é suprimido somente enquanto alvo **e assinatura do estado** da estação permanecem iguais; mover, mudar de alvo ou mudar o estado da estação libera o botão. A cena consome a decisão antes do `step` para que a mesma entrada não seja reenviada no frame seguinte.
 
+### 13.9 Política de versão (KD-46)
+
+- **SemVer (2026-11-20):** o app segue [SemVer](https://semver.org/lang/pt-BR/). A v1.0.0 marca o MVP completo; correções viram PATCH, funcionalidades compatíveis viram MINOR, e quebra de dados locais ou do contrato da RPC vira MAJOR.
+- **Tag manual após QA:** a versão sobe no `package.json` por PR, mas a tag `vX.Y.Z` só é criada por uma pessoa depois dos merges e da verificação em produção ([RELEASE_CHECKLIST](RELEASE_CHECKLIST.md)). Nenhum agente nem workflow cria tag, para que a tag sempre indique algo verificado.
+
 ---
 
 ## 14. Referências
