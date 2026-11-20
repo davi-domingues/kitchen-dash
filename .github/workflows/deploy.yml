@@ -1,0 +1,38 @@
+# Pipeline de produção (KD-45, SYSTEM_DESIGN §10): aplica as migrations no Supabase de produção a cada push na main.
+# Nunca roda em PR. O front é publicado pela integração Git da Cloudflare Pages (docs/DEPLOY.md).
+name: Deploy produção
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Um merge por vez; uma aplicação em andamento nunca é cancelada no meio
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  migrations:
+    name: Migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # A aprovação manual, se desejada, é configurada no environment (Settings → Environments → production)
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ vars.SUPABASE_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: supabase/setup-cli@689adcfb80d947100a1eab127289b97d1fb07b13 # v3.2.0
+        with:
+          version: 3.1.0
+      - name: Vincular projeto
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+      - name: Aplicar migrations
+        run: supabase db push

@@ -46,6 +46,20 @@ describe('measure', () => {
     expect(stats.initialJsGzip).toBeLessThan(1000)
     expect(stats.precache).toBeNull()
   })
+
+  it('ignora source maps, que não são publicados (KD-45)', () => {
+    const dist = fakeDist({
+      'index.html': '<script type="module" src="/assets/index.js"></script>',
+      'assets/index.js': 'a'.repeat(100),
+      'assets/index.js.map': 'm'.repeat(9000),
+    })
+
+    const stats = measure(dist)
+
+    expect(stats.fileCount).toBe(2)
+    expect(stats.largestPath).toBe('assets/index.js')
+    expect(stats.totalSize).toBeLessThan(9000)
+  })
 })
 
 describe('evaluate', () => {

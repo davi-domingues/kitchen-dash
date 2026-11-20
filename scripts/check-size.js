@@ -44,10 +44,13 @@ function precacheSize(distDir) {
 }
 
 export function measure(distDir) {
-  const files = listFiles(distDir).map((path) => ({
-    path: relative(distDir, path).split(sep).join('/'),
-    size: statSync(path).size,
-  }))
+  // Source maps vão só para o Sentry e são apagados após o upload (KD-45): não contam no orçamento
+  const files = listFiles(distDir)
+    .filter((path) => !path.endsWith('.map'))
+    .map((path) => ({
+      path: relative(distDir, path).split(sep).join('/'),
+      size: statSync(path).size,
+    }))
   const largest = files.reduce((max, f) => (f.size > max.size ? f : max), { path: '-', size: 0 })
   const html = readFileSync(join(distDir, 'index.html'), 'utf8')
   const initialJsGzip = initialScripts(html).reduce(

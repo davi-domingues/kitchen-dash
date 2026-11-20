@@ -59,6 +59,20 @@ Ficam no painel da Cloudflare (*Settings → Variables and Secrets*), separadas 
 - Toda variável `VITE_*` é **embutida no JS** durante o build, portanto é **pública**. Nunca coloque segredo nelas (AGENTS.md §6). A chave `sb_secret_` / `service_role` é recusada pelo app.
 - Mudar uma variável só vale no **próximo** build: faça *Retry deployment* no painel ou um novo push.
 
+Para os source maps do Sentry (KD-45), só em **Production**:
+
+| Variável | Tipo | Valor |
+|---|---|---|
+| `SENTRY_AUTH_TOKEN` | Secret | token de organização do Sentry |
+| `SENTRY_ORG` | texto | slug da organização |
+| `SENTRY_PROJECT` | texto | slug do projeto |
+
+Com o token, o build envia os mapas para a release = SHA do commit e os apaga do `dist/`. Sem ele (previews, build local) nada é enviado.
+
+## Migrations em produção
+
+O workflow **Deploy produção** (`.github/workflows/deploy.yml`) aplica `supabase db push` a cada push na `main`, no environment `production`. Para exigir aprovação manual: *Settings → Environments → production → Required reviewers*.
+
 ## Headers e rotas
 
 - `public/_redirects`: fallback da SPA (`/* /index.html 200`). Recarregar `/jogar` abre o app em vez de um 404.
