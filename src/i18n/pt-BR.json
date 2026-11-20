@@ -11,9 +11,6 @@
     "privacy": "Privacidade",
     "settings": "Configurações"
   },
-  "placeholder": {
-    "comingSoon": "Esta página chega em breve."
-  },
   "profile": {
     "local": {
       "visitorHint": "Seu progresso fica salvo neste navegador.",
@@ -64,7 +61,10 @@
       "deleteConfirmTitle": "Excluir a conta?",
       "deleteConfirmText": "Todos os dados da conta serão apagados de forma definitiva. Não dá para desfazer.",
       "deleteConfirm": "Excluir definitivamente",
-      "deleteError": "Não foi possível excluir a conta. Tente de novo."
+      "deleteError": "Não foi possível excluir a conta. Tente de novo.",
+      "guestDelete": "Para excluir uma conta, entre com o e-mail dela.",
+      "signIn": "Entrar",
+      "privacyLink": "Veja a política de privacidade"
     }
   },
   "notFound": {
@@ -365,6 +365,44 @@
       "title": "Algo deu errado",
       "description": "Tivemos um problema inesperado. Recarregue a página para continuar.",
       "reload": "Recarregar"
+    }
+  },
+  "footer": {
+    "label": "Rodapé",
+    "privacy": "Política de privacidade"
+  },
+  "privacy": {
+    "title": "Política de privacidade",
+    "updated": "Versão do MVP. Texto em revisão antes do lançamento.",
+    "collected": {
+      "title": "Dados que coletamos",
+      "body": "Sem conta, nada sai do seu navegador. Ao criar uma conta, guardamos o seu e-mail (para o login por código) e o nome de exibição que aparece no ranking. Também guardamos os dados do jogo da conta: pontuações, recordes, estatísticas, cosméticos e configurações."
+    },
+    "purpose": {
+      "title": "Para que usamos",
+      "body": "Para fazer o login, mostrar o ranking, manter o seu progresso entre dispositivos e corrigir erros do jogo. Não vendemos dados nem fazemos publicidade."
+    },
+    "retention": {
+      "title": "Por quanto tempo",
+      "body": "O histórico de partidas fica 90 dias. Recordes, estatísticas, cosméticos e configurações ficam enquanto a conta existir. Ao excluir a conta, todos esses dados são apagados."
+    },
+    "sharing": {
+      "title": "Com quem compartilhamos",
+      "body": "Só com os serviços que fazem o jogo funcionar: o provedor de banco de dados e login, o serviço anti-robô do login e o serviço de relatório de erros, que recebe os erros sem e-mail nem dados pessoais."
+    },
+    "storage": {
+      "title": "Cookies e armazenamento local",
+      "body": "Não usamos cookies de análise nem de publicidade. O jogo guarda progresso e configurações no armazenamento local do navegador; você pode apagá-los no perfil."
+    },
+    "rights": {
+      "title": "Seus direitos (LGPD)",
+      "body": "Você pode acessar, corrigir e excluir os seus dados. O nome de exibição se corrige no perfil, e a conta inteira pode ser excluída a qualquer momento.",
+      "deleteLink": "Excluir a minha conta"
+    },
+    "contact": {
+      "title": "Controlador e contato",
+      "controller": "Controlador dos dados: [a definir]",
+      "dpo": "Encarregado (DPO) e contato: [a definir]"
     }
   }
 }
