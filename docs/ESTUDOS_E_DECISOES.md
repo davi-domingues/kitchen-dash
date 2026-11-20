@@ -246,7 +246,16 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 ---
 
-## 14. Referências
+## 14. Pipeline de produção (KD-45)
+
+- **Upload de source maps no build da Cloudflare (2026-11-20):** o site publicado sai do build da integração Git da Cloudflare Pages; enviar os mapas desse mesmo build garante que correspondem aos bundles servidos. Um job no GitHub Actions faria um segundo build (hashes podem divergir) ou exigiria trocar a integração por `wrangler pages deploy`. O token fica só no ambiente Production da Cloudflare, então previews não enviam mapas.
+- **Release = SHA do commit:** `CF_PAGES_COMMIT_SHA` (ou `GITHUB_SHA`) vira o nome da release no upload e `VITE_SENTRY_RELEASE` no app, sem passo manual. `VITE_SENTRY_RELEASE` explícito continua prevalecendo.
+- **Mapas `hidden` e apagados após upload:** o JS publicado não referencia mapas e o `dist/` não os contém; o `check-size` ignora `.map` por garantia.
+- **Workflow separado para migrations:** `deploy.yml` isola os segredos de produção dos checks de PR, usa o environment `production` (aprovação manual configurável) e `concurrency` sem cancelamento para não interromper um `db push`.
+
+---
+
+## 15. Referências
 
 **Documentação oficial**
 - Supabase: [Pricing](https://supabase.com/pricing) · [Billing](https://supabase.com/docs/guides/platform/billing-on-supabase) · [Database size](https://supabase.com/docs/guides/platform/database-size) · [Disk size](https://supabase.com/docs/guides/platform/manage-your-usage/disk-size) · [MAU](https://supabase.com/docs/guides/platform/manage-your-usage/monthly-active-users) · [Egress](https://supabase.com/docs/guides/platform/manage-your-usage/egress.md) · [Passwordless email](https://supabase.com/docs/guides/auth/auth-email-passwordless) · [Auth CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha) · [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security) · [API quickstart (leaderboard)](https://supabase.com/docs/guides/api/quickstart)

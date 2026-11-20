@@ -294,6 +294,8 @@ flowchart LR
 - Desenvolvimento local: `supabase start` (Docker), com Auth, banco e e-mails capturados no Mailpit/Inbucket local.
 - Segredos no GitHub (`SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SENTRY_AUTH_TOKEN`). Variáveis públicas `VITE_*` na Cloudflare.
 - O limite de 500 builds por mês comporta ~16 deploys por dia.
+- **Migrations (KD-45):** o workflow `Deploy produção` (`.github/workflows/deploy.yml`) roda só em push na `main`, no environment `production` (aprovação manual opcional), um por vez, e executa `supabase link` + `supabase db push`.
+- **Source maps (KD-45):** o build da Cloudflare (Production) recebe `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` e `SENTRY_PROJECT`; o `@sentry/vite-plugin` gera mapas `hidden`, envia para a release = SHA do commit (`CF_PAGES_COMMIT_SHA`, a mesma que o app reporta) e apaga os `.map` do `dist/`. Sem token, nada é enviado.
 
 ---
 
