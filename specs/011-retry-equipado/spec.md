@@ -50,7 +50,7 @@ A pessoa, com sessão, equipa um cosmético sem conexão. A escolha vale na hora
 
 ### Key Entities
 
-- **Pendência do equipado**: usuário, número de tentativas e momento do próximo envio. O conteúdo não é guardado: vem do local.
+- **Pendência do equipado**: usuário, revisão (cresce a cada troca), número de tentativas e momento do próximo envio. O conteúdo não é guardado: vem do local.
 
 ## Success Criteria *(mandatory)*
 
