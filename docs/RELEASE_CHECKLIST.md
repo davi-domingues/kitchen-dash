@@ -1,6 +1,6 @@
 # Checklist de lançamento — Kitchen Dash v1.0.0
 
-Checklist da KD-46 (issue #39). Cada item liga a um ponto da [ARQUITETURA §9](ARQUITETURA.md#9-escopo-do-mvp) ou ao escopo da issue e diz **como verificar**. Só marque `[x]` depois de verificar **em produção**, com a evidência (print, link do log ou saída do comando) no comentário da issue #39.
+Checklist da KD-46 (issue #39). Cada item liga a um ponto da [ARQUITETURA §9](ARQUITETURA.md#9-escopo-do-mvp) ou ao escopo da issue e diz **como verificar**. Só marque `[x]` depois de verificar **em produção**, com a evidência (print, link do log ou saída do comando) no comentário da issue #39. Item que falhar vira issue nova, e a tag espera a correção.
 
 Pré-requisito: todos os PRs previstos para a v1.0.0 mergeados (ver [RELEASE_NOTES_v1.0.0.md](RELEASE_NOTES_v1.0.0.md)) e o deploy de produção concluído.
 
