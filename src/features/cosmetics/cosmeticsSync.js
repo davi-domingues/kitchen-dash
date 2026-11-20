@@ -1,5 +1,6 @@
 // Liga os cosméticos locais (KD-23) à conta (KD-38). Offline primeiro: falha remota nunca apaga o local.
 import { loadCosmeticsService } from '../../services/cosmeticsLoader.js'
+import { createEquippedOutbox } from '../../services/equippedOutbox.js'
 import { storage } from '../../services/storage.js'
 import { applyAccountCosmetics, equipCosmetic, loadCosmetics } from './cosmeticsStore.js'
 
@@ -33,9 +34,21 @@ export async function pushEquipped(user, { loadService, store } = DEFAULTS) {
   }
 }
 
-/** Equipa na hora (local) e, com sessão, envia para a conta em segundo plano. */
+const outboxes = new WeakMap()
+
+/** Fila de reenvio do equipado (#74), uma por conjunto de dependências (o app usa só a padrão). */
+export function equippedOutboxFor(deps = DEFAULTS) {
+  if (!outboxes.has(deps)) {
+    const { loadService, store, ...timing } = deps
+    const send = (userId) => pushEquipped({ id: userId }, { loadService, store })
+    outboxes.set(deps, createEquippedOutbox({ store, send, ...timing }))
+  }
+  return outboxes.get(deps)
+}
+
+/** Equipa na hora (local) e, com sessão, envia para a conta em segundo plano, com reenvio se falhar. */
 export function equipAndSync(id, user, deps = DEFAULTS) {
   const state = equipCosmetic(id, deps.store)
-  pushEquipped(user, deps)
+  if (user?.id) equippedOutboxFor(deps).request(user.id)
   return state
 }
