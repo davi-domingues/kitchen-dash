@@ -9,6 +9,7 @@ describe('contrato do EventBus', () => {
       MATCH_PAUSED: 'match:paused',
       MATCH_RESUMED: 'match:resumed',
       MATCH_END_REQUESTED: 'match:endRequested',
+      GAME_CRASHED: 'game:crashed',
     })
   })
 

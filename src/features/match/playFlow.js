@@ -16,13 +16,22 @@ export const initialPlayState = Object.freeze({
   // Muda a cada partida para o React montar uma nova instância do Phaser
   run: 0,
   result: null,
+  // Verdadeiro quando a última partida terminou por erro no jogo (débito #90)
+  crashed: false,
 })
 
 export function playFlowReducer(state, action) {
   switch (action.type) {
     case 'start':
       if (!isMatchConfig(action.config)) return state
-      return { ...state, phase: PLAY_PHASES.PLAYING, config: action.config, run: state.run + 1, result: null }
+      return {
+        ...state,
+        phase: PLAY_PHASES.PLAYING,
+        config: action.config,
+        run: state.run + 1,
+        result: null,
+        crashed: false,
+      }
     case 'replay':
       if (state.phase !== PLAY_PHASES.RESULT) return state
       return { ...state, phase: PLAY_PHASES.PLAYING, run: state.run + 1, result: null }
@@ -37,8 +46,10 @@ export function playFlowReducer(state, action) {
         ? { ...state, phase: PLAY_PHASES.RESULT, result }
         : { ...state, phase: PLAY_PHASES.ERROR, result: null }
     }
+    case 'crashed':
+      return { ...state, phase: PLAY_PHASES.SETUP, result: null, crashed: true }
     case 'setup':
-      return { ...state, phase: PLAY_PHASES.SETUP, result: null }
+      return { ...state, phase: PLAY_PHASES.SETUP, result: null, crashed: false }
     default:
       return state
   }

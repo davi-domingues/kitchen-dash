@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { loadCosmeticLook } from '../features/cosmetics/cosmeticsStore.js'
 import MatchResult from '../features/match/MatchResult.jsx'
+import { subscribeGameCrash } from '../features/match/gameCrash.js'
 import MatchSetup from '../features/match/MatchSetup.jsx'
 import PauseDialog from '../features/match/PauseDialog.jsx'
 import { PLAY_PHASES, initialPlayState, playFlowReducer } from '../features/match/playFlow.js'
@@ -13,6 +14,7 @@ import { MATCH_MODES } from '../game/core/matchModes.js'
 import { EventBus } from '../game/phaser/EventBus.js'
 import PhaserGame from '../game/phaser/PhaserGame.jsx'
 import { GAME_EVENTS } from '../game/phaser/events.js'
+import { captureError } from '../services/monitoring.js'
 import { setDailyChallengeCompletion } from '../services/dailyChallengeProgress.js'
 import { loadKeyBindings } from '../services/settings.js'
 
@@ -40,9 +42,14 @@ export default function PlayPage({ reduceEffects, onReduceEffectsChange }) {
 
     EventBus.on(GAME_EVENTS.MATCH_PAUSED, onPaused)
     EventBus.on(GAME_EVENTS.MATCH_ENDED, onEnded)
+    const unsubscribeCrash = subscribeGameCrash(EventBus, {
+      report: captureError,
+      onCrash: () => dispatch({ type: 'crashed' }),
+    })
     return () => {
       EventBus.off(GAME_EVENTS.MATCH_PAUSED, onPaused)
       EventBus.off(GAME_EVENTS.MATCH_ENDED, onEnded)
+      unsubscribeCrash()
     }
   }, [])
 
@@ -64,6 +71,12 @@ export default function PlayPage({ reduceEffects, onReduceEffectsChange }) {
       <p className="touch-notice alert max-w-lg" role="note">
         {t('play.touchNotice')}
       </p>
+
+      {state.phase === PLAY_PHASES.SETUP && state.crashed && (
+        <p role="alert" className="alert alert-error max-w-lg">
+          {t('play.crash.notice')}
+        </p>
+      )}
 
       {state.phase === PLAY_PHASES.SETUP && (
         <MatchSetup

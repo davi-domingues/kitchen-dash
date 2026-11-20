@@ -1,4 +1,6 @@
 import Phaser from 'phaser'
+import { guardScene } from '../sceneErrorGuard.js'
+import { EventBus } from '../EventBus.js'
 import { SCENE_KEYS, nextSceneKey } from '../sceneKeys.js'
 
 const BAR_WIDTH = 320
@@ -9,6 +11,7 @@ const BAR_COLOR = 0xf5ead6
 export class PreloadScene extends Phaser.Scene {
   constructor() {
     super(SCENE_KEYS.PRELOAD)
+    guardScene(this, SCENE_KEYS.PRELOAD, (event, payload) => EventBus.emit(event, payload))
   }
 
   preload() {

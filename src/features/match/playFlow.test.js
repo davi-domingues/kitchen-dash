@@ -87,6 +87,22 @@ describe('playFlowReducer', () => {
     expect(state).toMatchObject({ phase: PLAY_PHASES.SETUP, config: CONFIG })
   })
 
+  it('volta ao menu marcando a falha do jogo', () => {
+    const state = run({ type: 'start', config: CONFIG }, { type: 'crashed' })
+
+    expect(state).toMatchObject({ phase: PLAY_PHASES.SETUP, config: CONFIG, crashed: true, result: null })
+  })
+
+  it('limpa o aviso de falha ao iniciar outra partida', () => {
+    const state = run(
+      { type: 'start', config: CONFIG },
+      { type: 'crashed' },
+      { type: 'start', config: CONFIG },
+    )
+
+    expect(state).toMatchObject({ phase: PLAY_PHASES.PLAYING, crashed: false })
+  })
+
   it('ignora ação desconhecida', () => {
     expect(run({ type: 'nope' })).toBe(initialPlayState)
   })
