@@ -225,6 +225,7 @@ Os limites da Cloudflare definem o orçamento de tamanho do build (SYSTEM_DESIGN
 
 - **Check, não geração:** o CI recalcula `CONTENT_VERSION` e falha quando ela não aparece na última migration que atualiza `accepted_content_versions`. A migration continua explícita, revisável e criada pela pessoa que muda o conteúdo.
 - **Busca da migration relevante:** migrations posteriores que não alteram a lista não a substituem; o check percorre os arquivos em ordem inversa até encontrar a atualização da chave.
+- **Concorrência do submit_score (débito #76):** pgTAP roda numa transação só e não exercita concorrência real, e o `dblink` não vem habilitado no projeto. O teste é um script Node opcional (`npm run db:test:concurrency`) que cria um jogador `@example.com` no Supabase **local** (recusa outro host), dispara 8 envios simultâneos do mesmo `match_id` e exige 1 linha em `scores` e `matches_played = 1`. Fica fora do `npm test` porque o Vitest não usa Supabase real.
 
 ---
 
