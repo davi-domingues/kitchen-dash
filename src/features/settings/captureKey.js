@@ -1,4 +1,4 @@
-// Classifica o keydown durante a captura de uma tecla (contrato em specs/002-keybinding-remap-ui).
+// Classifica o keydown durante a captura de uma tecla (contrato em specs/010-remapeamento-teclas).
 // A primeira tecla só conta depois que a captura começou: o keydown de ativação não passa por aqui.
 
 const MODIFIER_CODES = new Set([
