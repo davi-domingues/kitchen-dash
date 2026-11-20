@@ -39,9 +39,22 @@ function writeMarker(userId, marker, store) {
   store.set(MIGRATION_KEY, { ...readAll(store), [userId]: marker })
 }
 
+function allStepsDone(marker) {
+  return STEPS.every((step) => marker.steps[step] === true)
+}
+
+// Partida de visitante jogada depois de uma rodada concluída reabre a migração (#73)
 export function isMigrationDone(userId, store = storage) {
-  const { steps } = readMarker(userId, store)
-  return STEPS.every((step) => steps[step] === true)
+  return allStepsDone(readMarker(userId, store)) && listGuestEntries(store).length === 0
+}
+
+// Nova rodada: reenvia as partidas e relê os cosméticos que o servidor pode ter liberado; as
+// configurações já foram conciliadas. Contadores zerados para o aviso refletir só esta rodada.
+function reopenForNewMatches(marker) {
+  marker.steps.scores = false
+  marker.steps.cosmetics = false
+  marker.sent = 0
+  marker.discarded = 0
 }
 
 // Partidas da outbox já pertencem a uma conta (KD-35); o resto do pending foi jogado como visitante
@@ -141,6 +154,7 @@ export async function runAccountMigration(user, overrides = {}) {
   const marker = readMarker(user.id, deps.store)
   const summary = () => ({ sent: marker.sent, discarded: marker.discarded })
   if (isMigrationDone(user.id, deps.store)) return { status: 'skipped', ...summary() }
+  if (allStepsDone(marker)) reopenForNewMatches(marker)
 
   const runners = {
     scores: () => migrateScores(marker, deps),

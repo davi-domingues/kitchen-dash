@@ -30,8 +30,8 @@ function matchId(n) {
   return `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`
 }
 
-function playGuestMatches(store, count) {
-  for (let n = 1; n <= count; n += 1) {
+function playGuestMatches(store, count, first = 1) {
+  for (let n = first; n < first + count; n += 1) {
     recordMatchResult(
       {
         matchId: matchId(n),
@@ -291,6 +291,49 @@ describe('runAccountMigration: cosméticos e configurações', () => {
 
     expect(again.status).toBe('skipped')
     expect(deps.pullCosmetics).toHaveBeenCalledTimes(1)
+  })
+
+  // Regressão #73: partidas de visitante jogadas depois da migração ficavam presas no local
+  it('migra no próximo login as partidas de visitante jogadas após a conclusão', async () => {
+    const submitScore = vi.fn(async () => ({}))
+    const { store, deps, settingsService } = setup({ submitScore })
+    playGuestMatches(store, 1)
+    await runAccountMigration(USER, deps)
+    playGuestMatches(store, 2, 10)
+
+    expect(isMigrationDone(USER.id, store)).toBe(false)
+    const again = await runAccountMigration(USER, deps)
+
+    expect(again).toEqual({ status: 'done', sent: 2, discarded: 0 })
+    expect(submitScore.mock.calls.map(([entry]) => entry.matchId)).toEqual([
+      matchId(1),
+      matchId(10),
+      matchId(11),
+    ])
+    expect(loadProgress(store).pending).toEqual([])
+    expect(deps.pullCosmetics).toHaveBeenCalledTimes(2)
+    expect(settingsService.fetchSettings).toHaveBeenCalledTimes(1)
+    expect(isMigrationDone(USER.id, store)).toBe(true)
+  })
+
+  it('rodada pós-login interrompida retoma sem reenviar', async () => {
+    const { store, deps } = setup()
+    await runAccountMigration(USER, deps)
+    playGuestMatches(store, 2, 10)
+    const submitScore = vi
+      .fn()
+      .mockResolvedValueOnce({})
+      .mockRejectedValue(new ScoreFailure(FAILURE_KINDS.AUTH))
+    await runAccountMigration(USER, { ...deps, loadScoreService: async () => ({ submitScore }) })
+
+    const retry = vi.fn(async () => ({}))
+    const result = await runAccountMigration(USER, {
+      ...deps,
+      loadScoreService: async () => ({ submitScore: retry }),
+    })
+
+    expect(result.status).toBe('done')
+    expect(retry.mock.calls.map(([entry]) => entry.matchId)).toEqual([matchId(11)])
   })
 
   it('o marcador é por usuário', async () => {
